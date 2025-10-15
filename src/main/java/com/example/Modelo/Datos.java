@@ -126,7 +126,7 @@ public class Datos {
             vehiculos.add(bus3);
             vehiculos.add(m1);
 			
-            // asignar vehículos al propietario con cédula 23456789
+            // asignar al propietario con cédula 23456789
 			Propietario prop = getPropietarioPorCedula("23456789");
 			if (prop != null) {
 				prop.getVehiculos().add(v1);
