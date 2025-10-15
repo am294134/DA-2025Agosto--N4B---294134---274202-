@@ -107,49 +107,30 @@ public class Datos {
 		vehiculos.clear();
 		Categoria catAuto = getCategoriaPorNombre("Auto");
 		Categoria catMoto = getCategoriaPorNombre("Moto");
+        Categoria catCamion = getCategoriaPorNombre("Camión");
+		Categoria catOmnibus = getCategoriaPorNombre("Omnibus");
 		if (catAuto != null) {
 			Vehiculo v1 = new Vehiculo("ABC1234", "Blanco", "Toyota Corolla", catAuto);
 			Vehiculo v2 = new Vehiculo("DEF5678", "Azul", "Ford F-150", catAuto);
+            Vehiculo cam2 = new Vehiculo("TRK777", "Blanco", "Volvo FH (2014) - 420000km", catCamion);
+			Vehiculo cam3 = new Vehiculo("TRK888", "Negro", "Iveco Stralis (2012) - 350000km", catCamion);
+            Vehiculo bus2 = new Vehiculo("BUS101", "Azul", "Mercedes O500 (2010) - 500000km", catOmnibus);
+			Vehiculo bus3 = new Vehiculo("BUS202", "Blanco/Azul", "Volvo B12 (2008) - 600000km", catOmnibus);
+			Vehiculo m1 = new Vehiculo("MOTO001", "Rojo", "Yamaha YBR", catMoto);
+
 			vehiculos.add(v1);
 			vehiculos.add(v2);
-			// asignar al propietario con cédula 23456789
+            vehiculos.add(cam2);
+            vehiculos.add(cam3);
+            vehiculos.add(bus2);
+            vehiculos.add(bus3);
+            vehiculos.add(m1);
+			
+            // asignar vehículos al propietario con cédula 23456789
 			Propietario prop = getPropietarioPorCedula("23456789");
 			if (prop != null) {
 				prop.getVehiculos().add(v1);
-				prop.getVehiculos().add(v2);
-			}
-		}
-		if (catMoto != null) {
-			Vehiculo m1 = new Vehiculo("MOTO001", "Rojo", "Yamaha YBR", catMoto);
-			vehiculos.add(m1);
-			Propietario prop = getPropietarioPorCedula("23456789");
-			if (prop != null) {
 				prop.getVehiculos().add(m1);
-			}
-		}
-
-		// Agregar más vehículos: camión y ómnibus y algunos más con detalles en el campo modelo
-		Categoria catCamion = getCategoriaPorNombre("Camión");
-		Categoria catOmnibus = getCategoriaPorNombre("Omnibus");
-		Propietario prop2 = getPropietarioPorCedula("23456789");
-		if (catCamion != null) {
-			Vehiculo cam2 = new Vehiculo("TRK777", "Blanco", "Volvo FH (2014) - 420000km", catCamion);
-			Vehiculo cam3 = new Vehiculo("TRK888", "Negro", "Iveco Stralis (2012) - 350000km", catCamion);
-			vehiculos.add(cam2);
-			vehiculos.add(cam3);
-			if (prop2 != null) {
-				prop2.getVehiculos().add(cam2);
-				prop2.getVehiculos().add(cam3);
-			}
-		}
-		if (catOmnibus != null) {
-			Vehiculo bus2 = new Vehiculo("BUS101", "Azul", "Mercedes O500 (2010) - 500000km", catOmnibus);
-			Vehiculo bus3 = new Vehiculo("BUS202", "Blanco/Azul", "Volvo B12 (2008) - 600000km", catOmnibus);
-			vehiculos.add(bus2);
-			vehiculos.add(bus3);
-			if (prop2 != null) {
-				prop2.getVehiculos().add(bus2);
-				prop2.getVehiculos().add(bus3);
 			}
 		}
 	}
