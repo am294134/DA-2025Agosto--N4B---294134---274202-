@@ -12,6 +12,8 @@ public class Datos {
 	private static ArrayList<Categoria> categorias = new ArrayList<>();
 
 	private static ArrayList<Vehiculo> vehiculos = new ArrayList<>();
+    
+	private static ArrayList<Administrador> administradores = new ArrayList<>();
 
 	/**
 	 * Carga (o recarga) los datos iniciales en memoria.
@@ -26,11 +28,18 @@ public class Datos {
 				"23456789",
 				2000.0,
 				500.0,
-				new Estado("ACTIVO"), // estado por defecto por ahora
+				new Estado("ACTIVO"), // estado por defecto
 				new ArrayList<>(), // vehiculos
 				new ArrayList<>(), // notificaciones
 				new ArrayList<>() // asignaciones
 		));
+
+		// Cargar administradores de precarga
+		administradores.clear();
+		administradores.add(new Administrador("Usuario",
+		 "Administrador",
+		  "12345678",
+		   "admin.123"));
 
 		// Cargar puestos (peajes de Uruguay - lista representativa)
 		puestos.clear();
@@ -161,6 +170,19 @@ public class Datos {
 		for (Categoria c : categorias) {
 			if (c.getNombre() != null && c.getNombre().equalsIgnoreCase(nombre)) {
 				return c;
+			}
+		}
+		return null;
+	}
+
+	public static List<Administrador> getAdministradores() {
+		return administradores;
+	}
+
+	public static Administrador getAdministradorPorCedula(String cedula) {
+		for (Administrador a : administradores) {
+			if (a.getCedula() != null && a.getCedula().equals(cedula)) {
+				return a;
 			}
 		}
 		return null;
