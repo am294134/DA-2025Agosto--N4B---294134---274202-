@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login Propietario</title>
+  <link rel="stylesheet" href="/css/login.css" />
+</head>
+<body class="propietario">
+  <main class="login-container">
+    <form class="login-box" action="/propietario/login" method="post" autocomplete="off">
+      <h1 class="title">Propietario</h1>
+      <label for="cedula">Cédula</label>
+      <input id="cedula" name="cedula" type="text" placeholder="12345678" required />
+
+      <label for="contrasenia">Contraseña</label>
+      <input id="contrasenia" name="contrasenia" type="password" placeholder="••••••••" required />
+
+      <button type="submit" class="btn">Ingresar</button>
+
+      <p class="small">¿Sos administrador? <a href="/login-admin.html">Ir al login de administrador</a></p>
+    </form>
+  </main>
+</body>
+</html>
