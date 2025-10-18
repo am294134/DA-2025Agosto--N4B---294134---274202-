@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/acceso")
 public class ControladorLogin {
+
+    //AGREGAR SESSION 
     
     @PostMapping("loginPropietario")
     public List<Respuesta> loginPropietario(@RequestBody String username, String password) throws PeajeException {

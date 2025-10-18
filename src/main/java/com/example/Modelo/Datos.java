@@ -5,14 +5,15 @@ import java.util.List;
 
 public class Datos {
 
+	Fachada fachada = Fachada.getInstancia();
+	// HACER LA PRECARGA A RAÍZ DE LA FACHADA.
+
+
+	
 	private static ArrayList<Propietario> propietarios = new ArrayList<>();
-
 	private static ArrayList<Puesto> puestos = new ArrayList<>();
-
 	private static ArrayList<Categoria> categorias = new ArrayList<>();
-
 	private static ArrayList<Vehiculo> vehiculos = new ArrayList<>();
-    
 	private static ArrayList<Administrador> administradores = new ArrayList<>();
 
 	/**

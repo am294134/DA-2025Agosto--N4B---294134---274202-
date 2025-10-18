@@ -3,8 +3,6 @@ package com.example.Modelo;
 import java.util.ArrayList;
 
 public class Fachada {
-    //Cuando creemos las clases vamos a tener que hacerlo sin singleton
-    //A los métodos de los SISTEMAS, ingresamos con Fachada.
 
     private static Fachada instancia;
     private SistemaAcceso sistemaAcceso;
@@ -17,16 +15,15 @@ public class Fachada {
 
     private void inicializarSistemas() {
         Datos.cargar();
-
-        ArrayList<Propietario> propietarios = new java.util.ArrayList<>(Datos.getPropietarios());
-        ArrayList<Administrador> administradores = new java.util.ArrayList<>(Datos.getAdministradores());
+        ArrayList<Propietario> propietarios = new ArrayList<>(Datos.getPropietarios());
+        ArrayList<Administrador> administradores = new ArrayList<>(Datos.getAdministradores());
 
         // Puestos y categorias directamente desde Datos
-        ArrayList<Puesto> puestos = new java.util.ArrayList<>(Datos.getPuestos());
-        ArrayList<Categoria> categorias = new java.util.ArrayList<>(Datos.getCategorias());
+        ArrayList<Puesto> puestos = new ArrayList<>(Datos.getPuestos());
+        ArrayList<Categoria> categorias = new ArrayList<>(Datos.getCategorias());
 
         // Tarifas: se obtienen agregando las tarifas de cada puesto
-        ArrayList<Tarifa> tarifas = new java.util.ArrayList<>();
+        ArrayList<Tarifa> tarifas = new ArrayList<>();
         for (Puesto p : puestos) {
             if (p.getTarifas() != null) {
                 tarifas.addAll(p.getTarifas());
@@ -34,7 +31,7 @@ public class Fachada {
         }
 
         // Vehículos: como Datos no expone un getter global para vehiculos, los recopilamos de los propietarios
-        ArrayList<Vehiculo> vehiculos = new java.util.ArrayList<>();
+        ArrayList<Vehiculo> vehiculos = new ArrayList<>();
         for (Propietario prop : propietarios) {
             if (prop.getVehiculos() != null) {
                 vehiculos.addAll(prop.getVehiculos());
@@ -42,7 +39,7 @@ public class Fachada {
         }
 
         // Transitos: no hay precarga explícita, inicializar vacío
-        ArrayList<Transito> transitos = new java.util.ArrayList<>();
+        ArrayList<Transito> transitos = new ArrayList<>();
 
         // Crear instancias de los sistemas
         this.sistemaAcceso = new SistemaAcceso(propietarios, administradores);
