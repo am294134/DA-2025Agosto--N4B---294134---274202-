@@ -11,6 +11,22 @@ public class SistemaAcceso {
         this.administradores = administradores;
     }
 
+    public void loginAdmin(String name, String pass) throws PeajeException{
+       login(name, pass, administradores);
+       throw new PeajeException("Login incorrecto");
+    }
+
+    private Administrador login(String name, String pass, ArrayList lista){
+        Administrador userAdmin;
+        for(Object o:lista){
+            userAdmin = (Administrador) o;
+            if(userAdmin.getNombre().equals(name) && userAdmin.getContrasenia().equals(pass)){
+                return userAdmin;
+            }
+        }
+        return null;
+    }
+
     public ArrayList<Propietario> getPropietarios() {
         return propietarios;
     }

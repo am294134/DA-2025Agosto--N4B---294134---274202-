@@ -21,18 +21,16 @@ public class Datos {
 	 */
 	public static void cargar() {
 		propietarios.clear();
-		propietarios.add(new Propietario(
-				"Usuario",
-				"Propietario",
-				"prop.123",
-				"23456789",
-				2000.0,
-				500.0,
-				new Estado("ACTIVO"), // estado por defecto
-				new ArrayList<>(), // vehiculos
-				new ArrayList<>(), // notificaciones
-				new ArrayList<>() // asignaciones
-		));
+	// Nota: el orden del constructor de Propietario es (nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado)
+	propietarios.add(new Propietario(
+		"Usuario",
+		"Propietario",
+		"23456789",
+		"prop.123",
+		2000.0,
+		500.0,
+		new Estado("ACTIVO")
+	));
 
 		// Cargar administradores de precarga
 		administradores.clear();
