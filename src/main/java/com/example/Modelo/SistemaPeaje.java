@@ -1,7 +1,6 @@
 package com.example.Modelo;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class SistemaPeaje {
     private ArrayList<Puesto> puestos;
@@ -14,15 +13,15 @@ public class SistemaPeaje {
         this.categorias = categorias;
     }
 
-    public List<Puesto> getPuestos() {
+    public ArrayList<Puesto> getPuestos() {
         return puestos;
     }
 
-    public List<Tarifa> getTarifas() {
+    public ArrayList<Tarifa> getTarifas() {
         return tarifas;
     }
 
-    public List<Categoria> getCategorias() {
+    public ArrayList<Categoria> getCategorias() {
         return categorias;
     }
 }

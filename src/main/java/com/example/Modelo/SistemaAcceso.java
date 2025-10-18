@@ -11,17 +11,23 @@ public class SistemaAcceso {
         this.administradores = administradores;
     }
 
-    public void loginAdmin(String name, String pass) throws PeajeException{
-       login(name, pass, administradores);
-       throw new PeajeException("Login incorrecto");
+    public void loginPropietario(String name, String pass) throws PeajeException{
+       login(name, pass, propietarios);
+       throw new PeajeException("Usuario o contraseña incorrectos");
+       
     }
-
-    private Administrador login(String name, String pass, ArrayList lista){
-        Administrador userAdmin;
+     public void loginAdministrador(String name, String pass) throws PeajeException{
+       login(name, pass, administradores);
+       throw new PeajeException("Usuario o contraseña incorrectos");
+    }
+    
+     private Usuario login(String name, String pass, ArrayList lista){
+        Usuario usuario;
+        
         for(Object o:lista){
-            userAdmin = (Administrador) o;
-            if(userAdmin.getNombre().equals(name) && userAdmin.getContrasenia().equals(pass)){
-                return userAdmin;
+            usuario = (Usuario)o;
+            if(usuario.getNombre().equals(name) && usuario.getContrasenia().equals(pass)){
+                return usuario;
             }
         }
         return null;

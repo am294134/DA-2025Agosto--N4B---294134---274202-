@@ -95,8 +95,42 @@ function manejarError(status, text, url, data){
                 console.error("url:" + url + "  data: " + data);
                 console.error("Error en submit:" + status, text);
                 document.body.innerHTML = '';
-                alert("Se produjo un error, detalles en consola");
+                // Si existe la función mostrarMensaje (de utilesVista.js) usarla, sino alert
+                try {
+                    if (typeof mostrarMensaje === 'function') {
+                        mostrarMensaje('Se produjo un error, detalles en consola: ' + text);
+                    } else {
+                        alert('Se produjo un error, detalles en consola: ' + text);
+                    }
+                } catch (e2) {
+                    alert('Se produjo un error, detalles en consola: ' + text);
+                }
      }
+}
+
+// Manejo por defecto para excepciones de aplicación (status 299)
+function excepcionDeAplicacion(texto) {
+    try {
+        if (typeof mostrarMensaje === 'function') {
+            mostrarMensaje(texto);
+            return;
+        }
+    } catch (e) {
+        console.error('Error mostrando mensaje de aplicación', e);
+    }
+    alert(texto);
+}
+
+// Manejo por defecto de errores de submit (fetch failures o status != 2xx)
+function procesarErrorSubmit(status, text) {
+    const msg = (status === 0) ? 'No se pudo conectar con el servidor: ' + text : ('Error ' + status + ': ' + text);
+    try {
+        if (typeof mostrarMensaje === 'function') {
+            mostrarMensaje(msg);
+            return;
+        }
+    } catch (e) {}
+    alert(msg);
 }
 
 // Por cada respuesta llama a la función "mostrar_" correspondiente
