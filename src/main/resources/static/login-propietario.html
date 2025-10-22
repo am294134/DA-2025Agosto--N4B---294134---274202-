@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Login Propietario</title>
+  <link rel="stylesheet" href="/css/login.css" />
+</head>
+<body class="propietario">
+  <main class="login-container">
+    <form id="formLogin" class="login-box" action="acceso/loginPropietario" method="post" autocomplete="off" onsubmit="handleLoginProp(event)">
+      <h1 class="title">Propietario</h1>
+      <label for="cedula">Cédula</label>
+      <input id="cedula" name="cedula" type="text" placeholder="12345678" required />
+
+      <label for="contrasenia">Contraseña</label>
+      <input id="contrasenia" name="contrasenia" type="password" placeholder="••••••••" required />
+
+      <button type="submit" class="btn">Ingresar</button>
+
+      <p class="small">¿Sos administrador? <a href="/login-admin.html">Ir al login de administrador</a></p>
+    </form>
+  </main>
+  <script src="utilesVista.js"></script>
+  <script src="vistaWeb.js"></script>
+  <script>
+    const URL_SUBMIT_PROP = "/acceso/loginPropietario";
+
+    function handleLoginProp(e) {
+      e.preventDefault();
+      submit(URL_SUBMIT_PROP, serializarFormulario("formLogin"));
+    }
+
+    // Redirige cuando el backend devuelve loginExitoso
+    function mostrar_loginExitoso(urlDestino) {
+      window.location.href = urlDestino;
+    }
+
+    async function excepcionDeAplicacion(text) {
+      await mostrarMensaje(text);
+    }
+  </script>
+</body>
+</html>
