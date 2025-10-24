@@ -55,17 +55,22 @@ public class SistemaTransito {
 
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
                                 String cedulaPropietario) throws PeajeException {
-        //buscamoss ya validando que existan
-        Categoria categoria = buscarCategoria(nombreCategoria);
+        // Validar que el propietario exista en el sistema
         Propietario propietario = buscarPropietario(cedulaPropietario);
+        if (propietario == null) {
+            throw new PeajeException("No se encontró el propietario con cédula: " + cedulaPropietario);
+        }
         
-        // Creamos el veh
-        Vehiculo vehiculo = new Vehiculo(matricula, modelo, color, categoria, propietario);
+        // Buscar la categoría
+        Categoria categoria = buscarCategoria(nombreCategoria);
         
-        // Agregamos el vehículo a la lista de v
+        // Crear el vehículo
+        Vehiculo vehiculo = new Vehiculo(matricula, color, modelo, categoria, propietario);
+        
+        // Agregar el vehículo a la lista general de vehículos
         vehiculos.add(vehiculo);
         
-        // agregamos el vehículo a la lista del prop, (bidireccional), para que agregar un vehículo si no es de un prop? 
+        // Agregar el vehículo a la lista del propietario (relación bidireccional)
         propietario.getVehiculos().add(vehiculo);
     }
 
@@ -99,12 +104,12 @@ public class SistemaTransito {
         throw new PeajeException("No existe la categoría: " + nombreCategoria);
     }
 
-    private Propietario buscarPropietario(String cedulaPropietario) throws PeajeException {
+    private Propietario buscarPropietario(String cedula) throws PeajeException {
         for (Propietario p : propietarios) {
-            if (p.getCedula().equals(cedulaPropietario)) {
+            if (p.getCedula().equals(cedula)) {
                 return p;
             }
         }
-        throw new PeajeException("No existe el propietario con cédula: " + cedulaPropietario);
+        throw new PeajeException("No existe el propietario con cédula: " + cedula);
     }
 }

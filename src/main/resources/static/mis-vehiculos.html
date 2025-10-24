@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Vehículos</title>
+    <link rel="stylesheet" href="css/login.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Mis Vehículos</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Matrícula</th>
+                    <th>Modelo</th>
+                    <th>Color</th>
+                    <th>Categoría</th>
+                </tr>
+            </thead>
+            <tbody id="vehiculosTableBody">
+                <!-- Los vehículos se cargarán aquí dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="utilesVista.js"></script>
+    <script>
+        // Función para cargar los vehículos
+        async function cargarVehiculos() {
+            try {
+                const response = await fetch('/vehiculos/listarVehiculos');
+                if (!response.ok) {
+                    throw new Error('Error al cargar los vehículos');
+                }
+                const vehiculos = await response.json();
+                mostrarVehiculos(vehiculos);
+            } catch (error) {
+                console.error('Error:', error);
+                // Si hay error de sesión, redirigir al login
+                window.location.href = 'login-propietario.html';
+            }
+        }
+
+        // Función para mostrar los vehículos en la tabla
+        function mostrarVehiculos(vehiculos) {
+            const tbody = document.getElementById('vehiculosTableBody');
+            tbody.innerHTML = ''; // Limpiar la tabla
+
+            vehiculos.forEach(vehiculo => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${vehiculo.matricula}</td>
+                    <td>${vehiculo.modelo}</td>
+                    <td>${vehiculo.color}</td>
+                    <td>${vehiculo.categoria}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Cargar los vehículos cuando la página se cargue
+        window.onload = cargarVehiculos;
+    </script>
+</body>
+</html>

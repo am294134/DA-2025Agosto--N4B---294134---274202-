@@ -9,15 +9,17 @@ public class Datos {
 
         // #region usuarios
         // Administradores
-        fachada.agregarAdministrador("Prueba", "Uno", "1", "a");
+        fachada.agregarAdministrador("Prueba", "Admin", "1", "a");
         fachada.agregarAdministrador("Admin", "Principal", "0001", "admin123");
         fachada.agregarAdministrador("Usuario", "Administrador", "12345678", "admin.123");
 
         // Propietarios
-        fachada.agregarPropietario("Juan", "Perez", "12345678", "juanpass", 5000.0, 1000.0, new Estado("Habilitado"));
-        fachada.agregarPropietario("Maria", "Gomez", "87654321", "mariapass", 3000.0, 500.0, new Estado("Habilitado"));
-        fachada.agregarPropietario("Usuario", "Propietario", "23456789", "prop.123", 2000, 500.0,
-                new Estado("Habilitado"));
+        fachada.agregarPropietario("Prueba", "Prop", "1", "a", 5000.0, 1000.0, new Estado("Habilitado"));
+        fachada.agregarPropietario("Juan", "Pérez", "11111111", "juan123", 5000.0, 1000.0, new Estado("Habilitado"));
+        fachada.agregarPropietario("María", "Gómez", "22222222", "maria123", 3000.0, 500.0, new Estado("Habilitado"));
+        fachada.agregarPropietario("Carlos", "Rodríguez", "33333333", "carlos123", 4000.0, 800.0, new Estado("Habilitado"));
+        fachada.agregarPropietario("Ana", "Martínez", "44444444", "ana123", 3500.0, 700.0, new Estado("Habilitado"));
+        fachada.agregarPropietario("Luis", "García", "55555555", "luis123", 4500.0, 900.0, new Estado("Habilitado"));
         // #endregion
 
         // #region Categorías
@@ -120,33 +122,33 @@ public class Datos {
         // #endregion
 
         // #region Vehículos
-        // Autos
-        fachada.agregarVehiculo("SAB1234", "Gris", "Toyota Corolla", "Automóvil", "12345678");
-        fachada.agregarVehiculo("ABC1234", "Negro", "Volkswagen Golf", "Automóvil", "87654321");
-        fachada.agregarVehiculo("DEF5678", "Blanco", "Honda Civic", "Automóvil", "23456789");
-        fachada.agregarVehiculo("GHI9012", "Rojo", "Ford Focus", "Automóvil", "34567890");
-        fachada.agregarVehiculo("JKL3456", "Azul", "Chevrolet Cruze", "Automóvil", "45678901");
+        // Automóviles
+        fachada.agregarVehiculo("SAB1234", "Gris", "Toyota Corolla", "Automóvil", "1");
+        fachada.agregarVehiculo("ABC1234", "Negro", "Volkswagen Golf", "Automóvil", "22222222");
+        fachada.agregarVehiculo("DEF5678", "Blanco", "Honda Civic", "Automóvil", "33333333");
+        fachada.agregarVehiculo("GHI9012", "Rojo", "Ford Focus", "Automóvil", "44444444");
+        fachada.agregarVehiculo("JKL3456", "Azul", "Chevrolet Cruze", "Automóvil", "55555555");
 
         // Motos
-        fachada.agregarVehiculo("MOT1234", "Negro", "Honda CB 250", "Moto", "12345678");
-        fachada.agregarVehiculo("BIK5678", "Rojo", "Yamaha YBR 125", "Moto", "87654321");
-        fachada.agregarVehiculo("CYC9012", "Azul", "Kawasaki Ninja", "Moto", "23456789");
-        fachada.agregarVehiculo("MTR3456", "Verde", "Suzuki GSX", "Moto", "34567890");
-        fachada.agregarVehiculo("VES7890", "Blanco", "BMW G310", "Moto", "45678901");
+        fachada.agregarVehiculo("MOT1234", "Negro", "Honda CB 250", "Moto", "1");
+        fachada.agregarVehiculo("BIK5678", "Rojo", "Yamaha YBR 125", "Moto", "22222222");
+        fachada.agregarVehiculo("CYC9012", "Azul", "Kawasaki Ninja", "Moto", "33333333");
+        fachada.agregarVehiculo("MTR3456", "Verde", "Suzuki GSX", "Moto", "44444444");
+        fachada.agregarVehiculo("VES7890", "Blanco", "BMW G310", "Moto", "55555555");
 
         // Camiones
-        fachada.agregarVehiculo("CAM1234", "Blanco", "Volkswagen Worker", "Camión", "12345678");
-        fachada.agregarVehiculo("TRK5678", "Rojo", "Mercedes-Benz Atego", "Camión", "87654321");
-        fachada.agregarVehiculo("HVY9012", "Verde", "Scania P410", "Camión", "23456789");
-        fachada.agregarVehiculo("BIG3456", "Azul", "Volvo FH", "Camión", "34567890");
-        fachada.agregarVehiculo("LOD7890", "Gris", "Ford Cargo", "Camión", "45678901");
+        fachada.agregarVehiculo("CAM1234", "Blanco", "Volkswagen Worker", "Camión", "1");
+        fachada.agregarVehiculo("TRK5678", "Rojo", "Mercedes-Benz Atego", "Camión", "22222222");
+        fachada.agregarVehiculo("HVY9012", "Verde", "Scania P410", "Camión", "33333333");
+        fachada.agregarVehiculo("BIG3456", "Azul", "Volvo FH", "Camión", "44444444");
+        fachada.agregarVehiculo("LOD7890", "Gris", "Ford Cargo", "Camión", "55555555");
 
         // Omnibus
-        fachada.agregarVehiculo("BUS1234", "Blanco", "Mercedes-Benz OH 1621", "Omnibus", "12345678");
-        fachada.agregarVehiculo("COA5678", "Azul", "Volvo B420R", "Omnibus", "87654321");
-        fachada.agregarVehiculo("TRP9012", "Verde", "Scania K400", "Omnibus", "23456789");
-        fachada.agregarVehiculo("PTR3456", "Gris", "Marcopolo Paradiso", "Omnibus", "34567890");
-        fachada.agregarVehiculo("LIN7890", "Rojo", "Irizar i6", "Omnibus", "45678901");
+        fachada.agregarVehiculo("BUS1234", "Blanco", "Mercedes-Benz OH 1621", "Omnibus", "1");
+        fachada.agregarVehiculo("COA5678", "Azul", "Volvo B420R", "Omnibus", "22222222");
+        fachada.agregarVehiculo("TRP9012", "Verde", "Scania K400", "Omnibus", "33333333");
+        fachada.agregarVehiculo("PTR3456", "Gris", "Marcopolo Paradiso", "Omnibus", "44444444");
+        fachada.agregarVehiculo("LIN7890", "Rojo", "Irizar i6", "Omnibus", "55555555");
         // #endregion
 
     }

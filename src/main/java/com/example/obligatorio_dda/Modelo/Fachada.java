@@ -47,7 +47,9 @@ public class Fachada {
 
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
                       double saldoActual, double saldoMinimo, Estado estado) {
-        sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
+        Propietario propietario = sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
+        // Sincronizar con SistemaTransito
+        sistemaTransito.getPropietarios().add(propietario);
     }
 
     public void agregarPuesto(String nombre, String ubicacion) {

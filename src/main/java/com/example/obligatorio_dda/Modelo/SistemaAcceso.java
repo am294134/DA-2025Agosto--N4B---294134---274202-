@@ -10,9 +10,11 @@ public class SistemaAcceso {
         this.administradores = administradores;
     }
 
-    public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
+    public Propietario agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
                       double saldoActual, double saldoMinimo, Estado estado) {
-        this.propietarios.add(new Propietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado)  );
+        Propietario propietario = new Propietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
+        this.propietarios.add(propietario);
+        return propietario;
     }
 
     public void agregarAdministrador(String nombre, String apellido, String cedula, String contrasenia) {
