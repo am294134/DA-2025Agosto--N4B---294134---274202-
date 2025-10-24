@@ -36,6 +36,7 @@ public class ControladorVehiculos {
         }
         
         String nombreCompleto = propietario.getNombre() + " " + propietario.getApellido();
-        return new VehiculosPropDTO(nombreCompleto, vehiculosDTO);
+        // incluir estado y saldoActual en la respuesta para que la vista pueda mostrarlos en el menú
+        return new VehiculosPropDTO(nombreCompleto, vehiculosDTO, propietario.getEstado(), propietario.getSaldoActual());
     }
 }

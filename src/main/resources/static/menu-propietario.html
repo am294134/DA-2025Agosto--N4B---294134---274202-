@@ -90,6 +90,8 @@
         <h1>Panel de Propietario</h1>
         <div class="user-info">
             Bienvenido, <span id="nombreUsuario"></span>
+            &nbsp;|&nbsp; Estado: <span id="estadoUsuario"></span>
+            &nbsp;|&nbsp; Saldo: $<span id="saldoUsuario"></span>
         </div>
     </div>
 
@@ -155,6 +157,13 @@
                         vehiculos = data.vehiculos;
                         if (data.nombreCompleto) {
                             document.getElementById('nombreUsuario').textContent = data.nombreCompleto;
+                        }
+                        if (data.estado) {
+                            const estadoText = data.estado.nombre ? data.estado.nombre : String(data.estado);
+                            document.getElementById('estadoUsuario').textContent = estadoText;
+                        }
+                        if (typeof data.saldoActual !== 'undefined') {
+                            document.getElementById('saldoUsuario').textContent = Number(data.saldoActual).toFixed(2);
                         }
                     } else {
                         // estructura desconocida: intentar usar como array
