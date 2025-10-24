@@ -36,6 +36,13 @@
       window.location.href = urlDestino;
     }
 
+    // Cuando el backend envía 'datosUsuario' (nombre completo), no guardamos en storage
+    // para evitar datos desincronizados entre pestañas.
+    function mostrar_datosUsuario(nombreCompleto) {
+      // no-op: el menu pedirá el nombre al servidor cuando se cargue
+      console.log('datosUsuario recibido (ignorado en cliente):', nombreCompleto);
+    }
+
     async function excepcionDeAplicacion(text) {
       await mostrarMensaje(text);
     }

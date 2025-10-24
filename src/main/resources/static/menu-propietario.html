@@ -138,14 +138,29 @@
     <script src="/utilesVista.js"></script>
     <script src="/vistaWeb.js"></script>
     <script>
-        // Función para cargar los vehículos
+        // Función para cargar los vehículos (acepta ya sea un array o un objeto { nombreCompleto, vehiculos })
         async function cargarVehiculos() {
             try {
                 const response = await fetch('/vehiculos/listarVehiculos');
                 if (!response.ok) {
                     throw new Error('Error al cargar los vehículos');
                 }
-                const vehiculos = await response.json();
+                const data = await response.json();
+                let vehiculos = [];
+                if (data) {
+                    // si el servidor devolvió { nombreCompleto, vehiculos }
+                    if (Array.isArray(data)) {
+                        vehiculos = data;
+                    } else if (data.vehiculos) {
+                        vehiculos = data.vehiculos;
+                        if (data.nombreCompleto) {
+                            document.getElementById('nombreUsuario').textContent = data.nombreCompleto;
+                        }
+                    } else {
+                        // estructura desconocida: intentar usar como array
+                        vehiculos = Array.isArray(data) ? data : [];
+                    }
+                }
                 mostrarVehiculos(vehiculos);
             } catch (error) {
                 console.error('Error:', error);
@@ -179,9 +194,11 @@
             // Manejar cierre de sesión cuando se cierra la ventana
             urlCierreVista = "/acceso/cerrarSesion";
 
-            // Cargar los vehículos
+            // Cargar vehículos (la respuesta incluye nombreCompleto y se usa para setear el nombre)
             cargarVehiculos();
         });
+
+        // Nota: el nombre se obtiene ahora desde la respuesta de /vehiculos/listarVehiculos
 
         // Función para mostrar datos del usuario
         function mostrar_datosUsuario(datos) {

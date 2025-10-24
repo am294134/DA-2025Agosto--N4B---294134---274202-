@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.obligatorio_dda.DTOs.VehiculoDTO;
+import com.example.obligatorio_dda.DTOs.VehiculosPropDTO;
 import com.example.obligatorio_dda.Modelo.Propietario;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class ControladorVehiculos {
 
     @GetMapping("/listarVehiculos")
-    public List<VehiculoDTO> listarVehiculos(HttpSession sesion) throws Exception {
+    public VehiculosPropDTO listarVehiculos(HttpSession sesion) throws Exception {
         // obtenemos session
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
@@ -33,6 +34,8 @@ public class ControladorVehiculos {
                 v.getCategoria().getNombre()
             ));
         }
-        return vehiculosDTO;
+        
+        String nombreCompleto = propietario.getNombre() + " " + propietario.getApellido();
+        return new VehiculosPropDTO(nombreCompleto, vehiculosDTO);
     }
 }
