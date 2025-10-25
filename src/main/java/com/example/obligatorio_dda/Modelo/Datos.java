@@ -20,6 +20,7 @@ public class Datos {
         fachada.agregarPropietario("Carlos", "Rodríguez", "33333333", "carlos123", 4000.0, 800.0, new Estado("Habilitado"));
         fachada.agregarPropietario("Ana", "Martínez", "44444444", "ana123", 3500.0, 700.0, new Estado("Habilitado"));
         fachada.agregarPropietario("Luis", "García", "55555555", "luis123", 4500.0, 900.0, new Estado("Habilitado"));
+        fachada.agregarPropietario("El desha", "Bilitado", "66666666", "des123", 2500.0, 1000.0, new Estado("Deshabilitado"));
         // #endregion
 
         // #region Categorías

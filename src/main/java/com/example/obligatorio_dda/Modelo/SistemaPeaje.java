@@ -7,7 +7,7 @@ public class SistemaPeaje {
     private ArrayList<Tarifa> tarifas;
     private ArrayList<Categoria> categorias;
 
-    public SistemaPeaje(ArrayList<Puesto> puestos, ArrayList<Tarifa> tarifas, ArrayList<Categoria> categorias) {
+    protected SistemaPeaje(ArrayList<Puesto> puestos, ArrayList<Tarifa> tarifas, ArrayList<Categoria> categorias) {
         this.puestos = puestos;
         this.tarifas = tarifas;
         this.categorias = categorias;

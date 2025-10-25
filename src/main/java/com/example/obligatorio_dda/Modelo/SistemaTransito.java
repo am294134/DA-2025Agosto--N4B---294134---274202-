@@ -10,9 +10,9 @@ public class SistemaTransito {
     private ArrayList<Categoria> categorias;
     private ArrayList<Propietario> propietarios;
 
-    public SistemaTransito(ArrayList<Transito> transitos, ArrayList<Vehiculo> vehiculos,
-                           ArrayList<Puesto> puestos, ArrayList<Tarifa> tarifas,
-                           ArrayList<Categoria> categorias, ArrayList<Propietario> propietarios) {
+    protected SistemaTransito(ArrayList<Transito> transitos, ArrayList<Vehiculo> vehiculos,
+            ArrayList<Puesto> puestos, ArrayList<Tarifa> tarifas,
+            ArrayList<Categoria> categorias, ArrayList<Propietario> propietarios) {
         this.transitos = transitos;
         this.vehiculos = vehiculos;
         this.puestos = puestos;
@@ -54,23 +54,22 @@ public class SistemaTransito {
     }
 
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
-                                String cedulaPropietario) throws PeajeException {
+            String cedulaPropietario) throws PeajeException {
         // Validar que el propietario exista en el sistema
         Propietario propietario = buscarPropietario(cedulaPropietario);
         if (propietario == null) {
             throw new PeajeException("No se encontró el propietario con cédula: " + cedulaPropietario);
         }
-        
-        // Buscar la categoría
+
+        // Busca cat
         Categoria categoria = buscarCategoria(nombreCategoria);
-        
-        // Crear el vehículo
+
+        // Crea veh
         Vehiculo vehiculo = new Vehiculo(matricula, color, modelo, categoria, propietario);
-        
-        // Agregar el vehículo a la lista general de vehículos
+
+        // Agrega el vehículo a la lista general
         vehiculos.add(vehiculo);
-        
-        // Agregar el vehículo a la lista del propietario (relación bidireccional)
+        // Agrega el vehiculo a la lista del propietario (relación bidireccional)
         propietario.getVehiculos().add(vehiculo);
     }
 
@@ -84,8 +83,7 @@ public class SistemaTransito {
         puesto.getTarifas().add(tarifa);
     }
 
- 
-    //métodos pa no repetir código
+    // métodos pa no repetir código
     private Puesto buscarPuesto(String nombrePuesto) throws PeajeException {
         for (Puesto p : puestos) {
             if (p.getNombre().equals(nombrePuesto)) {

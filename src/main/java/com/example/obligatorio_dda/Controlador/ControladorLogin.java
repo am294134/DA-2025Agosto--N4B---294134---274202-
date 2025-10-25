@@ -22,6 +22,11 @@ public class ControladorLogin {
         // login al modelo
         Propietario propietario = Fachada.getInstancia().loginPropietario(cedula, contrasenia);
 
+        // si el propietario esta deshabilitado, no puede ingresar
+        if (propietario.getEstado() != null && "Deshabilitado".equalsIgnoreCase(propietario.getEstado().getNombre())) {
+            throw new PeajeException("Usuario deshabilitado, no puede ingresar al sistema");
+        }
+
         // se guarda el propietario en la sesionHttp
         sesionHttp.setAttribute("usuarioPropietario", propietario);
         // devolvemos el los datos del usuario
