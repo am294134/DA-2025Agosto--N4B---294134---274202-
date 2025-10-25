@@ -5,51 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menú Administrador</title>
     <link rel="stylesheet" href="/css/login.css">
-    <style>
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 20px;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .menu-item {
-            background: var(--card);
-            padding: 20px;
-            border-radius: var(--radius);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.2s;
-        }
-        .menu-item:hover {
-            transform: translateY(-5px);
-        }
-        .menu-item h3 {
-            margin: 0 0 10px;
-            color: #d93025;
-        }
-        .menu-item p {
-            margin: 0;
-            color: #666;
-            font-size: 0.9em;
-        }
-        .header {
-            background: #d93025;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .user-info {
-            font-size: 0.9em;
-            opacity: 0.9;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/menu-admin.css">
+    <!-- Styles moved to /css/menu-admin.css -->
 </head>
 <body class="admin">
     <div class="header">
@@ -58,31 +15,72 @@
             Bienvenido, <span id="nombreUsuario"></span>
         </div>
     </div>
+    <!-- Nueva sección con tres paneles para funciones administrativas (solo visual) -->
+    <div class="admin-sections">
+        <div class="admin-section menu-item">
+            <div class="section-header"><h3>1) Emular tránsito</h3></div>
+            <div class="section-body">
+                <p>Simula el paso de un vehículo por un peaje.</p>
+                <form>
+                    <label>Matrícula</label>
+                    <input type="text" placeholder="ABC1234" disabled>
 
-    <div class="menu-grid">
-        <div class="menu-item">
-            <h3>Gestión de Puestos</h3>
-            <p>Administrar puestos de peaje</p>
+                    <label>Peaje</label>
+                    <select disabled>
+                        <option>Peaje de Pando Interbalnearia</option>
+                        <option>Peaje Solís</option>
+                    </select>
+
+                    <label>Categoría</label>
+                    <select disabled>
+                        <option>Automóvil</option>
+                        <option>Moto</option>
+                    </select>
+
+                    <button disabled class="action-btn">Emular</button>
+                </form>
+            </div>
         </div>
-        <div class="menu-item">
-            <h3>Tarifas</h3>
-            <p>Configurar tarifas por categoría</p>
+
+        <div class="admin-section menu-item">
+            <div class="section-header"><h3>2) Asignar bonificaciones</h3></div>
+            <div class="section-body">
+                <p>Asignar bonificaciones a un propietario o vehículo.</p>
+                <form>
+                    <label>Propietario (cédula)</label>
+                    <input type="text" placeholder="11111111" disabled>
+
+                    <label>Tipo de bonificación</label>
+                    <select disabled>
+                        <option>Descuento por pago anticipado</option>
+                        <option>Promoción</option>
+                    </select>
+
+                    <label>Monto/Porcentaje</label>
+                    <input type="text" placeholder="10% / $100" disabled>
+
+                    <button disabled class="action-btn">Asignar</button>
+                </form>
+            </div>
         </div>
-        <div class="menu-item">
-            <h3>Bonificaciones</h3>
-            <p>Gestionar bonificaciones y descuentos</p>
-        </div>
-        <div class="menu-item">
-            <h3>Propietarios</h3>
-            <p>Ver listado de propietarios</p>
-        </div>
-        <div class="menu-item">
-            <h3>Reportes</h3>
-            <p>Generar informes y estadísticas</p>
-        </div>
-        <div class="menu-item">
-            <h3>Configuración</h3>
-            <p>Ajustes del sistema</p>
+
+        <div class="admin-section menu-item">
+            <div class="section-header"><h3>3) Cambiar estado del propietario</h3></div>
+            <div class="section-body">
+                <p>Modificar el estado actual (Habilitado / Deshabilitado).</p>
+                <form>
+                    <label>Propietario (cédula)</label>
+                    <input type="text" placeholder="1" disabled>
+
+                    <label>Estado</label>
+                    <select disabled>
+                        <option>Habilitado</option>
+                        <option>Deshabilitado</option>
+                    </select>
+
+                    <button disabled class="action-btn">Cambiar estado</button>
+                </form>
+            </div>
         </div>
     </div>
 

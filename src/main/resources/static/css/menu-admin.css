@@ -1,0 +1,130 @@
+/* Styles for admin page layout and form visuals */
+.admin-sections {
+  max-width: 1400px;
+  margin: 10px auto 40px auto;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* Responsive: 2 columns for medium, 1 column for small */
+@media (max-width: 1100px) {
+  .admin-sections {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 700px) {
+  .admin-sections {
+    grid-template-columns: 1fr;
+  }
+}
+
+.menu-item {
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(17, 24, 39, 0.06);
+  background: #ffffff;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.menu-item:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 30px rgba(17,24,39,0.09);
+}
+
+.section-header h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.05rem;
+  color: #d93025;
+}
+.section-body p {
+  margin: 0 0 12px 0;
+  color: #444;
+}
+
+/* Form visuals inside panels (visual only) */
+.admin-sections form {
+  display: grid;
+  gap: 10px;
+}
+.admin-sections label {
+  display: block;
+  font-size: 0.85rem;
+  color: #333;
+}
+.admin-sections input[type="text"],
+.admin-sections select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e6e9ef;
+  border-radius: 6px;
+  background: #fbfbfd;
+  color: #222;
+}
+
+/* Action button style (disabled visually distinct) */
+.action-btn {
+  display: inline-block;
+  padding: 10px 14px;
+  background: #d93025;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: not-allowed; /* visual only */
+  font-weight: 600;
+}
+.action-btn:disabled {
+  opacity: 0.85;
+}
+
+/* Improve spacing inside the whole page header and container */
+.header {
+  padding: 28px 20px;
+}
+
+/* Make inputs look less cramped on wide screens */
+@media (min-width: 1200px) {
+  .admin-sections input[type="text"], .admin-sections select {
+    padding: 12px 14px;
+  }
+}
+
+/* Header and menu-item overrides previously inline in HTML */
+.header {
+  background: #d93025;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+.header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+.user-info {
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+/* Ensure panels occupy roughly half the viewport height and are equal height */
+.admin-sections {
+  min-height: 50vh; /* make container at least half viewport high */
+}
+.menu-item {
+  /* keep previous visual styles, ensure equal height */
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+}
+.section-body {
+  flex: 1 1 auto; /* let body grow to fill the card */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* Keep labels and controls positioned nicely if content is short */
+.admin-sections form {
+  flex: 1 1 auto;
+}
