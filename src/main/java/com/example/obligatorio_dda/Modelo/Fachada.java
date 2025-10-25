@@ -14,9 +14,6 @@ public class Fachada {
         this.sistemaTransito = new SistemaTransito(
             new ArrayList<>(), // transitos
             new ArrayList<>(), // vehiculos
-            new ArrayList<>(), // puestos
-            new ArrayList<>(), // tarifas
-            new ArrayList<>(), // categorias
             new ArrayList<>()  // propietarios
         );
     }
@@ -53,27 +50,48 @@ public class Fachada {
     }
 
     public void agregarPuesto(String nombre, String ubicacion) {
-        sistemaTransito.agregarPuesto(new Puesto(nombre, ubicacion));
+        sistemaPeaje.agregarPuesto(new Puesto(nombre, ubicacion));
     }
 
     public void agregarCategoria(String nombre) {
-        sistemaTransito.agregarCategoria(new Categoria(nombre));
+        sistemaPeaje.agregarCategoria(new Categoria(nombre));
     }
 
     public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
-        sistemaTransito.agregarTarifa(nombrePuesto, nombreCategoria, monto);
+        sistemaPeaje.agregarTarifa(nombrePuesto, nombreCategoria, monto);
     }
 
-    public void agregarVehiculo(String matricula, String color, String modelo, String categoria, String cedulaPropietario) throws PeajeException {
-        sistemaTransito.agregarVehiculo(matricula, color, modelo, categoria, cedulaPropietario);
+    public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria, String cedulaPropietario) throws PeajeException {
+        Categoria categoria = null;
+        for (Categoria c : sistemaPeaje.getCategorias()) {
+            if (c.getNombre().equals(nombreCategoria)) {
+                categoria = c;
+                break;
+            }
+        }
+        if (categoria == null) {
+            throw new PeajeException("No existe la categoría: " + nombreCategoria);
+        }
+
+        Propietario propietario = null;
+        for (Propietario p : sistemaTransito.getPropietarios()) {
+            if (p.getCedula().equals(cedulaPropietario)) {
+                propietario = p;
+                break;
+            }
+        }
+        if (propietario == null) {
+            throw new PeajeException("No existe el propietario con cédula: " + cedulaPropietario);
+        }
+
+        sistemaTransito.agregarVehiculo(matricula, color, modelo, categoria, propietario);
     }
 
     //#endregion
     
     //#region getters para listas
     public ArrayList<Puesto> getPuestos() {
-        // Los puestos se cargan en st "Datos.agregarPuesto" y devuelve lista desde st cargados en Datos.Cargar().
-        return sistemaTransito.getPuestos();
+        return sistemaPeaje.getPuestos();
     }
 
     public ArrayList<Categoria> getCategorias() {
