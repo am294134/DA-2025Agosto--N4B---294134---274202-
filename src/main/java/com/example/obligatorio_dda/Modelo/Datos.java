@@ -152,6 +152,19 @@ public class Datos {
         fachada.agregarVehiculo("LIN7890", "Rojo", "Irizar i6", "Omnibus", "55555555");
         // #endregion
 
+        // #region Notificaciones de prueba
+        
+        
+        // pruebita para ver las notifiaciones, dps vemos quién asigna las notificaciones
+        for (Propietario prop : fachada.getPropietarios()) {
+            if (prop.getCedula().equals("1")) {  // Es el propietario de prueba
+                Notificacion notif = new Notificacion("Bienvenido al sistema de peajes. Su cuenta ha sido activada correctamente.", prop);
+                prop.getNotificaciones().add(notif);
+                Notificacion notif2 = new Notificacion("Notificación número 2", prop);
+                prop.getNotificaciones().add(notif2);
+            }
+        }
+        // #endregion
     }
 
 }

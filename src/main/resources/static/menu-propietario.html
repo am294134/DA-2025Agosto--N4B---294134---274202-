@@ -4,8 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menú Propietario</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="/css/login.css">
     <style>
+        .notification-icon {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+        .notification-icon i {
+            font-size: 20px;
+            color: white;
+        }
+        .notification-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            min-width: 16px;
+            text-align: center;
+        }
+        .notification-dropdown {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            min-width: 300px;
+            max-width: 400px;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        .notification-dropdown.show {
+            display: block;
+        }
+        .notification-header {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+        }
+        .notification-header h4 {
+            margin: 0;
+            color: #333;
+        }
+        .mark-read-btn {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .mark-read-btn:hover {
+            background: #1557b0;
+        }
+        .notification-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            background-color: #ffffff;
+            transition: background-color 0.2s;
+        }
+        .notification-item.unread {
+            background-color: #eef6ff; /* light blue for unread */
+            font-weight: 600;
+        }
+        .notification-item.read {
+            background-color: #f7f8fa; /* softer gray for read */
+            color: #666;
+            font-weight: 400;
+        }
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        .notification-item .notification-time {
+            color: #666;
+            font-size: 0.8em;
+            margin-top: 4px;
+        }
+        .notification-item.unread:hover {
+            background-color: #e6f0ff;
+        }
         .menu-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -92,6 +182,13 @@
             Bienvenido, <span id="nombreUsuario"></span>
             &nbsp;|&nbsp; Estado: <span id="estadoUsuario"></span>
             &nbsp;|&nbsp; Saldo: $<span id="saldoUsuario"></span>
+            <div class="notification-icon" onclick="toggleNotifications()">
+                <i class="fas fa-bell"></i>
+                <span class="notification-count" id="notificationCount">0</span>
+                <div class="notification-dropdown" id="notificationDropdown">
+                    <!-- Notifications will be inserted here -->
+                </div>
+            </div>
         </div>
     </div>
 
@@ -140,6 +237,116 @@
     <script src="/utilesVista.js"></script>
     <script src="/vistaWeb.js"></script>
     <script>
+        let notifications = [];
+
+        // Función para cargar las notificaciones
+        async function cargarNotificaciones() {
+            try {
+                const response = await fetch('/notificaciones/listar');
+                if (!response.ok) {
+                    throw new Error('Error al cargar las notificaciones');
+                }
+                const notifs = await response.json();
+                    // Guardamos todas las notificaciones (con su campo 'leida')
+                    notifications = notifs;
+                    actualizarContadorNotificaciones();
+                    actualizarDropdownNotificaciones();
+            } catch (error) {
+                console.error('Error al cargar notificaciones:', error);
+            }
+        }
+
+        // Función para actualizar el contador de notificaciones
+        function actualizarContadorNotificaciones() {
+            const count = document.getElementById('notificationCount');
+            // Contador muestra solo las no leídas
+            const unread = notifications.filter(n => !n.leida).length;
+            count.textContent = unread;
+            count.style.display = unread > 0 ? 'block' : 'none';
+        }
+
+        // Función para marcar todas las notificaciones como leídas
+        async function marcarComoLeidas() {
+            try {
+                const response = await fetch('/notificaciones/marcarLeidas', {
+                    method: 'POST'
+                });
+                if (!response.ok) {
+                    throw new Error('Error al marcar las notificaciones como leídas');
+                }
+                // Recargar notificaciones para reflejar estado actualizado
+                await cargarNotificaciones();
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Función para actualizar el contenido del dropdown de notificaciones
+        function actualizarDropdownNotificaciones() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.innerHTML = '';
+            
+            // Agregar el encabezado con el botón de marcar como leídas
+            const header = document.createElement('div');
+            header.className = 'notification-header';
+            
+            const title = document.createElement('h4');
+            title.textContent = 'Notificaciones';
+            
+            const markReadBtn = document.createElement('button');
+            markReadBtn.className = 'mark-read-btn';
+            markReadBtn.textContent = 'Marcar como leídas';
+            markReadBtn.onclick = marcarComoLeidas;
+            
+            header.appendChild(title);
+            // Mostrar el botón solo si hay notificaciones no leídas
+            const anyUnread = notifications.some(n => !n.leida);
+            if (anyUnread) {
+                header.appendChild(markReadBtn);
+            }
+            dropdown.appendChild(header);
+            
+            if (notifications.length === 0) {
+                const noNotifs = document.createElement('div');
+                noNotifs.className = 'notification-item';
+                noNotifs.textContent = 'No hay notificaciones nuevas';
+                dropdown.appendChild(noNotifs);
+                return;
+            }
+            // Mostrar todas las notificaciones, diferenciando por clase
+            notifications.forEach(notif => {
+                const notifItem = document.createElement('div');
+                notifItem.className = 'notification-item ' + (notif.leida ? 'read' : 'unread');
+
+                const mensaje = document.createElement('div');
+                mensaje.textContent = notif.mensaje;
+
+                const tiempo = document.createElement('div');
+                tiempo.className = 'notification-time';
+                tiempo.textContent = notif.fechaHora;
+
+                notifItem.appendChild(mensaje);
+                notifItem.appendChild(tiempo);
+                dropdown.appendChild(notifItem);
+            });
+        }
+
+        // Función para mostrar/ocultar el dropdown de notificaciones
+        function toggleNotifications() {
+            const dropdown = document.getElementById('notificationDropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Cerrar el dropdown cuando se hace click fuera de él
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('notificationDropdown');
+            const notificationIcon = document.querySelector('.notification-icon');
+            
+            if (!notificationIcon.contains(event.target) && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
         // Función para cargar los vehículos (acepta ya sea un array o un objeto { nombreCompleto, vehiculos })
         async function cargarVehiculos() {
             try {
@@ -205,6 +412,12 @@
 
             // Cargar vehículos (la respuesta incluye nombreCompleto y se usa para setear el nombre)
             cargarVehiculos();
+            
+            // Cargar notificaciones iniciales
+            cargarNotificaciones();
+            
+            // Configurar el refresco periódico de notificaciones (cada 30 segundos)
+            setInterval(cargarNotificaciones, 30000);
         });
 
         // Nota: el nombre se obtiene ahora desde la respuesta de /vehiculos/listarVehiculos
