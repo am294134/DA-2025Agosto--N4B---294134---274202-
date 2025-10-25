@@ -157,7 +157,7 @@ public class Datos {
         
         // pruebita para ver las notifiaciones, dps vemos quién asigna las notificaciones
         for (Propietario prop : fachada.getPropietarios()) {
-            if (prop.getCedula().equals("1")) {  // Es el propietario de prueba
+            if (prop.getCedula().equals("1")) {  // propietario de prueba
                 Notificacion notif = new Notificacion("Bienvenido al sistema de peajes. Su cuenta ha sido activada correctamente.", prop);
                 prop.getNotificaciones().add(notif);
                 Notificacion notif2 = new Notificacion("Notificación número 2", prop);

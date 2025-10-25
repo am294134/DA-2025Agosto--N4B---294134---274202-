@@ -72,7 +72,8 @@ public class Fachada {
     
     //#region getters para listas
     public ArrayList<Puesto> getPuestos() {
-        return sistemaPeaje.getPuestos();
+        // Los puestos se cargan en st "Datos.agregarPuesto" y devuelve lista desde st cargados en Datos.Cargar().
+        return sistemaTransito.getPuestos();
     }
 
     public ArrayList<Categoria> getCategorias() {

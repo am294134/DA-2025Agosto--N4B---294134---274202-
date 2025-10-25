@@ -55,7 +55,7 @@ public class SistemaTransito {
 
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
             String cedulaPropietario) throws PeajeException {
-        // Validar que el propietario exista en el sistema
+        // busca y valida que exista en sistema
         Propietario propietario = buscarPropietario(cedulaPropietario);
         if (propietario == null) {
             throw new PeajeException("No se encontró el propietario con cédula: " + cedulaPropietario);

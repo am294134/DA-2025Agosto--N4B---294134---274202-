@@ -18,67 +18,74 @@
     <!-- Nueva sección con tres paneles para funciones administrativas (solo visual) -->
     <div class="admin-sections">
         <div class="admin-section menu-item">
-            <div class="section-header"><h3>1) Emular tránsito</h3></div>
+            <div class="section-header"><h3>Emular tránsito</h3></div>
             <div class="section-body">
                 <p>Simula el paso de un vehículo por un peaje.</p>
                 <form>
                     <label>Matrícula</label>
-                    <input type="text" placeholder="ABC1234" disabled>
+                        <input type="text" placeholder="ABC1234">
 
                     <label>Peaje</label>
-                    <select disabled>
-                        <option>Peaje de Pando Interbalnearia</option>
-                        <option>Peaje Solís</option>
-                    </select>
+                        <select id="peajeSelect">
+                        <!-- Options loaded dynamically -->
+                        </select>
 
                     <label>Categoría</label>
-                    <select disabled>
+                        <select>
                         <option>Automóvil</option>
                         <option>Moto</option>
-                    </select>
+                        </select>
 
-                    <button disabled class="action-btn">Emular</button>
+                        <div class="action-row">
+                            <button class="action-btn">Emular</button>
+                        </div>
                 </form>
             </div>
         </div>
 
         <div class="admin-section menu-item">
-            <div class="section-header"><h3>2) Asignar bonificaciones</h3></div>
+            <div class="section-header"><h3>Asignar bonificaciones</h3></div>
             <div class="section-body">
                 <p>Asignar bonificaciones a un propietario o vehículo.</p>
                 <form>
                     <label>Propietario (cédula)</label>
-                    <input type="text" placeholder="11111111" disabled>
+                        <input type="text" placeholder="11111111">
 
                     <label>Tipo de bonificación</label>
-                    <select disabled>
+                        <select>
                         <option>Descuento por pago anticipado</option>
                         <option>Promoción</option>
-                    </select>
+                        </select>
 
                     <label>Monto/Porcentaje</label>
-                    <input type="text" placeholder="10% / $100" disabled>
+                        <input type="text" placeholder="10% / $100">
 
-                    <button disabled class="action-btn">Asignar</button>
+                        <div class="action-row">
+                            <button class="action-btn">Asignar</button>
+                        </div>
                 </form>
             </div>
         </div>
 
         <div class="admin-section menu-item">
-            <div class="section-header"><h3>3) Cambiar estado del propietario</h3></div>
+            <div class="section-header"><h3>Cambiar estado del propietario</h3></div>
             <div class="section-body">
-                <p>Modificar el estado actual (Habilitado / Deshabilitado).</p>
+                <p>Modificar el estado actual</p>
                 <form>
                     <label>Propietario (cédula)</label>
-                    <input type="text" placeholder="1" disabled>
+                        <input type="text" placeholder="1">
 
                     <label>Estado</label>
-                    <select disabled>
+                        <select>
                         <option>Habilitado</option>
+                        <option>Penalizado</option>
+                        <option>Suspendido</option>
                         <option>Deshabilitado</option>
-                    </select>
+                        </select>
 
-                    <button disabled class="action-btn">Cambiar estado</button>
+                        <div class="action-row">
+                            <button class="action-btn">Cambiar estado</button>
+                        </div>
                 </form>
             </div>
         </div>
@@ -94,7 +101,30 @@
             
             // Manejar cierre de sesión cuando se cierra la ventana
             urlCierreVista = "/acceso/cerrarSesion";
+
+            // Cargar lista de puestos para el select de Emular tránsito
+            cargarPuestos();
         });
+
+        // Cargar puestos desde el backend y poblar el select
+        async function cargarPuestos() {
+            try {
+                const resp = await fetch('/puestos/listar');
+                if (!resp.ok) throw new Error('Error al obtener puestos');
+                const lista = await resp.json();
+                const sel = document.getElementById('peajeSelect');
+                if (!sel) return;
+                sel.innerHTML = '';
+                lista.forEach(nombre => {
+                    const opt = document.createElement('option');
+                    opt.value = nombre;
+                    opt.textContent = nombre;
+                    sel.appendChild(opt);
+                });
+            } catch (e) {
+                console.error('No se pudieron cargar los puestos:', e);
+            }
+        }
 
         // Función para mostrar datos del usuario
         function mostrar_datosUsuario(datos) {
