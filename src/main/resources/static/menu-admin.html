@@ -15,78 +15,88 @@
             Bienvenido, <span id="nombreUsuario"></span>
         </div>
     </div>
-    <!-- Nueva sección con tres paneles para funciones administrativas (solo visual) -->
-    <div class="admin-sections">
-        <div class="admin-section menu-item">
-            <div class="section-header"><h3>Emular tránsito</h3></div>
-            <div class="section-body">
-                <p>Simula el paso de un vehículo por un peaje.</p>
-                <form>
-                    <label>Matrícula</label>
-                        <input type="text" placeholder="ABC1234">
+    <!-- Pestañas modernas: un solo contenedor con 3 pestañas -->
+    <div class="admin-sections tabs-container">
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="tab-emular">Emular tránsito</button>
+            <button class="tab-btn" data-tab="tab-bonificaciones">Asignar bonificaciones</button>
+            <button class="tab-btn" data-tab="tab-cambiar-estado">Cambiar estado</button>
+        </div>
 
-                    <label>Peaje</label>
+        <div class="tab-contents">
+            <div id="tab-emular" class="tab-panel active menu-item">
+                <div class="section-header"><h3>Emular tránsito</h3></div>
+                <div class="section-body">
+                    <p>Simula el paso de un vehículo por un peaje.</p>
+                    <form id="form-emular" onsubmit="event.preventDefault();">
+                        <label for="matricula">Matrícula</label>
+                        <input id="matricula" type="text" placeholder="ABC1234">
+
+                        <label for="peajeSelect">Peaje</label>
                         <select id="peajeSelect">
-                        <!-- Options loaded dynamically -->
+                            <!-- Options loaded dynamically -->
                         </select>
 
-                    <label>Categoría</label>
-                        <select>
-                        <option>Automóvil</option>
-                        <option>Moto</option>
+                        <label for="categoriaSelect">Categoría</label>
+                        <select id="categoriaSelect">
+                            <option>Automóvil</option>
+                            <option>Moto</option>
+                            <option>Camión</option>
+                            <option>Omnibus</option>
                         </select>
 
                         <div class="action-row">
-                            <button class="action-btn">Emular</button>
+                            <button class="action-btn" id="btn-emular">Emular</button>
                         </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
 
-        <div class="admin-section menu-item">
-            <div class="section-header"><h3>Asignar bonificaciones</h3></div>
-            <div class="section-body">
-                <p>Asignar bonificaciones a un propietario o vehículo.</p>
-                <form>
-                    <label>Propietario (cédula)</label>
-                        <input type="text" placeholder="11111111">
+            <div id="tab-bonificaciones" class="tab-panel menu-item">
+                <div class="section-header"><h3>Asignar bonificaciones</h3></div>
+                <div class="section-body">
+                    <p>Asignar bonificaciones a un propietario o vehículo.</p>
+                    <form id="form-bonificaciones" onsubmit="event.preventDefault();">
+                        <label for="bon-propietario">Propietario (cédula)</label>
+                        <input id="bon-propietario" type="text" placeholder="11111111">
 
-                    <label>Tipo de bonificación</label>
-                        <select>
-                        <option>Descuento por pago anticipado</option>
-                        <option>Promoción</option>
+                        <label for="bon-tipo">Tipo de bonificación</label>
+                        <select id="bon-tipo">
+                            <option>Descuento por pago anticipado</option>
+                            <option>Promoción</option>
                         </select>
 
-                    <label>Monto/Porcentaje</label>
-                        <input type="text" placeholder="10% / $100">
+                        <label for="bon-monto">Monto/Porcentaje</label>
+                        <input id="bon-monto" type="text" placeholder="10% / $100">
 
                         <div class="action-row">
-                            <button class="action-btn">Asignar</button>
+                            <button class="action-btn" id="btn-asignar">Asignar</button>
                         </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
 
-        <div class="admin-section menu-item">
-            <div class="section-header"><h3>Cambiar estado del propietario</h3></div>
-            <div class="section-body">
-                <p>Modificar el estado actual</p>
-                <form>
-                    <label>Propietario (cédula)</label>
-                        <input type="text" placeholder="1">
+            <div id="tab-cambiar-estado" class="tab-panel menu-item">
+                <div class="section-header"><h3>Cambiar estado del propietario</h3></div>
+                <div class="section-body">
+                    <p>Modificar el estado actual</p>
+                    <form id="form-cambiar-estado" onsubmit="event.preventDefault();">
+                        <label for="estado-propietario">Propietario (cédula)</label>
+                        <input id="estado-propietario" type="text" placeholder="1">
 
-                    <label>Estado</label>
-                        <select>
-                        <option>Habilitado</option>
-                        <option>Penalizado</option>
-                        <option>Suspendido</option>
-                        <option>Deshabilitado</option>
+                        <label for="estado-select">Estado</label>
+                        <select id="estado-select">
+                            <option>Habilitado</option>
+                            <option>Penalizado</option>
+                            <option>Suspendido</option>
+                            <option>Deshabilitado</option>
                         </select>
 
                         <div class="action-row">
-                            <button class="action-btn">Cambiar estado</button>
+                            <button class="action-btn" id="btn-cambiar-estado">Cambiar estado</button>
                         </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -103,8 +113,42 @@
             urlCierreVista = "/acceso/cerrarSesion";
 
             // Cargar lista de puestos para el select de Emular tránsito
-            cargarPuestos();
+                cargarPuestos();
+                initTabs();
         });
+
+            // Inicializa el comportamiento de las pestañas
+            function initTabs() {
+                const tabButtons = document.querySelectorAll('.tab-btn');
+                tabButtons.forEach(btn => {
+                    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+                    btn.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            switchTab(btn.dataset.tab);
+                        }
+                    });
+                });
+            }
+
+            function switchTab(tabId) {
+                // buttons
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+                if (activeBtn) activeBtn.classList.add('active');
+
+                // panels
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                const panel = document.getElementById(tabId);
+                if (panel) panel.classList.add('active');
+
+                // lazy load puestos when switching to emular
+                if (tabId === 'tab-emular') {
+                    const sel = document.getElementById('peajeSelect');
+                    if (sel && sel.options.length === 0) cargarPuestos();
+                    document.getElementById('matricula').focus();
+                }
+            }
 
         // Cargar puestos desde el backend y poblar el select
         async function cargarPuestos() {
