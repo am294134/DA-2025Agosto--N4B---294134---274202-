@@ -1,7 +1,7 @@
 package com.example.obligatorio_dda.Modelo;
 import java.util.ArrayList;
 
-public class Bonificacion {
+public abstract class Bonificacion {
     private String nombre;
     private ArrayList<Asignacion> asignaciones;
     private ArrayList<Transito> transitos;
@@ -11,6 +11,8 @@ public class Bonificacion {
         this.asignaciones = new ArrayList<>();
         this.transitos = new ArrayList<>();
     }
+
+    public abstract void calcularDescuento();
 
     public String getNombre() {
         return nombre;
