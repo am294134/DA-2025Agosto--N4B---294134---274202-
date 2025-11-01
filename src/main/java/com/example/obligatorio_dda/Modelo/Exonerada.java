@@ -1,3 +1,4 @@
+package com.example.obligatorio_dda.Modelo;
 public class Exonerada extends Bonificacion {
     public Exonerada(String nombre) {
         super(nombre);

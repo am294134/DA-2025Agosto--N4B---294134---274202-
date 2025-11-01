@@ -1,3 +1,4 @@
+package com.example.obligatorio_dda.Modelo;
 public class Trabajador extends Bonificacion {
     public Trabajador(String nombre) {
         super(nombre);
