@@ -61,6 +61,10 @@ public class Fachada {
         sistemaPeaje.agregarTarifa(nombrePuesto, nombreCategoria, monto);
     }
 
+    public void agrgarBonificacion(Bonificacion bonificacion) {
+        sistemaPeaje.agrgarBonificacion(bonificacion);
+    }
+
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria, String cedulaPropietario) throws PeajeException {
         Categoria categoria = null;
         for (Categoria c : sistemaPeaje.getCategorias()) {

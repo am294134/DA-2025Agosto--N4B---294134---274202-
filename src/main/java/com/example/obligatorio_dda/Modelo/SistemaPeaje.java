@@ -6,7 +6,8 @@ public class SistemaPeaje {
     private ArrayList<Puesto> puestos;
     private ArrayList<Tarifa> tarifas;
     private ArrayList<Categoria> categorias;
-
+    private ArrayList<Bonificacion> bonificaciones;
+    
     protected SistemaPeaje(ArrayList<Puesto> puestos, ArrayList<Tarifa> tarifas, ArrayList<Categoria> categorias) {
         this.puestos = puestos;
         this.tarifas = tarifas;
@@ -22,6 +23,14 @@ public class SistemaPeaje {
         tarifas.add(tarifa);
         puesto.getTarifas().add(tarifa);
     }
+
+    public void agrgarBonificacion(Bonificacion bonificacion) {
+         bonificaciones.add(bonificacion);
+    }
+
+    public ArrayList<Bonificacion> getBonificaciones() {
+        return bonificaciones;
+    }   
 
     // métodos auxiliares de búsqueda
     private Puesto buscarPuesto(String nombrePuesto) throws PeajeException {

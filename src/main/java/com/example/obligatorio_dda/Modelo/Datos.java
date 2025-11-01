@@ -152,6 +152,11 @@ public class Datos {
         fachada.agregarVehiculo("LIN7890", "Rojo", "Irizar i6", "Omnibus", "55555555");
         // #endregion
 
+
+        //agregar Bonificaciones de prueba
+        fachada.agrgarBonificacion(new Bonificacion("Exonerada"));
+        fachada.agrgarBonificacion(new Bonificacion("Trabajador"));
+        fachada.agrgarBonificacion(new Bonificacion("Frecuente"));
         // #region Notificaciones de prueba
         
         
