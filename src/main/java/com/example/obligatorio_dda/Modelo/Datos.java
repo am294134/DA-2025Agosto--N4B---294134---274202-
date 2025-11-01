@@ -162,6 +162,13 @@ public class Datos {
                 prop.getNotificaciones().add(notif);
                 Notificacion notif2 = new Notificacion("Notificación número 2", prop);
                 prop.getNotificaciones().add(notif2);
+                Notificacion notif3 = new Notificacion("Notificación número 3", prop);
+                prop.getNotificaciones().add(notif3);
+            }
+
+            if (prop.getCedula().equals("11111111")) { 
+                Notificacion notif = new Notificacion("Su saldo es bajo. Por favor, recargue su cuenta para evitar inconvenientes en los peajes.", prop);
+                prop.getNotificaciones().add(notif);
             }
         }
         // #endregion
