@@ -1,6 +1,7 @@
 package com.example.obligatorio_dda.Controlador;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.obligatorio_dda.Modelo.Administrador;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/acceso")
 public class ControladorLogin {
 
-    @PostMapping("/loginPropietario")
+    @GetMapping("/loginPropietario")
     public List<Respuesta> loginPropietario(HttpSession sesionHttp, @RequestParam String cedula,
             @RequestParam String contrasenia) throws PeajeException {
 
@@ -37,7 +38,7 @@ public class ControladorLogin {
         );
     }
 
-    @PostMapping("/loginAdministrador")
+    @GetMapping("/loginAdministrador")
     public List<Respuesta> loginAdministrador(HttpSession sesionHttp, @RequestParam String cedula,
             @RequestParam String contrasenia) throws PeajeException {
 
