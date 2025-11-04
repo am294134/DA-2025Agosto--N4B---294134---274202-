@@ -37,8 +37,8 @@ public class SistemaTransito {
         propietario.getVehiculos().add(vehiculo);
     }
 
-    public void agregarTransito(String matricula, Transito transito)   {
+    public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
         Vehiculo v = buscarVehiculoPorMatricula(matricula);
-        v.agregarTransito(transito);
+        v.agregarTransito(puestoId, fechaHora);
     }
 }

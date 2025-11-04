@@ -39,6 +39,6 @@ public class ControladorEmularTransito {
             throw new PeajeException("No hay un administrador logueado");
         } 
 
-        fachada.agregarTransito(matricula, puestoId);
+        fachada.agregarTransito(puestoId, matricula, fechaHora);
 
 }
