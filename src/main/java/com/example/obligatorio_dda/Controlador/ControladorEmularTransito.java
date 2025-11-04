@@ -27,7 +27,18 @@ import com.example.obligatorio_dda.Modelo.Tarifa;
 @RequestMapping("/emularTransito")
 public class ControladorEmularTransito {
 
-	@PostMapping("/agregar"){
-        
-    }
+	@PostMapping("/agregar")
+    public void agregarTransito(HttpSession sesion,
+            @RequestParam("puestoId") Long puestoId,
+            @RequestParam("matricula") String matricula,
+            @RequestParam("fechaHora")
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fechaHora) throws PeajeException {
+        // obtenemos session
+        Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
+        if (admin == null) {
+            throw new PeajeException("No hay un administrador logueado");
+        } 
+
+        fachada.agregarTransito(matricula, puestoId);
+
 }
