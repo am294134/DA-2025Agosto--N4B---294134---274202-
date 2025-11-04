@@ -19,6 +19,19 @@ public class Vehiculo {
         this.transitos = new ArrayList<>();
     }
 
+    public Vehiculo buscarVehiculoPorMatricula(String matricula) throws PeajeException {
+        for (Vehiculo v : vehiculos) {
+            if (v.getMatricula().equals(matricula)) {
+                return v;
+            }
+        }
+        throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
+    }
+    
+    public void agregarTransito(Transito transito) {
+        transitos.add(transito);
+    }   
+
     public String getMatricula() {
         return matricula;
     }

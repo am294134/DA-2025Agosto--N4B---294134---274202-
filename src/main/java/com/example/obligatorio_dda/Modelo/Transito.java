@@ -12,7 +12,6 @@ public class Transito {
         this.puesto = puesto;
         this.vehiculo = vehiculo;
         this.propietario = propietario;
-        this.tarifas = new ArrayList<>();
     }
 
     public Puesto getPuesto() {

@@ -153,10 +153,10 @@ public class Datos {
         // #endregion
 
 
-        //agregar Bonificaciones de prueba
-        fachada.agrgarBonificacion(new Bonificacion("Exonerada"));
-        fachada.agrgarBonificacion(new Bonificacion("Trabajador"));
-        fachada.agrgarBonificacion(new Bonificacion("Frecuente"));
+    //agregar Bonificaciones de prueba
+    fachada.agrgarBonificacion(new Exonerada("Exonerada"));
+    fachada.agrgarBonificacion(new Trabajador("Trabajador"));
+    fachada.agrgarBonificacion(new Frecuente("Frecuente"));
         // #region Notificaciones de prueba
         
         

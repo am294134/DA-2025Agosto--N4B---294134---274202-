@@ -8,11 +8,13 @@ public class SistemaPeaje {
     private ArrayList<Categoria> categorias;
     private ArrayList<Bonificacion> bonificaciones;
     
-    protected SistemaPeaje(ArrayList<Puesto> puestos, ArrayList<Tarifa> tarifas, ArrayList<Categoria> categorias) {
+    protected SistemaPeaje(ArrayList<Puesto> puestos, ArrayList<Tarifa> tarifas, ArrayList<Categoria> categorias, ArrayList<Bonificacion> bonificaciones) {
         this.puestos = puestos;
         this.tarifas = tarifas;
         this.categorias = categorias;
+        this.bonificaciones = bonificaciones;
     }
+
 
     public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
         Puesto puesto = buscarPuesto(nombrePuesto);

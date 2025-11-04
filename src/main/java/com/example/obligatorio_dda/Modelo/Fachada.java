@@ -10,7 +10,7 @@ public class Fachada {
 
     private Fachada() {
         this.sistemaAcceso = new SistemaAcceso(new ArrayList<>(), new ArrayList<>());
-        this.sistemaPeaje = new SistemaPeaje(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+        this.sistemaPeaje = new SistemaPeaje(new ArrayList<Puesto>(), new ArrayList<Tarifa>(), new ArrayList<Categoria>(), new ArrayList<Bonificacion>());
         this.sistemaTransito = new SistemaTransito(
             new ArrayList<>(), // transitos
             new ArrayList<>(), // vehiculos
@@ -89,6 +89,10 @@ public class Fachada {
         }
 
         sistemaTransito.agregarVehiculo(matricula, color, modelo, categoria, propietario);
+
+        public void agregarTransito(String matricula, Transito transito) throws PeajeException {
+            sistemaTransito.agregarTransito(matricula, t);
+        }
     }
 
     //#endregion

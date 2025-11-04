@@ -37,7 +37,8 @@ public class SistemaTransito {
         propietario.getVehiculos().add(vehiculo);
     }
 
-    public void registrarTransito(Transito transito) {
-        transitos.add(transito);
+    public void agregarTransito(String matricula, Transito transito)   {
+        Vehiculo v = buscarVehiculoPorMatricula(matricula);
+        v.agregarTransito(transito);
     }
 }
