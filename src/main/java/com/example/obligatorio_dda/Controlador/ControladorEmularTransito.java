@@ -27,6 +27,7 @@ import com.example.obligatorio_dda.Modelo.Tarifa;
 @RequestMapping("/emularTransito")
 public class ControladorEmularTransito {
 
-	// Controlador vacío por ahora; los imports necesarios ya están añadidos.
-
+	@PostMapping("/agregar"){
+        
+    }
 }
