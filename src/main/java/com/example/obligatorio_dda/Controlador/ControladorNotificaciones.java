@@ -1,6 +1,6 @@
 package com.example.obligatorio_dda.Controlador;
 
-import com.example.obligatorio_dda.DTOs.NotificacionDTO;
+import com.example.obligatorio_dda.Controlador.DTOs.NotificacionDTO;
 import com.example.obligatorio_dda.Modelo.Notificacion;
 import com.example.obligatorio_dda.Modelo.Propietario;
 import org.springframework.web.bind.annotation.GetMapping;

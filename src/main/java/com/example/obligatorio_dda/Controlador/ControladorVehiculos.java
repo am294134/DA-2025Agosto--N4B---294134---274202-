@@ -3,8 +3,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.obligatorio_dda.DTOs.VehiculoDTO;
-import com.example.obligatorio_dda.DTOs.VehiculosPropDTO;
+import com.example.obligatorio_dda.Controlador.DTOs.VehiculoDTO;
+import com.example.obligatorio_dda.Controlador.DTOs.VehiculosPropDTO;
 import com.example.obligatorio_dda.Modelo.Propietario;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
 

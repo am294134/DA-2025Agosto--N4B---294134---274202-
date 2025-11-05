@@ -8,10 +8,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import com.example.obligatorio_dda.Modelo.Fachada;
@@ -20,6 +22,7 @@ import com.example.obligatorio_dda.Modelo.Transito;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
 import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Propietario;
+import com.example.obligatorio_dda.Modelo.Administrador;
 import com.example.obligatorio_dda.Modelo.Categoria;
 import com.example.obligatorio_dda.Modelo.Tarifa;
 
@@ -27,7 +30,7 @@ import com.example.obligatorio_dda.Modelo.Tarifa;
 @RequestMapping("/emularTransito")
 public class ControladorEmularTransito {
 
-	@PostMapping("/agregar")
+    @PostMapping("/agregar")
     public void agregarTransito(HttpSession sesion,
             @RequestParam("puestoId") Long puestoId,
             @RequestParam("matricula") String matricula,
@@ -38,7 +41,6 @@ public class ControladorEmularTransito {
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         } 
-
         fachada.agregarTransito(puestoId, matricula, fechaHora);
 
 }

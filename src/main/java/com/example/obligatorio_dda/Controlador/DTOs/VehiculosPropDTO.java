@@ -1,4 +1,4 @@
-package com.example.obligatorio_dda.DTOs;
+package com.example.obligatorio_dda.Controlador.DTOs;
 import java.util.List;
 import com.example.obligatorio_dda.Modelo.Estado;
 

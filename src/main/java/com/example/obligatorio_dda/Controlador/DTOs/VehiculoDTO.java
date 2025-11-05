@@ -1,5 +1,4 @@
-package com.example.obligatorio_dda.DTOs;
-
+package com.example.obligatorio_dda.Controlador.DTOs;
 public class VehiculoDTO {
     private String matricula;
     private String modelo;
