@@ -10,11 +10,12 @@ public class Fachada {
 
     private Fachada() {
         this.sistemaAcceso = new SistemaAcceso(new ArrayList<>(), new ArrayList<>());
-        this.sistemaPeaje = new SistemaPeaje(new ArrayList<Puesto>(), new ArrayList<Tarifa>(), new ArrayList<Categoria>(), new ArrayList<Bonificacion>());
+        this.sistemaPeaje = new SistemaPeaje(new ArrayList<Puesto>(), new ArrayList<Tarifa>(),
+                new ArrayList<Categoria>(), new ArrayList<Bonificacion>());
         this.sistemaTransito = new SistemaTransito(
-            new ArrayList<>(), // transitos
-            new ArrayList<>(), // vehiculos
-            new ArrayList<>()  // propietarios
+                new ArrayList<>(), // transitos
+                new ArrayList<>(), // vehiculos
+                new ArrayList<>() // propietarios
         );
     }
 
@@ -24,27 +25,28 @@ public class Fachada {
         }
         return instancia;
     }
-    
-    //DELEGACIONES
-    
-    //#region logins
-    public Propietario loginPropietario(String username, String password) throws PeajeException {
-           return sistemaAcceso.loginPropietario(username, password);
-    }
-    
-    public Administrador loginAdministrador(String username, String password) throws PeajeException {
-           return sistemaAcceso.loginAdministrador(username, password);
-    }
-    //#endregion
 
-    //#region agregados
+    // DELEGACIONES
+
+    // #region logins
+    public Propietario loginPropietario(String username, String password) throws PeajeException {
+        return sistemaAcceso.loginPropietario(username, password);
+    }
+
+    public Administrador loginAdministrador(String username, String password) throws PeajeException {
+        return sistemaAcceso.loginAdministrador(username, password);
+    }
+    // #endregion
+
+    // #region agregados
     public void agregarAdministrador(String nombre, String apellido, String cedula, String contrasenia) {
         sistemaAcceso.agregarAdministrador(nombre, apellido, cedula, contrasenia);
     }
 
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
-                      double saldoActual, double saldoMinimo, Estado estado) {
-        Propietario propietario = sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
+            double saldoActual, double saldoMinimo, Estado estado) {
+        Propietario propietario = sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual,
+                saldoMinimo, estado);
         // sincroniza lista con SistemaTransito
         sistemaTransito.getPropietarios().add(propietario);
     }
@@ -65,7 +67,8 @@ public class Fachada {
         sistemaPeaje.agrgarBonificacion(bonificacion);
     }
 
-    public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria, String cedulaPropietario) throws PeajeException {
+    public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
+            String cedulaPropietario) throws PeajeException {
         Categoria categoria = null;
         for (Categoria c : sistemaPeaje.getCategorias()) {
             if (c.getNombre().equals(nombreCategoria)) {
@@ -89,15 +92,15 @@ public class Fachada {
         }
 
         sistemaTransito.agregarVehiculo(matricula, color, modelo, categoria, propietario);
-
-        public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-            sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
-        }
     }
 
-    //#endregion
-    
-    //#region getters para listas
+    public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
+        sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
+    }
+
+    // #endregion
+
+    // #region getters para listas
     public ArrayList<Puesto> getPuestos() {
         return sistemaPeaje.getPuestos();
     }
@@ -125,6 +128,6 @@ public class Fachada {
     public ArrayList<Transito> getTransitos() {
         return sistemaTransito.getTransitos();
     }
-    //#endregion
+    // #endregion
 
 }

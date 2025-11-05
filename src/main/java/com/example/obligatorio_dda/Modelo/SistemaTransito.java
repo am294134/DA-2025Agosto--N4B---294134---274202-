@@ -37,6 +37,15 @@ public class SistemaTransito {
         propietario.getVehiculos().add(vehiculo);
     }
 
+    public Vehiculo buscarVehiculoPorMatricula(String matricula) throws PeajeException {
+        for (Vehiculo v : vehiculos) {
+            if (v.getMatricula().equals(matricula)) {
+                return v;
+            }
+        }
+        throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
+    }
+
     public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
         Vehiculo v = buscarVehiculoPorMatricula(matricula);
         v.agregarTransito(puestoId, fechaHora);

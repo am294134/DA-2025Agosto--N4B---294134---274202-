@@ -1,9 +1,9 @@
-package com.example.obligatorio_dda.DTOs;
+package com.example.obligatorio_dda.Controlador.DTOs;
 
 public class NotificacionDTO {
     private String mensaje;
     private String fechaHora;
-    private boolean leida; 
+    private boolean leida;
 
     public NotificacionDTO(String mensaje, String fechaHora, boolean leida) {
         this.mensaje = mensaje;

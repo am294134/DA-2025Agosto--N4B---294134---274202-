@@ -34,13 +34,13 @@ public class ControladorEmularTransito {
     public void agregarTransito(HttpSession sesion,
             @RequestParam("puestoId") Long puestoId,
             @RequestParam("matricula") String matricula,
-            @RequestParam("fechaHora")
-            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fechaHora) throws PeajeException {
+            @RequestParam("fechaHora") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fechaHora)
+            throws PeajeException {
         // obtenemos session
         Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
-        } 
-        fachada.agregarTransito(puestoId, matricula, fechaHora);
-
+        }
+        Fachada.agregarTransito(puestoId, matricula, fechaHora);
+    }
 }
