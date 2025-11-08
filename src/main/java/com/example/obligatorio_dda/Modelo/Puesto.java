@@ -24,6 +24,10 @@ public class Puesto {
         return direccion;
     }
 
+    public String getId() {
+        return nombre + "-" + direccion;
+    }   
+
     public ArrayList<Transito> getTransitos() {
         return transitos;
     }

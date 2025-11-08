@@ -9,6 +9,7 @@ public class Propietario extends Usuario {
     private ArrayList<Vehiculo> vehiculos = new ArrayList<>();
     private ArrayList<Notificacion> notificaciones = new ArrayList<>();
     private ArrayList<Asignacion> asignaciones = new ArrayList<>();
+    private ArrayList<Transito> transitos = new ArrayList<>();
     
     public Propietario(String nombre, String apellido, String cedula, String contrasenia,
                       double saldoActual, double saldoMinimo, Estado estado) {
@@ -47,6 +48,9 @@ public class Propietario extends Usuario {
         return asignaciones;
     }
 
+    public  void agregarTransito(Transito transito) {
+        transitos.add(transito);
+    }   
     
 
 

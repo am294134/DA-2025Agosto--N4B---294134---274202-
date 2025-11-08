@@ -7,12 +7,18 @@ public class SistemaPeaje {
     private ArrayList<Tarifa> tarifas;
     private ArrayList<Categoria> categorias;
     private ArrayList<Bonificacion> bonificaciones;
+    private ArrayList<Vehiculo> vehiculos;
+    private ArrayList<Propietario> propietarios;
+    private ArrayList<Transito> transitos;  
     
-    protected SistemaPeaje(ArrayList<Puesto> puestos, ArrayList<Tarifa> tarifas, ArrayList<Categoria> categorias, ArrayList<Bonificacion> bonificaciones) {
+    protected SistemaPeaje(ArrayList<Puesto> puestos, ArrayList<Tarifa> tarifas, ArrayList<Categoria> categorias, ArrayList<Bonificacion> bonificaciones, ArrayList<Vehiculo> vehiculos, ArrayList<Propietario> propietarios) {
         this.puestos = puestos;
         this.tarifas = tarifas;
         this.categorias = categorias;
         this.bonificaciones = bonificaciones;
+        this.vehiculos = new ArrayList<>();
+        this.propietarios = new ArrayList<>();
+        this.transitos = new ArrayList<>();
     }
 
 
@@ -53,6 +59,50 @@ public class SistemaPeaje {
         throw new PeajeException("No existe la categoría: " + nombreCategoria);
     }
 
+    public Vehiculo buscarVehiculoPorMatricula(String matricula) throws PeajeException {
+        for (Vehiculo v : vehiculos) {
+            if (v.getMatricula().equals(matricula)) {
+                return v;
+            }
+        }
+        throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
+    }
+        public void agregarVehiculo(String matricula, String color, String modelo, Categoria categoria,
+            Propietario propietario) {
+        // Crea veh
+        Vehiculo vehiculo = new Vehiculo(matricula, color, modelo, categoria, propietario);
+
+        // Agrega el vehículo a la lista general
+        vehiculos.add(vehiculo);
+        // Agrega el vehiculo a la lista del propietario (relación bidireccional)
+        propietario.getVehiculos().add(vehiculo);
+    }
+
+    public Puesto buscarPuestoPorId(String puestoId) throws PeajeException {
+        for (Puesto p : puestos) {
+            if (p.getId().equals(puestoId)) {
+                return p;
+            }
+        }
+        throw new PeajeException("No existe el puesto con ID: " + puestoId);
+    }
+
+    public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
+        Vehiculo v = buscarVehiculoPorMatricula(matricula);
+        
+        Puesto p = buscarPuestoPorId(puestoId);
+        // Obtener propietario desde el vehículo
+        Propietario propietario = v.getPropietario();
+        // Construir Transito y registrarlo   
+        Transito transito = new Transito(p, v, propietario);
+        p.getTransitos().add(transito); //sera necesario? si es necesario hacer p.agregarTRas
+        v.agregarTransito(transito);    
+    }
+    
+    public ArrayList<Transito> getTransitos() {
+        return transitos;
+    }   
+
     public void agregarPuesto(Puesto puesto) {
         puestos.add(puesto);
     }
@@ -73,4 +123,13 @@ public class SistemaPeaje {
         return categorias;
     }
 
+    public ArrayList<Vehiculo> getVehiculos() {
+        return vehiculos;
+    }
+
+    public ArrayList<Propietario> getPropietarios() {
+        return propietarios;
+    }   
+
+    
 }
