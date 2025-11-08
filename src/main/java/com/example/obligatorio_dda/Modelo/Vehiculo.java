@@ -19,7 +19,6 @@ public class Vehiculo {
         this.transitos = new ArrayList<>();
     }
 
-
     public void agregarTransito(Transito transito) {
         transitos.add(transito);
     }   
