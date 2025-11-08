@@ -89,10 +89,10 @@ public class Fachada {
         }
 
         sistemaTransito.agregarVehiculo(matricula, color, modelo, categoria, propietario);
+    }
 
-        public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-            sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
-        }
+    public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
+        sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
     }
 
     //#endregion
