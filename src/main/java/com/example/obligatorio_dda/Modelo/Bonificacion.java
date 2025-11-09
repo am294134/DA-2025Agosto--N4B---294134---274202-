@@ -12,7 +12,7 @@ public abstract class Bonificacion {
         this.transitos = new ArrayList<>();
     }
 
-    public abstract void calcularDescuento();
+    public abstract double calcularDescuento(double monto);
 
     public String getNombre() {
         return nombre;
@@ -25,6 +25,4 @@ public abstract class Bonificacion {
     public ArrayList<Transito> getTransitos() {
         return transitos;
     }
-    
-
 }

@@ -1,12 +1,13 @@
 package com.example.obligatorio_dda.Modelo;
 public class Exonerada extends Bonificacion {
     public Exonerada(String nombre) {
-        super(nombre);
+        super("Exonerado");
     }
 
     @Override
-    public void calcularDescuento() {
-        // Implementación específica para Exonerada
-    }   
+    public double calcularDescuento(double monto) {
+        // no pagan
+        return 0.0;
+    }
 
 }

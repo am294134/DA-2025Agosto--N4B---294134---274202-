@@ -1,12 +1,13 @@
 package com.example.obligatorio_dda.Modelo;
 public class Trabajador extends Bonificacion {
     public Trabajador(String nombre) {
-        super(nombre);
+        super("Trabajador");
     }
 
     @Override
-    public void calcularDescuento() {
-        // Implementación específica para Trabajador
-    }       
+    public double calcularDescuento(double monto) {
+        // 80% de descuento
+        return monto * 0.2;
+    }
 
 }
