@@ -57,6 +57,11 @@
                         <label for="bon-propietario">Propietario (cédula)</label>
                         <input id="bon-propietario" type="text" placeholder="12345678">
 
+                        <label for="bon-puesto">Puesto</label>
+                        <select id="bon-puesto">
+                            <!-- carga dinamica de puestos -->
+                        </select>
+
                         <label for="bon-tipo">Tipo de bonificación</label>
                         <select id="bon-tipo">
                         </select>
@@ -105,9 +110,11 @@
             urlCierreVista = "/acceso/cerrarSesion";
 
             // Cargar lista de puestos para el select de Emular tránsito
-        cargarPuestos();
-        cargarCategorias();
-        cargarBonificacionesTipos();
+    cargarPuestos();
+    // Poblar también el select de puestos usado en asignar bonificaciones
+    cargarPuestosEn('bon-puesto');
+    cargarCategorias();
+    cargarBonificacionesTipos();
         initTabs();
         });
 
@@ -149,6 +156,8 @@
                 if (tabId === 'tab-bonificaciones') {
                     const selBon = document.getElementById('bon-tipo');
                     if (selBon && selBon.options.length === 0) cargarBonificacionesTipos();
+                    const selPuesto = document.getElementById('bon-puesto');
+                    if (selPuesto && selPuesto.options.length === 0) cargarPuestosEn('bon-puesto');
                 }
             }
 
@@ -169,6 +178,26 @@
                 });
             } catch (e) {
                 console.error('No se pudieron cargar los puestos:', e);
+            }
+        }
+
+        // Cargar puestos en un select cualquiera por id (reutilizable)
+        async function cargarPuestosEn(selectId) {
+            try {
+                const resp = await fetch('/puestos/listar');
+                if (!resp.ok) throw new Error('Error al obtener puestos');
+                const lista = await resp.json();
+                const sel = document.getElementById(selectId);
+                if (!sel) return;
+                sel.innerHTML = '';
+                lista.forEach(nombre => {
+                    const opt = document.createElement('option');
+                    opt.value = nombre;
+                    opt.textContent = nombre;
+                    sel.appendChild(opt);
+                });
+            } catch (e) {
+                console.error('No se pudieron cargar los puestos (en):', selectId, e);
             }
         }
 
