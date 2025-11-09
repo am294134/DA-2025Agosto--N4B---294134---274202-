@@ -83,6 +83,7 @@
 
                         <label for="estado-select">Estado</label>
                         <select id="estado-select">
+                            <option value="">Seleccionar estado</option>
                             <option>Habilitado</option>
                             <option>Penalizado</option>
                             <option>Suspendido</option>
@@ -169,7 +170,7 @@
                 const lista = await resp.json();
                 const sel = document.getElementById('peajeSelect');
                 if (!sel) return;
-                sel.innerHTML = '';
+                sel.innerHTML = '<option value="">Seleccionar puesto</option>';
                 lista.forEach(nombre => {
                     const opt = document.createElement('option');
                     opt.value = nombre;
@@ -189,7 +190,7 @@
                 const lista = await resp.json();
                 const sel = document.getElementById(selectId);
                 if (!sel) return;
-                sel.innerHTML = '';
+                sel.innerHTML = '<option value="">Seleccionar puesto</option>';
                 lista.forEach(nombre => {
                     const opt = document.createElement('option');
                     opt.value = nombre;
@@ -209,7 +210,7 @@
                 const lista = await resp.json();
                 const sel = document.getElementById('categoriaSelect');
                 if (!sel) return;
-                sel.innerHTML = '';
+                sel.innerHTML = '<option value="">Seleccionar categoría</option>';
                 lista.forEach(nombre => {
                     const opt = document.createElement('option');
                     opt.value = nombre;
@@ -229,7 +230,7 @@
                 const lista = await resp.json();
                 const sel = document.getElementById('bon-tipo');
                 if (!sel) return;
-                sel.innerHTML = '';
+                sel.innerHTML = '<option value="">Seleccionar bonificación</option>';
                 lista.forEach(nombre => {
                     const opt = document.createElement('option');
                     opt.value = nombre;
@@ -239,6 +240,65 @@
             } catch (e) {
                 console.error('No se pudieron cargar los tipos de bonificaciones:', e);
             }
+        }
+
+        // ---- Validaciones para selects/inputs ----
+        function validarSelect(selectId, mensaje) {
+            const sel = document.getElementById(selectId);
+            if (!sel) return true; // si no existe, no validar
+            if (!sel.value || sel.value === '') {
+                try { excepcionDeAplicacion(mensaje); } catch (e) { alert(mensaje); }
+                sel.focus();
+                return false;
+            }
+            return true;
+        }
+
+        function validarNotEmpty(inputId, mensaje) {
+            const inp = document.getElementById(inputId);
+            if (!inp) return true;
+            if (inp.value.trim() === '') {
+                try { excepcionDeAplicacion(mensaje); } catch (e) { alert(mensaje); }
+                inp.focus();
+                return false;
+            }
+            return true;
+        }
+
+        // Conectar validaciones a los botones
+        const btnEmular = document.getElementById('btn-emular');
+        if (btnEmular) {
+            btnEmular.addEventListener('click', function (e) {
+                if (!validarNotEmpty('matricula', 'Ingrese la matrícula') ||
+                    !validarSelect('peajeSelect', 'Seleccione un puesto') ||
+                    !validarSelect('categoriaSelect', 'Seleccione una categoría')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
+
+        const btnAsignar = document.getElementById('btn-asignar');
+        if (btnAsignar) {
+            btnAsignar.addEventListener('click', function (e) {
+                if (!validarNotEmpty('bon-propietario', 'Ingrese la cédula del propietario') ||
+                    !validarSelect('bon-puesto', 'Seleccione un puesto') ||
+                    !validarSelect('bon-tipo', 'Seleccione un tipo de bonificación')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
+
+        const btnCambiar = document.getElementById('btn-cambiar-estado');
+        if (btnCambiar) {
+            btnCambiar.addEventListener('click', function (e) {
+                if (!validarNotEmpty('estado-propietario', 'Ingrese la cédula del propietario') ||
+                    !validarSelect('estado-select', 'Seleccione un estado')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
         }
 
         // Función para mostrar datos del usuario
