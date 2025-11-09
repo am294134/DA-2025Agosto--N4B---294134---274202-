@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 @RequestMapping("/acceso")
 public class ControladorLogin {
 
-    @GetMapping("/loginPropietario")
+    @PostMapping("/loginPropietario")
     public List<Respuesta> loginPropietario(HttpSession sesionHttp, @RequestParam String cedula,
-            @RequestParam String contrasenia) throws PeajeException {
+        @RequestParam String contrasenia) throws PeajeException {
 
         // login al modelo
         Propietario propietario = Fachada.getInstancia().loginPropietario(cedula, contrasenia);
@@ -38,13 +38,13 @@ public class ControladorLogin {
         );
     }
 
-    @GetMapping("/loginAdministrador")
+    @PostMapping("/loginAdministrador")
     public List<Respuesta> loginAdministrador(HttpSession sesionHttp, @RequestParam String cedula,
             @RequestParam String contrasenia) throws PeajeException {
 
         Administrador admin = Fachada.getInstancia().loginAdministrador(cedula, contrasenia);
-        //guardamos sesion
-        sesionHttp.setAttribute("usuarioAdmin", admin);
+        //guardamos sesion (consistente con el resto del proyecto)
+        sesionHttp.setAttribute("usuarioAdministrador", admin);
 
         return Respuesta.lista(new Respuesta("loginExitoso", "menu-admin.html"));
     }
