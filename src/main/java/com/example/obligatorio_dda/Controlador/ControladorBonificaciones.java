@@ -27,20 +27,29 @@ public class ControladorBonificaciones {
         List<BonificacionAsignadaDTO> bonis = new ArrayList<>();
 
         // recorremos las bonificaciones
-        for (Bonificacion b : Fachada.getInstancia().getBonificaciones()) {
+        for (Bonificacion bonificaciones : Fachada.getInstancia().getBonificaciones()) {
             // recorremos las asignaciones
-            for (Asignacion a : b.getAsignaciones()) {
+            for (Asignacion asigns : bonificaciones.getAsignaciones()) {
                 // buscamos las que pertenecen al propietario logueado y lo mandamos para el DTO
-                if (a.getPropietario() != null && a.getPropietario().getCedula().equals(propietario.getCedula())) {
-                    String nombreBon = b.getNombre();
-                    String nombrePuesto = a.getPuesto() != null ? a.getPuesto().getNombre() : "";
-                    String fecha = a.getFechaAsignacion() != null ? a.getFechaAsignacion().toString() : "";
+                if (asigns.getPropietario() != null && asigns.getPropietario().getCedula().equals(propietario.getCedula())) {
+                    String nombreBon = bonificaciones.getNombre();
+                    String nombrePuesto = asigns.getPuesto() != null ? asigns.getPuesto().getNombre() : "";
+                    String fecha = asigns.getFechaAsignacion() != null ? asigns.getFechaAsignacion().toString() : "";
                     bonis.add(new BonificacionAsignadaDTO(nombreBon, nombrePuesto, fecha));
                 }
             }
         }
 
         return bonis;
+    }
+
+    @GetMapping("/listarTipos")
+    public List<String> listarTipos() {
+        List<String> tipos = new ArrayList<>();
+        for (Bonificacion b : Fachada.getInstancia().getBonificaciones()) {
+            tipos.add(b.getNombre());
+        }
+        return tipos;
     }
 
 }

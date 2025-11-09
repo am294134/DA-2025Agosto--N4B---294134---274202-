@@ -52,20 +52,15 @@
             <div id="tab-bonificaciones" class="tab-panel menu-item">
                 <div class="section-header"><h3>Asignar bonificaciones</h3></div>
                 <div class="section-body">
-                    <p>Asignar bonificaciones a un propietario o vehículo.</p>
+                    <p>Asignar bonificaciones a un propietario</p>
                     <form id="form-bonificaciones" onsubmit="event.preventDefault();">
                         <label for="bon-propietario">Propietario (cédula)</label>
-                        <input id="bon-propietario" type="text" placeholder="11111111">
+                        <input id="bon-propietario" type="text" placeholder="12345678">
 
                         <label for="bon-tipo">Tipo de bonificación</label>
                         <select id="bon-tipo">
-                            <option>Descuento por pago anticipado</option>
-                            <option>Promoción</option>
                         </select>
-
-                        <label for="bon-monto">Monto/Porcentaje</label>
-                        <input id="bon-monto" type="text" placeholder="10% / $100">
-
+                        <label id="data-bon">Exonerados: No pagan / Frecuentes: 50% de descuento / Trabajadores: 80% de descuento</label>
                         <div class="action-row">
                             <button class="action-btn" id="btn-asignar">Asignar</button>
                         </div>
@@ -112,6 +107,7 @@
             // Cargar lista de puestos para el select de Emular tránsito
         cargarPuestos();
         cargarCategorias();
+        cargarBonificacionesTipos();
         initTabs();
         });
 
@@ -147,6 +143,12 @@
                     const selCat = document.getElementById('categoriaSelect');
                     if (selCat && selCat.options.length === 0) cargarCategorias();
                     document.getElementById('matricula').focus();
+                }
+
+                // lazy load tipos de bonificaciones al cambiar a la pestaña correspondiente
+                if (tabId === 'tab-bonificaciones') {
+                    const selBon = document.getElementById('bon-tipo');
+                    if (selBon && selBon.options.length === 0) cargarBonificacionesTipos();
                 }
             }
 
@@ -187,6 +189,26 @@
                 });
             } catch (e) {
                 console.error('No se pudieron cargar las categorías:', e);
+            }
+        }
+
+        // Cargar tipos de bonificaciones desde el backend y poblar el select
+        async function cargarBonificacionesTipos() {
+            try {
+                const resp = await fetch('/bonificaciones/listarTipos');
+                if (!resp.ok) throw new Error('Error al obtener tipos de bonificaciones');
+                const lista = await resp.json();
+                const sel = document.getElementById('bon-tipo');
+                if (!sel) return;
+                sel.innerHTML = '';
+                lista.forEach(nombre => {
+                    const opt = document.createElement('option');
+                    opt.value = nombre;
+                    opt.textContent = nombre;
+                    sel.appendChild(opt);
+                });
+            } catch (e) {
+                console.error('No se pudieron cargar los tipos de bonificaciones:', e);
             }
         }
 
