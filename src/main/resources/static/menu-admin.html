@@ -34,15 +34,12 @@
 
                         <label for="peajeSelect">Peaje</label>
                         <select id="peajeSelect">
-                            <!-- Options loaded dynamically -->
+                            <!-- carga dinamica -->
                         </select>
 
                         <label for="categoriaSelect">Categoría</label>
                         <select id="categoriaSelect">
-                            <option>Automóvil</option>
-                            <option>Moto</option>
-                            <option>Camión</option>
-                            <option>Omnibus</option>
+                            <!-- carga dinamica -->
                         </select>
 
                         <div class="action-row">
@@ -113,8 +110,9 @@
             urlCierreVista = "/acceso/cerrarSesion";
 
             // Cargar lista de puestos para el select de Emular tránsito
-                cargarPuestos();
-                initTabs();
+        cargarPuestos();
+        cargarCategorias();
+        initTabs();
         });
 
             // Inicializa el comportamiento de las pestañas
@@ -146,6 +144,8 @@
                 if (tabId === 'tab-emular') {
                     const sel = document.getElementById('peajeSelect');
                     if (sel && sel.options.length === 0) cargarPuestos();
+                    const selCat = document.getElementById('categoriaSelect');
+                    if (selCat && selCat.options.length === 0) cargarCategorias();
                     document.getElementById('matricula').focus();
                 }
             }
@@ -167,6 +167,26 @@
                 });
             } catch (e) {
                 console.error('No se pudieron cargar los puestos:', e);
+            }
+        }
+
+        // Cargar categorías desde el backend y poblar el select
+        async function cargarCategorias() {
+            try {
+                const resp = await fetch('/categorias/listar');
+                if (!resp.ok) throw new Error('Error al obtener categorías');
+                const lista = await resp.json();
+                const sel = document.getElementById('categoriaSelect');
+                if (!sel) return;
+                sel.innerHTML = '';
+                lista.forEach(nombre => {
+                    const opt = document.createElement('option');
+                    opt.value = nombre;
+                    opt.textContent = nombre;
+                    sel.appendChild(opt);
+                });
+            } catch (e) {
+                console.error('No se pudieron cargar las categorías:', e);
             }
         }
 

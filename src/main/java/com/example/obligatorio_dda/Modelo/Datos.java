@@ -17,16 +17,18 @@ public class Datos {
         fachada.agregarPropietario("Prueba", "Prop", "1", "a", 5000.0, 1000.0, new Estado("Habilitado"));
         fachada.agregarPropietario("Juan", "Pérez", "11111111", "juan123", 12300.0, 1000.0, new Estado("Habilitado"));
         fachada.agregarPropietario("María", "Gómez", "22222222", "maria123", 3000.0, 500.0, new Estado("Habilitado"));
-        fachada.agregarPropietario("Carlos", "Rodríguez", "33333333", "carlos123", 4000.0, 800.0, new Estado("Habilitado"));
+        fachada.agregarPropietario("Carlos", "Rodríguez", "33333333", "carlos123", 4000.0, 800.0,
+                new Estado("Habilitado"));
         fachada.agregarPropietario("Ana", "Martínez", "44444444", "ana123", 3500.0, 700.0, new Estado("Habilitado"));
         fachada.agregarPropietario("Luis", "García", "55555555", "luis123", 4500.0, 900.0, new Estado("Habilitado"));
-        fachada.agregarPropietario("El desha", "Bilitado", "66666666", "des123", 2500.0, 1000.0, new Estado("Deshabilitado"));
+        fachada.agregarPropietario("El desha", "Bilitado", "66666666", "des123", 2500.0, 1000.0,
+                new Estado("Deshabilitado"));
         // #endregion
 
         // #region Categorías
-        fachada.agregarCategoria("Camión");
         fachada.agregarCategoria("Automóvil");
         fachada.agregarCategoria("Moto");
+        fachada.agregarCategoria("Camión");
         fachada.agregarCategoria("Omnibus");
         // #endregion
 
@@ -152,18 +154,18 @@ public class Datos {
         fachada.agregarVehiculo("LIN7890", "Rojo", "Irizar i6", "Omnibus", "55555555");
         // #endregion
 
-
-    //agregar Bonificaciones de prueba
-    fachada.agrgarBonificacion(new Exonerada("Exonerada"));
-    fachada.agrgarBonificacion(new Trabajador("Trabajador"));
-    fachada.agrgarBonificacion(new Frecuente("Frecuente"));
+        // agregar Bonificaciones de prueba
+        fachada.agrgarBonificacion(new Exonerada("Exonerada"));
+        fachada.agrgarBonificacion(new Trabajador("Trabajador"));
+        fachada.agrgarBonificacion(new Frecuente("Frecuente"));
         // #region Notificaciones de prueba
-        
-        
-        // pruebita para ver las notifiaciones, dps vemos quién asigna las notificaciones
+
+        // pruebita para ver las notifiaciones, dps vemos quién asigna las
+        // notificaciones
         for (Propietario prop : fachada.getPropietarios()) {
-            if (prop.getCedula().equals("1")) {  // propietario de prueba
-                Notificacion notif = new Notificacion("Bienvenido al sistema de peajes. Su cuenta ha sido activada correctamente.", prop);
+            if (prop.getCedula().equals("1")) { // propietario de prueba
+                Notificacion notif = new Notificacion(
+                        "Bienvenido al sistema de peajes. Su cuenta ha sido activada correctamente.", prop);
                 prop.getNotificaciones().add(notif);
                 Notificacion notif2 = new Notificacion("Notificación número 2", prop);
                 prop.getNotificaciones().add(notif2);
@@ -171,8 +173,10 @@ public class Datos {
                 prop.getNotificaciones().add(notif3);
             }
 
-            if (prop.getCedula().equals("11111111")) { 
-                Notificacion notif = new Notificacion("Su saldo es bajo. Por favor, recargue su cuenta para evitar inconvenientes en los peajes.", prop);
+            if (prop.getCedula().equals("11111111")) {
+                Notificacion notif = new Notificacion(
+                        "Su saldo es bajo. Por favor, recargue su cuenta para evitar inconvenientes en los peajes.",
+                        prop);
                 prop.getNotificaciones().add(notif);
             }
         }
