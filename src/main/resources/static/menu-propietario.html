@@ -25,31 +25,8 @@
         </div>
     </div>
 
-    <div class="menu-grid">
-        <div class="menu-item">
-            <h3>Saldo</h3>
-            <p>Ver saldo actual y recargar</p>
-        </div>
-        <div class="menu-item">
-            <h3>Tránsitos</h3>
-            <p>Historial de tránsitos por peajes</p>
-        </div>
-        <div class="menu-item">
-            <h3>Notificaciones</h3>
-            <p>Ver alertas y mensajes</p>
-        </div>
-        <div class="menu-item">
-            <h3>Bonificaciones</h3>
-            <p>Ver bonificaciones activas</p>
-        </div>
-        <div class="menu-item">
-            <h3>Mi Cuenta</h3>
-            <p>Gestionar información personal</p>
-        </div>
-    </div>
-
     <div class="vehiculos-section">
-        <h2>Mis Vehículos</h2>
+        <h2>Mis vehículos</h2>
         <div class="table-container">
             <table>
                 <thead>
@@ -61,7 +38,6 @@
                     </tr>
                 </thead>
                 <tbody id="vehiculosTableBody">
-                    <!-- Los vehículos se cargarán aquí dinámicamente -->
                 </tbody>
             </table>
         </div>
@@ -69,6 +45,25 @@
 
     <script src="/utilesVista.js"></script>
     <script src="/vistaWeb.js"></script>
+    
+    <!-- Sección de bonificaciones asignadas -->
+    <div class="bonificaciones-section">
+        <h2>Mis bonificaciones asignadas</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre Bonificación</th>
+                        <th>Puesto</th>
+                        <th>Fecha Asignada</th>
+                    </tr>
+                </thead>
+                <tbody id="bonificacionesTableBody">
+                    <!-- Filas de bonificaciones se insertarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
     <script>
         let notifications = [];
 
@@ -249,6 +244,9 @@
             // Cargar notificaciones iniciales
             cargarNotificaciones();
             
+                // Cargar bonificaciones asignadas
+                cargarBonificaciones();
+
             // Configurar el refresco periódico de notificaciones (cada 30 segundos)
             setInterval(cargarNotificaciones, 30000);
         });
@@ -258,6 +256,44 @@
         // Función para mostrar datos del usuario
         function mostrar_datosUsuario(datos) {
             document.getElementById('nombreUsuario').textContent = datos.nombre + " " + datos.apellido;
+        }
+
+        // Función para cargar las bonificaciones asignadas al propietario
+        async function cargarBonificaciones() {
+            try {
+                const response = await fetch('/bonificaciones/porPropietario');
+                if (!response.ok) {
+                    // si la sesión expiró o hubo error, redirigir al login
+                    if (response.status === 401) {
+                        window.location.href = 'login-propietario.html';
+                        return;
+                    }
+                    throw new Error('Error al cargar las bonificaciones');
+                }
+                const lista = await response.json();
+                const tbody = document.getElementById('bonificacionesTableBody');
+                tbody.innerHTML = '';
+                if (!Array.isArray(lista) || lista.length === 0) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td colspan="3">No hay bonificaciones asignadas</td>`;
+                    tbody.appendChild(tr);
+                    return;
+                }
+                lista.forEach(b => {
+                    const tr = document.createElement('tr');
+                    const nombre = b.nombreBonificacion || b.nombre || '';
+                    const puesto = (b.puesto && (b.puesto.nombre || b.puesto)) || '';
+                    const fecha = b.fechaAsignada || b.fecha || '';
+                    tr.innerHTML = `
+                        <td>${nombre}</td>
+                        <td>${puesto}</td>
+                        <td>${fecha}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch (error) {
+                console.error('Error al cargar bonificaciones:', error);
+            }
         }
     </script>
 </body>

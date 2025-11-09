@@ -110,6 +110,10 @@ public class Fachada {
         return sistemaPeaje.getTarifas();
     }
 
+    public ArrayList<Bonificacion> getBonificaciones() {
+        return sistemaPeaje.getBonificaciones();
+    }
+
     public ArrayList<Propietario> getPropietarios() {
         return sistemaAcceso.getPropietarios();
     }

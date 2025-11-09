@@ -142,6 +142,16 @@
     margin-bottom: 20px;
     text-align: center;
 }
+.bonificaciones-section {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+}
+.bonificaciones-section h2 {
+    color: #1a73e8;
+    margin-bottom: 20px;
+    text-align: center;
+}
 .table-container {
     background: white;
     border-radius: var(--radius);
