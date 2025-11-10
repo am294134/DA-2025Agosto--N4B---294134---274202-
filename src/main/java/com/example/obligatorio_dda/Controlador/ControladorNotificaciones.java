@@ -3,7 +3,6 @@ package com.example.obligatorio_dda.Controlador;
 import com.example.obligatorio_dda.Controlador.DTOs.NotificacionDTO;
 import com.example.obligatorio_dda.Modelo.Notificacion;
 import com.example.obligatorio_dda.Modelo.Propietario;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +15,8 @@ import java.util.List;
 @RequestMapping("/notificaciones")
 public class ControladorNotificaciones {
 
-    @GetMapping("/listar")
-    public List<NotificacionDTO> listarNotificaciones(HttpSession sesion) throws Exception {
+    @PostMapping("/listar")
+    public List<Respuesta> listarNotificaciones(HttpSession sesion) throws Exception {
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             throw new Exception("No hay un propietario logueado");
@@ -33,7 +32,7 @@ public class ControladorNotificaciones {
             ));
         }
 
-        return notificacionesDTO;
+        return Respuesta.lista(new Respuesta("notificaciones", notificacionesDTO));
     }
     
     @PostMapping("/marcarLeidas")

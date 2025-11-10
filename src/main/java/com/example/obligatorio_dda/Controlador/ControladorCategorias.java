@@ -2,7 +2,7 @@ package com.example.obligatorio_dda.Controlador;
 
 import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.Categoria;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,12 +13,12 @@ import java.util.List;
 @RequestMapping("/categorias")
 public class ControladorCategorias {
 
-    @GetMapping("/listar")
-    public List<String> listarCategorias() {
+    @PostMapping("/listar")
+    public List<Respuesta> listarCategorias() {
         List<String> nombres = new ArrayList<>();
         for (Categoria c : Fachada.getInstancia().getCategorias()) {
             nombres.add(c.getNombre());
         }
-        return nombres;
+        return Respuesta.lista(new Respuesta("categoriasLista", nombres));
     }
 }

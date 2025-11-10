@@ -1,5 +1,5 @@
 package com.example.obligatorio_dda.Controlador;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,15 +16,15 @@ import java.util.List;
 @RequestMapping("/vehiculos")
 public class ControladorVehiculos {
 
-    @GetMapping("/listarVehiculos")
-    public VehiculosPropDTO listarVehiculos(HttpSession sesion) throws Exception {
+    @PostMapping("/listarVehiculos")
+    public java.util.List<Respuesta> listarVehiculos(HttpSession sesion) throws Exception {
         // obtenemos session
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             throw new Exception("No hay un propietario logueado");
         }
 
-        // Convertir los vehículos a DTO para enviar solo la información necesaria
+        // Convertimos los vehículos a DTO para enviar solo la información necesaria
         List<VehiculoDTO> vehiculosDTO = new ArrayList<>();
         for (Vehiculo v : propietario.getVehiculos()) {
             vehiculosDTO.add(new VehiculoDTO(
@@ -37,6 +37,7 @@ public class ControladorVehiculos {
         
         String nombreCompleto = propietario.getNombre() + " " + propietario.getApellido();
         // incluir estado y saldoActual en la respuesta para que la vista pueda mostrarlos en el menú
-        return new VehiculosPropDTO(nombreCompleto, vehiculosDTO, propietario.getEstado(), propietario.getSaldoActual());
+        VehiculosPropDTO dto = new VehiculosPropDTO(nombreCompleto, vehiculosDTO, propietario.getEstado(), propietario.getSaldoActual());
+        return Respuesta.lista(new Respuesta("vehiculosProp", dto));
     }
 }
