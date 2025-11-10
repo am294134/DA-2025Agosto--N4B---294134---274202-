@@ -91,9 +91,9 @@ public class SistemaPeaje {
         Vehiculo v = buscarVehiculoPorMatricula(matricula);
         
         Puesto p = buscarPuestoPorId(puestoId);
-        // Obtener propietario desde el vehículo
+        // tenemos el propietario con el vehiculo
         Propietario propietario = v.getPropietario();
-        // Construir Transito y registrarlo   
+        // registramos el transito con los datos obtenidos 
         Transito transito = new Transito(p, v, propietario);
         p.getTransitos().add(transito); //sera necesario? si es necesario hacer p.agregarTRas
         v.agregarTransito(transito);    

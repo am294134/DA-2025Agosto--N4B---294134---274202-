@@ -30,14 +30,30 @@ public class ControladorBonificaciones {
             // recorremos las asignaciones
             for (Asignacion asigns : bonificaciones.getAsignaciones()) {
                 // buscamos las que pertenecen al propietario logueado y lo mandamos para el DTO
-                if (asigns.getPropietario() != null && asigns.getPropietario().getCedula().equals(propietario.getCedula())) {
+                if (asigns.getPropietario() != null
+                        && asigns.getPropietario().getCedula().equals(propietario.getCedula())) {
+
                     String nombreBon = bonificaciones.getNombre();
-                    String nombrePuesto = asigns.getPuesto() != null ? asigns.getPuesto().getNombre() : "";
-                    String fecha = asigns.getFechaAsignacion() != null ? asigns.getFechaAsignacion().toString() : "";
+
+                    String nombrePuesto = "";
+                    if (asigns.getPuesto() != null) {
+                        if (asigns.getPuesto().getNombre() != null) {
+                            nombrePuesto = asigns.getPuesto().getNombre();
+                        } else {
+                            nombrePuesto = "";
+                        }
+                    }
+
+                    String fecha = "";
+                    if (asigns.getFechaAsignacion() != null) {
+                        fecha = asigns.getFechaAsignacion().toString(); // pasamos date a string
+                    }
+
                     bonis.add(new BonificacionAsignadaDTO(nombreBon, nombrePuesto, fecha));
                 }
             }
         }
+
         return Respuesta.lista(new Respuesta("bonificacionesAsignadas", bonis));
     }
 
