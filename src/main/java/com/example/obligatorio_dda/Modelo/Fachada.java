@@ -9,7 +9,10 @@ public class Fachada {
 
     private Fachada() {
         this.sistemaAcceso = new SistemaAcceso(new ArrayList<>(), new ArrayList<>());
-        this.sistemaPeaje = new SistemaPeaje(new ArrayList<Puesto>(), new ArrayList<Tarifa>(), new ArrayList<Categoria>(), new ArrayList<Bonificacion>(), new ArrayList<Vehiculo>(), new ArrayList<Propietario>());;
+        this.sistemaPeaje = new SistemaPeaje(new ArrayList<Puesto>(), new ArrayList<Tarifa>(),
+                new ArrayList<Categoria>(), new ArrayList<Bonificacion>(), new ArrayList<Vehiculo>(),
+                new ArrayList<Propietario>());
+        ;
     }
 
     public static Fachada getInstancia() {
@@ -38,10 +41,8 @@ public class Fachada {
 
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
             double saldoActual, double saldoMinimo, Estado estado) {
-        Propietario propietario = sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual,
-                saldoMinimo, estado);
-        // sincroniza lista con SistemaTransito
-        sistemaPeaje.getPropietarios().add(propietario);
+    // Delegar la creación del propietario al sistema de acceso
+    sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
     }
 
     public void agregarPuesto(String nombre, String ubicacion) {
@@ -87,12 +88,14 @@ public class Fachada {
         sistemaPeaje.agregarVehiculo(matricula, color, modelo, categoria, propietario);
     }
 
-    // public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-    //     sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+    // public void agregarTransito(String puestoId, String matricula, String
+    // fechaHora) throws PeajeException {
+    // sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
     // }
 
-    // public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-    //     sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
+    // public void agregarTransito(String puestoId, String matricula, String
+    // fechaHora) throws PeajeException {
+    // sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
     // }
 
     // #endregion
@@ -125,7 +128,7 @@ public class Fachada {
     public ArrayList<Vehiculo> getVehiculos() {
         return sistemaPeaje.getVehiculos();
     }
- 
+
     public ArrayList<Transito> getTransitos() {
         return sistemaPeaje.getTransitos();
     }
