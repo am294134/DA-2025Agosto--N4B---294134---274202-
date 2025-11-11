@@ -60,32 +60,7 @@ public class Fachada {
         sistemaPeaje.agrgarBonificacion(bonificacion);
     }
 
-    public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
-            String cedulaPropietario) throws PeajeException {
-        Categoria categoria = null;
-        for (Categoria c : sistemaPeaje.getCategorias()) {
-            if (c.getNombre().equals(nombreCategoria)) {
-                categoria = c;
-                break;
-            }
-        }
-        if (categoria == null) {
-            throw new PeajeException("No existe la categoría: " + nombreCategoria);
-        }
-
-        Propietario propietario = null;
-        for (Propietario p : sistemaPeaje.getPropietarios()) {
-            if (p.getCedula().equals(cedulaPropietario)) {
-                propietario = p;
-                break;
-            }
-        }
-        if (propietario == null) {
-            throw new PeajeException("No existe el propietario con cédula: " + cedulaPropietario);
-        }
-
-        sistemaPeaje.agregarVehiculo(matricula, color, modelo, categoria, propietario);
-    }
+   
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
          sistemaPeaje.agregarVehiculo(matricula, color, modelo, categoria, propietario);
     }

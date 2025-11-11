@@ -4,14 +4,15 @@ import java.util.ArrayList;
 
 public class Transito {
     private Puesto puesto;
-    private ArrayList<Tarifa> tarifas;
+    private Tarifa tarifa;
     private Vehiculo vehiculo;
     private Propietario propietario;
 
-    public Transito(Puesto puesto, Vehiculo vehiculo, Propietario propietario) {
+    public Transito(Puesto puesto, Vehiculo vehiculo, Propietario propietario, Tarifa tarifa) {
         this.puesto = puesto;
         this.vehiculo = vehiculo;
         this.propietario = propietario;
+        this.tarifa = tarifa;
     }
 
     public Puesto getPuesto() {
@@ -30,7 +31,24 @@ public class Transito {
         return propietario;
     }
 
+    public Tarifa getTarifa() {
+        return tarifa;
+    }
+
+    public void setTarifa (Tarifa tarifa) {
+        this.tarifa = tarifa;
+    }
     
+    public void setPuesto (Puesto puesto) {
+        this.puesto = puesto;
+    }
+    public void setVehiculo (Vehiculo vehiculo) {
+        this.vehiculo = vehiculo;
+    }
+
+    public void setPropietario (Propietario propietario) {
+        this.propietario = propietario;
+    }
 
 
 }

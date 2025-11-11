@@ -17,6 +17,7 @@ public class Vehiculo {
         this.categoria = categoria;
         this.propietario = propietario;
         this.transitos = new ArrayList<>();
+        
     }
 
     public void agregarTransito(Transito transito) {
@@ -47,6 +48,9 @@ public class Vehiculo {
         return propietario;
     }
 
-    
+    public double calcularTarifa() {
+        double tarifa = categoria.obtenerTarifa();
+        return tarifa;
+    }
     
 }

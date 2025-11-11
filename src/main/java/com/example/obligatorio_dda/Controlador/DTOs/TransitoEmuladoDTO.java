@@ -7,12 +7,13 @@ import com.example.obligatorio_dda.Modelo.Propietario;
 public class TransitoEmuladoDTO {
 
     private Puesto puesto;
-    // private ArrayList<Tarifa> tarifas;
+    private Tarifa tarifa;
     private Vehiculo vehiculo;
     private Propietario propietario;
 
     public TransitoEmuladoDTO(Puesto puesto, Vehiculo vehiculo, Propietario propietario) {
         this.puesto = puesto;
+        this.tarifa = tarifa;
         this.vehiculo = vehiculo;
         this.propietario = propietario;
     }
