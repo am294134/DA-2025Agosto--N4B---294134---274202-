@@ -9,7 +9,10 @@ public class Fachada {
 
     private Fachada() {
         this.sistemaAcceso = new SistemaAcceso(new ArrayList<>(), new ArrayList<>());
-        this.sistemaPeaje = new SistemaPeaje(new ArrayList<Puesto>(), new ArrayList<Tarifa>(), new ArrayList<Categoria>(), new ArrayList<Bonificacion>(), new ArrayList<Vehiculo>(), new ArrayList<Propietario>());;
+        this.sistemaPeaje = new SistemaPeaje(new ArrayList<Puesto>(), new ArrayList<Tarifa>(),
+                new ArrayList<Categoria>(), new ArrayList<Bonificacion>(), new ArrayList<Vehiculo>(),
+                new ArrayList<Propietario>());
+        ;
     }
 
     public static Fachada getInstancia() {
@@ -38,10 +41,8 @@ public class Fachada {
 
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
             double saldoActual, double saldoMinimo, Estado estado) {
-        Propietario propietario = sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual,
-                saldoMinimo, estado);
-        // sincroniza lista con SistemaTransito
-        sistemaPeaje.getPropietarios().add(propietario);
+    // Delegar la creación del propietario al sistema de acceso
+    sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
     }
 
     public void agregarPuesto(String nombre, String ubicacion) {
@@ -60,10 +61,34 @@ public class Fachada {
         sistemaPeaje.agrgarBonificacion(bonificacion);
     }
 
-   
+
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
-         sistemaPeaje.agregarVehiculo(matricula, color, modelo, categoria, propietario);
+            String cedulaPropietario) throws PeajeException {
+        Categoria categoria = null;
+        for (Categoria c : sistemaPeaje.getCategorias()) {
+            if (c.getNombre().equals(nombreCategoria)) {
+                categoria = c;
+                break;
+            }
+        }
+        if (categoria == null) {
+            throw new PeajeException("No existe la categoría: " + nombreCategoria);
+        }
+
+        Propietario propietario = null;
+        for (Propietario p : sistemaPeaje.getPropietarios()) {
+            if (p.getCedula().equals(cedulaPropietario)) {
+                propietario = p;
+                break;
+            }
+        }
+        if (propietario == null) {
+            throw new PeajeException("No existe el propietario con cédula: " + cedulaPropietario);
+        }
+
+        sistemaPeaje.agregarVehiculo(matricula, color, modelo, categoria, propietario);
     }
+    
 
     
 
@@ -71,8 +96,9 @@ public class Fachada {
     //     sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
     // }
 
-    // public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-    //     sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
+    // public void agregarTransito(String puestoId, String matricula, String
+    // fechaHora) throws PeajeException {
+    // sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
     // }
 
     // #endregion
@@ -105,7 +131,7 @@ public class Fachada {
     public ArrayList<Vehiculo> getVehiculos() {
         return sistemaPeaje.getVehiculos();
     }
- 
+
     public ArrayList<Transito> getTransitos() {
         return sistemaPeaje.getTransitos();
     }
