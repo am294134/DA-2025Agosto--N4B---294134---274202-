@@ -11,6 +11,11 @@ public class SistemaAcceso {
         this.administradores = administradores;
     }
 
+    public SistemaAcceso() {
+        this.propietarios = new ArrayList<>();
+        this.administradores = new ArrayList<>();
+    }
+
     public Propietario agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
             double saldoActual, double saldoMinimo, Estado estado) {
         Propietario propietario = new Propietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo,

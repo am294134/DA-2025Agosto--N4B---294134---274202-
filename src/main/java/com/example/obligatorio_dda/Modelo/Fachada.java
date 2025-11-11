@@ -1,24 +1,30 @@
 package com.example.obligatorio_dda.Modelo;
 
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
-public class Fachada {
-    private static Fachada instancia = null;
+import com.example.obligatorio_dda.Observador.Observable;
+
+public class Fachada extends Observable {
+    // singleton eager (como en el ejemplo del profesor)
+    private static Fachada instancia = new Fachada();
     private SistemaAcceso sistemaAcceso;
     private SistemaPeaje sistemaPeaje;
+
+    // Eventos que emite la fachada cuando hay cambios relevantes
+    public enum Eventos {
+        propietarioAgregado,
+        vehiculoAgregado
+    }
 
     private Fachada() {
         this.sistemaAcceso = new SistemaAcceso(new ArrayList<>(), new ArrayList<>());
         this.sistemaPeaje = new SistemaPeaje(new ArrayList<Puesto>(), new ArrayList<Tarifa>(),
                 new ArrayList<Categoria>(), new ArrayList<Bonificacion>(), new ArrayList<Vehiculo>(),
                 new ArrayList<Propietario>());
-        ;
     }
 
     public static Fachada getInstancia() {
-        if (instancia == null) {
-            instancia = new Fachada();
-        }
         return instancia;
     }
 
@@ -41,8 +47,13 @@ public class Fachada {
 
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
             double saldoActual, double saldoMinimo, Estado estado) {
-    // Delegar la creación del propietario al sistema de acceso
-    sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
+        // delegamos la creación al sistema de acceso y notificar al observador
+        Propietario p = sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual,
+                saldoMinimo, estado);
+        // registramos prop en sistema peaje
+        sistemaPeaje.agregarPropietario(p);
+        // avisamos a los observadores que se agrega prop
+        avisar(new Object[] { Eventos.propietarioAgregado, p });
     }
 
     public void agregarPuesto(String nombre, String ubicacion) {
@@ -61,45 +72,17 @@ public class Fachada {
         sistemaPeaje.agrgarBonificacion(bonificacion);
     }
 
-
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
             String cedulaPropietario) throws PeajeException {
-        Categoria categoria = null;
-        for (Categoria c : sistemaPeaje.getCategorias()) {
-            if (c.getNombre().equals(nombreCategoria)) {
-                categoria = c;
-                break;
-            }
-        }
-        if (categoria == null) {
-            throw new PeajeException("No existe la categoría: " + nombreCategoria);
-        }
-
-        Propietario propietario = null;
-        for (Propietario p : sistemaPeaje.getPropietarios()) {
-            if (p.getCedula().equals(cedulaPropietario)) {
-                propietario = p;
-                break;
-            }
-        }
-        if (propietario == null) {
-            throw new PeajeException("No existe el propietario con cédula: " + cedulaPropietario);
-        }
-
-        sistemaPeaje.agregarVehiculo(matricula, color, modelo, categoria, propietario);
+        sistemaPeaje.agregarVehiculo(matricula, color, modelo, nombreCategoria, cedulaPropietario);
+        // vehiculo creado para notificar observadores 
+        Vehiculo v = sistemaPeaje.buscarVehiculoPorMatricula(matricula);
+        avisar(new Object[] { Eventos.vehiculoAgregado, v });
     }
-    
 
-    
-
-    // public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-    //     sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
-    // }
-
-    // public void agregarTransito(String puestoId, String matricula, String
-    // fechaHora) throws PeajeException {
-    // sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
-    // }
+    public void agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
+        sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+    }
 
     // #endregion
 

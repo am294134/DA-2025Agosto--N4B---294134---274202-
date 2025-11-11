@@ -1,6 +1,7 @@
 package com.example.obligatorio_dda.Controlador.DTOs;
 
 import com.example.obligatorio_dda.Modelo.Puesto;
+import com.example.obligatorio_dda.Modelo.Tarifa;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
 import com.example.obligatorio_dda.Modelo.Propietario;
 
@@ -11,7 +12,7 @@ public class TransitoEmuladoDTO {
     private Vehiculo vehiculo;
     private Propietario propietario;
 
-    public TransitoEmuladoDTO(Puesto puesto, Vehiculo vehiculo, Propietario propietario) {
+    public TransitoEmuladoDTO(Puesto puesto, Vehiculo vehiculo, Propietario propietario, Tarifa tarifa) {
         this.puesto = puesto;
         this.tarifa = tarifa;
         this.vehiculo = vehiculo;
@@ -28,5 +29,9 @@ public class TransitoEmuladoDTO {
 
     public Propietario getPropietario() {
         return propietario;
+    }
+
+    public Tarifa getTarifa() {
+        return tarifa;
     }
 }
