@@ -86,6 +86,11 @@ public class Fachada {
 
         sistemaPeaje.agregarVehiculo(matricula, color, modelo, categoria, propietario);
     }
+    public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
+         sistemaPeaje.agregarVehiculo(matricula, color, modelo, categoria, propietario);
+    }
+
+    
 
     // public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
     //     sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);

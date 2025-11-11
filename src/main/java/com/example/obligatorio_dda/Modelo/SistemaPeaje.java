@@ -88,15 +88,41 @@ public class SistemaPeaje {
     }
 
     public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-        Vehiculo v = buscarVehiculoPorMatricula(matricula);
+        Vehiculo vehiculo = buscarVehiculoPorMatricula(matricula);
+        Puesto propietario = buscarPuestoPorId(puestoId);
+        Propietario propietario = v.getPropietario();  
         
-        Puesto p = buscarPuestoPorId(puestoId);
-        // Obtener propietario desde el vehículo
-        Propietario propietario = v.getPropietario();
-        // Construir Transito y registrarlo   
-        Transito transito = new Transito(p, v, propietario);
         p.getTransitos().add(transito); //sera necesario? si es necesario hacer p.agregarTRas
+        double tarifa = v.calcularTarifa();
+        Transito transito = new Transito(propietario, tarifa, vehiculo, propietario);
         v.agregarTransito(transito);    
+    }
+
+    public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
+            String cedulaPropietario) throws PeajeException {
+        Categoria categoria = null;
+        for (Categoria c : sistemaPeaje.getCategorias()) {
+            if (c.getNombre().equals(nombreCategoria)) {
+                categoria = c;
+                break;
+            }
+        }
+        if (categoria == null) {
+            throw new PeajeException("No existe la categoría: " + nombreCategoria);
+        }
+
+        Propietario propietario = null;
+        for (Propietario p : sistemaPeaje.getPropietarios()) {
+            if (p.getCedula().equals(cedulaPropietario)) {
+                propietario = p;
+                break;
+            }
+        }
+        if (propietario == null) {
+            throw new PeajeException("No existe el propietario con cédula: " + cedulaPropietario);
+        }
+
+        sistemaPeaje.agregarVehiculo(matricula, color, modelo, categoria, propietario);
     }
     
     public ArrayList<Transito> getTransitos() {
