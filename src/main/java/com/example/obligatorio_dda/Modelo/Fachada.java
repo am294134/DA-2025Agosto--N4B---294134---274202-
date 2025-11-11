@@ -11,7 +11,7 @@ public class Fachada extends Observable {
     private SistemaAcceso sistemaAcceso;
     private SistemaPeaje sistemaPeaje;
 
-    // Eventos que emite la fachada cuando hay cambios relevantes
+    // eventos para avisar cambios relevantes
     public enum Eventos {
         propietarioAgregado,
         vehiculoAgregado
@@ -80,8 +80,8 @@ public class Fachada extends Observable {
         avisar(new Object[] { Eventos.vehiculoAgregado, v });
     }
 
-    public void agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
-        sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+    public void agregarTransito(String identPuesto, String matricula, LocalDateTime fechaHora) throws PeajeException {
+        sistemaPeaje.agregarTransito(identPuesto, matricula, fechaHora);
     }
 
     // #endregion
