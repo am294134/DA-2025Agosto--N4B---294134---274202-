@@ -163,83 +163,70 @@
             }
 
         // Cargar puestos desde el backend y poblar el select
-        async function cargarPuestos() {
-            try {
-                const resp = await fetch('/puestos/listar');
-                if (!resp.ok) throw new Error('Error al obtener puestos');
-                const lista = await resp.json();
-                const sel = document.getElementById('peajeSelect');
-                if (!sel) return;
-                sel.innerHTML = '<option value="">Seleccionar puesto</option>';
-                lista.forEach(nombre => {
-                    const opt = document.createElement('option');
-                    opt.value = nombre;
-                    opt.textContent = nombre;
-                    sel.appendChild(opt);
-                });
-            } catch (e) {
-                console.error('No se pudieron cargar los puestos:', e);
-            }
+        // Usar submit (vistaWeb.submit) para obtener la lista de puestos y procesarla
+        function cargarPuestos() {
+            // indicamos destino por defecto
+            window._selectTargetForPuestos = 'peajeSelect';
+            submit('/puestos/listar', '');
         }
 
         // Cargar puestos en un select cualquiera por id (reutilizable)
-        async function cargarPuestosEn(selectId) {
-            try {
-                const resp = await fetch('/puestos/listar');
-                if (!resp.ok) throw new Error('Error al obtener puestos');
-                const lista = await resp.json();
-                const sel = document.getElementById(selectId);
-                if (!sel) return;
-                sel.innerHTML = '<option value="">Seleccionar puesto</option>';
-                lista.forEach(nombre => {
-                    const opt = document.createElement('option');
-                    opt.value = nombre;
-                    opt.textContent = nombre;
-                    sel.appendChild(opt);
-                });
-            } catch (e) {
-                console.error('No se pudieron cargar los puestos (en):', selectId, e);
-            }
+        function cargarPuestosEn(selectId) {
+            window._selectTargetForPuestos = selectId;
+            submit('/puestos/listar', '');
         }
 
         // Cargar categorías desde el backend y poblar el select
-        async function cargarCategorias() {
-            try {
-                const resp = await fetch('/categorias/listar');
-                if (!resp.ok) throw new Error('Error al obtener categorías');
-                const lista = await resp.json();
-                const sel = document.getElementById('categoriaSelect');
-                if (!sel) return;
-                sel.innerHTML = '<option value="">Seleccionar categoría</option>';
-                lista.forEach(nombre => {
-                    const opt = document.createElement('option');
-                    opt.value = nombre;
-                    opt.textContent = nombre;
-                    sel.appendChild(opt);
-                });
-            } catch (e) {
-                console.error('No se pudieron cargar las categorías:', e);
-            }
+        function cargarCategorias() {
+            submit('/categorias/listar', '');
         }
 
         // Cargar tipos de bonificaciones desde el backend y poblar el select
-        async function cargarBonificacionesTipos() {
-            try {
-                const resp = await fetch('/bonificaciones/listarTipos');
-                if (!resp.ok) throw new Error('Error al obtener tipos de bonificaciones');
-                const lista = await resp.json();
-                const sel = document.getElementById('bon-tipo');
-                if (!sel) return;
-                sel.innerHTML = '<option value="">Seleccionar bonificación</option>';
-                lista.forEach(nombre => {
-                    const opt = document.createElement('option');
-                    opt.value = nombre;
-                    opt.textContent = nombre;
-                    sel.appendChild(opt);
-                });
-            } catch (e) {
-                console.error('No se pudieron cargar los tipos de bonificaciones:', e);
-            }
+        function cargarBonificacionesTipos() {
+            submit('/bonificaciones/listarTipos', '');
+        }
+
+        // Handlers llamados por vistaWeb.process cuando llega Respuesta con id correspondiente
+        function mostrar_puestosLista(lista) {
+            const selId = window._selectTargetForPuestos || 'peajeSelect';
+            const sel = document.getElementById(selId);
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Seleccionar puesto</option>';
+            if (!Array.isArray(lista)) return;
+            lista.forEach(nombre => {
+                const opt = document.createElement('option');
+                opt.value = nombre;
+                opt.textContent = nombre;
+                sel.appendChild(opt);
+            });
+            // limpiar target
+            delete window._selectTargetForPuestos;
+        }
+
+        function mostrar_categoriasLista(lista) {
+            const sel = document.getElementById('categoriaSelect');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Seleccionar categoría</option>';
+            if (!Array.isArray(lista)) return;
+            lista.forEach(nombre => {
+                const opt = document.createElement('option');
+                opt.value = nombre;
+                opt.textContent = nombre;
+                sel.appendChild(opt);
+            });
+        }
+
+        function mostrar_bonificacionesTipos(lista) {
+            const sel = document.getElementById('bon-tipo');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Seleccionar bonificación</option>';
+            if (!Array.isArray(lista)) return;
+            lista.forEach(nombre => {
+                const opt = document.createElement('option');
+                opt.value = nombre;
+                opt.textContent = nombre;
+                sel.appendChild(opt);
+            });
         }
 
         // ---- Validaciones para selects/inputs ----

@@ -52,22 +52,12 @@
     </div>
 
     <script src="utilesVista.js"></script>
+    <script src="vistaWeb.js"></script>
     <script>
         // Función para cargar los vehículos (acepta array o { nombreCompleto, vehiculos })
-        async function cargarVehiculos() {
-            try {
-                const response = await fetch('/vehiculos/listarVehiculos');
-                if (!response.ok) {
-                    throw new Error('Error al cargar los vehículos');
-                }
-                const data = await response.json();
-                const vehiculos = Array.isArray(data) ? data : (data.vehiculos || []);
-                mostrarVehiculos(vehiculos);
-            } catch (error) {
-                console.error('Error:', error);
-                // Si hay error de sesión, redirigir al login
-                window.location.href = 'login-propietario.html';
-            }
+        function cargarVehiculos() {
+            // usar submit para obtener la respuesta en formato Respuesta
+            submit('/vehiculos/listarVehiculos', '');
         }
 
         // Función para mostrar los vehículos en la tabla
@@ -89,6 +79,12 @@
 
         // Cargar los vehículos cuando la página se cargue
         window.onload = cargarVehiculos;
+
+        // Handler para la respuesta de submit (id = vehiculosProp)
+        function mostrar_vehiculosProp(data) {
+            const vehiculos = Array.isArray(data.vehiculos) ? data.vehiculos : [];
+            mostrarVehiculos(vehiculos);
+        }
     </script>
 </body>
 </html>

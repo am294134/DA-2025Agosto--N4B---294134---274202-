@@ -68,20 +68,9 @@
         let notifications = [];
 
         // Función para cargar las notificaciones
-        async function cargarNotificaciones() {
-            try {
-                const response = await fetch('/notificaciones/listar');
-                if (!response.ok) {
-                    throw new Error('Error al cargar las notificaciones');
-                }
-                const notifs = await response.json();
-                    // Guardamos todas las notificaciones (con su campo 'leida')
-                    notifications = notifs;
-                    actualizarContadorNotificaciones();
-                    actualizarDropdownNotificaciones();
-            } catch (error) {
-                console.error('Error al cargar notificaciones:', error);
-            }
+        function cargarNotificaciones() {
+            // usar vistaWeb.submit para obtener notificaciones (devuelve Respuesta lista con id 'notificaciones')
+            submit('/notificaciones/listar', '');
         }
 
         // Función para actualizar el contador de notificaciones
@@ -176,41 +165,9 @@
         });
 
         // Función para cargar los vehículos (acepta ya sea un array o un objeto { nombreCompleto, vehiculos })
-        async function cargarVehiculos() {
-            try {
-                const response = await fetch('/vehiculos/listarVehiculos');
-                if (!response.ok) {
-                    throw new Error('Error al cargar los vehículos');
-                }
-                const data = await response.json();
-                let vehiculos = [];
-                if (data) {
-                    // si el servidor devolvió { nombreCompleto, vehiculos }
-                    if (Array.isArray(data)) {
-                        vehiculos = data;
-                    } else if (data.vehiculos) {
-                        vehiculos = data.vehiculos;
-                        if (data.nombreCompleto) {
-                            document.getElementById('nombreUsuario').textContent = data.nombreCompleto;
-                        }
-                        if (data.estado) {
-                            const estadoText = data.estado.nombre ? data.estado.nombre : String(data.estado);
-                            document.getElementById('estadoUsuario').textContent = estadoText;
-                        }
-                        if (typeof data.saldoActual !== 'undefined') {
-                            document.getElementById('saldoUsuario').textContent = Number(data.saldoActual).toFixed(2);
-                        }
-                    } else {
-                        // estructura desconocida: intentar usar como array
-                        vehiculos = Array.isArray(data) ? data : [];
-                    }
-                }
-                mostrarVehiculos(vehiculos);
-            } catch (error) {
-                console.error('Error:', error);
-                // Si hay error de sesión, redirigir al login
-                window.location.href = 'login-propietario.html';
-            }
+        function cargarVehiculos() {
+            // Pedimos la información mediante submit; la respuesta llamará a mostrar_vehiculosProp
+            submit('/vehiculos/listarVehiculos', '');
         }
 
         // Función para mostrar los vehículos en la tabla
@@ -259,41 +216,56 @@
         }
 
         // Función para cargar las bonificaciones asignadas al propietario
-        async function cargarBonificaciones() {
-            try {
-                const response = await fetch('/bonificaciones/porPropietario');
-                if (!response.ok) {
-                    // si la sesión expiró o hubo error, redirigir al login
-                    if (response.status === 401) {
-                        window.location.href = 'login-propietario.html';
-                        return;
-                    }
-                    throw new Error('Error al cargar las bonificaciones');
-                }
-                const lista = await response.json();
-                const tbody = document.getElementById('bonificacionesTableBody');
-                tbody.innerHTML = '';
-                if (!Array.isArray(lista) || lista.length === 0) {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `<td colspan="3">No hay bonificaciones asignadas</td>`;
-                    tbody.appendChild(tr);
-                    return;
-                }
-                lista.forEach(b => {
-                    const tr = document.createElement('tr');
-                    const nombre = b.nombreBonificacion || b.nombre || '';
-                    const puesto = (b.puesto && (b.puesto.nombre || b.puesto)) || '';
-                    const fecha = b.fechaAsignada || b.fecha || '';
-                    tr.innerHTML = `
-                        <td>${nombre}</td>
-                        <td>${puesto}</td>
-                        <td>${fecha}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } catch (error) {
-                console.error('Error al cargar bonificaciones:', error);
+        function cargarBonificaciones() {
+            submit('/bonificaciones/porPropietario', '');
+        }
+
+        // Handlers para respuestas de submit
+        function mostrar_notificaciones(lista) {
+            // lista es el array de NotificacionDTO
+            notifications = Array.isArray(lista) ? lista : [];
+            actualizarContadorNotificaciones();
+            actualizarDropdownNotificaciones();
+        }
+
+        function mostrar_vehiculosProp(data) {
+            if (!data) return;
+            // data puede ser el DTO { nombreCompleto, vehiculos, estado, saldoActual }
+            if (data.nombreCompleto) {
+                document.getElementById('nombreUsuario').textContent = data.nombreCompleto;
             }
+            if (data.estado) {
+                const estadoText = data.estado.nombre ? data.estado.nombre : String(data.estado);
+                document.getElementById('estadoUsuario').textContent = estadoText;
+            }
+            if (typeof data.saldoActual !== 'undefined') {
+                document.getElementById('saldoUsuario').textContent = Number(data.saldoActual).toFixed(2);
+            }
+            const vehiculos = Array.isArray(data.vehiculos) ? data.vehiculos : [];
+            mostrarVehiculos(vehiculos);
+        }
+
+        function mostrar_bonificacionesAsignadas(lista) {
+            const tbody = document.getElementById('bonificacionesTableBody');
+            tbody.innerHTML = '';
+            if (!Array.isArray(lista) || lista.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="3">No hay bonificaciones asignadas</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+            lista.forEach(b => {
+                const tr = document.createElement('tr');
+                const nombre = b.nombreBonificacion || b.nombre || '';
+                const puesto = (b.puesto && (b.puesto.nombre || b.puesto)) || '';
+                const fecha = b.fechaAsignada || b.fecha || '';
+                tr.innerHTML = `
+                    <td>${nombre}</td>
+                    <td>${puesto}</td>
+                    <td>${fecha}</td>
+                `;
+                tbody.appendChild(tr);
+            });
         }
     </script>
 </body>
