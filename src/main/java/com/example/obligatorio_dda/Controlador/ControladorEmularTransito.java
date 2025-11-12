@@ -31,9 +31,24 @@ public class ControladorEmularTransito {
             throw new PeajeException("No hay un administrador logueado");
         }
 
-        // Fachada.agregarTransito(puestoId, matricula, fechaHora);
-
+        Fachada.agregarTransito(puestoId, matricula, fechaHora);
     }
+    /* 
+        @PostMapping("/mostrar")
+        public TransitoEmuladoDTO mostrarTransito() throws PeajeException {
+            // obtenemos session
+            Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
+            if (admin == null) {
+                throw new PeajeException("No hay un administrador logueado");
+            }
+
+            // Fachada.mostrarTransito();
+
+        }
+            */
+    }
+
+    
 
     
 

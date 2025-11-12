@@ -40,5 +40,18 @@ public class Puesto {
         return asignaciones;
     }
 
+    public void agregarTransito(Transito transito) {
+        transitos.add(transito);
+    }   
+
+    public double obtenerTarifaParaCategoria(Categoria categoria) throws PeajeException {
+        for (Tarifa t : tarifas) {
+            if (t.getCategoria().getNombre().equals(categoria.getNombre())) {
+                return t.getMonto();
+            }
+        }
+        throw new PeajeException("No hay tarifa definida para la categoría: " + categoria.getNombre() + " en el puesto: " + nombre);
+    }
     
+
 }

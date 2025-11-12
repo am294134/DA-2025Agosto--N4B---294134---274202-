@@ -5,28 +5,18 @@ import com.example.obligatorio_dda.Modelo.Vehiculo;
 import com.example.obligatorio_dda.Modelo.Propietario;
 
 public class TransitoEmuladoDTO {
-
-    private Puesto puesto;
-    private Tarifa tarifa;
-    private Vehiculo vehiculo;
     private Propietario propietario;
-
-    public TransitoEmuladoDTO(Puesto puesto, Vehiculo vehiculo, Propietario propietario) {
-        this.puesto = puesto;
-        this.tarifa = tarifa;
-        this.vehiculo = vehiculo;
+    private String categoria;
+    private String bonificacion;
+    private double costoDelTransito;
+    private double saldoLuegoDelTransito;
+   
+    public transitoEmuladoDTO(Puesto puesto, Vehiculo vehiculo, Propietario propietario) {
         this.propietario = propietario;
+        this.categoria = vehiculo.getCategoria().getNombre();
+        this.bonificacion = propietario.getBonificacion().getTipoBonificacion();
+        this.costoDelTransito = vehiculo.calcularTarifa();
+        this.saldoLuegoDelTransito = propietario.getSaldoDisponible() - costoDelTransito;
     }
 
-    public Puesto getPuesto() {
-        return puesto;
-    }
-
-    public Vehiculo getVehiculo() {
-        return vehiculo;
-    }
-
-    public Propietario getPropietario() {
-        return propietario;
-    }
 }
