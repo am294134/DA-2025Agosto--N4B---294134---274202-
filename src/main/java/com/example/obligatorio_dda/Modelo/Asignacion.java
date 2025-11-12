@@ -30,6 +30,4 @@ public class Asignacion {
     public Puesto getPuesto() {
         return puesto;
     }
-
-    //comentario222
 }

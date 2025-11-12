@@ -16,6 +16,4 @@ public class Tarifa {
     public Categoria getCategoria() {
         return categoria;
     }
-
-    
 }

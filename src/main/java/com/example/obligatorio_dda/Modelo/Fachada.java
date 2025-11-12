@@ -1,7 +1,6 @@
 package com.example.obligatorio_dda.Modelo;
 
 import java.util.ArrayList;
-import java.time.LocalDateTime;
 
 import com.example.obligatorio_dda.Observador.Observable;
 
@@ -75,21 +74,14 @@ public class Fachada extends Observable {
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
             String cedulaPropietario) throws PeajeException {
         sistemaPeaje.agregarVehiculo(matricula, color, modelo, nombreCategoria, cedulaPropietario);
-        // vehiculo creado para notificar observadores 
+        // vehiculo creado para notificar observadores
         Vehiculo v = sistemaPeaje.buscarVehiculoPorMatricula(matricula);
         avisar(new Object[] { Eventos.vehiculoAgregado, v });
     }
 
-    
-
-     public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-     sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+    public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
+        sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
     }
-
-    // public void agregarTransito(String puestoId, String matricula, String
-    // fechaHora) throws PeajeException {
-    // sistemaTransito.agregarTransito(puestoId, matricula, fechaHora);
-    // }
 
     // #endregion
 
