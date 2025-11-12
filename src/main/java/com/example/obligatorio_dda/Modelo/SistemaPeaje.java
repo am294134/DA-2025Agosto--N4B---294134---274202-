@@ -134,33 +134,16 @@ public class SistemaPeaje {
     }
 
     public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-        Vehiculo vehiculo = buscarVehiculoPorMatricula(matricula);
-        Puesto puesto = buscarPuestoPorId(puestoId);
-        Propietario propietario = v.getPropietario();  
+        // Vehiculo vehiculo = buscarVehiculoPorMatricula(matricula);
+        // Puesto puesto = buscarPuestoPorId(puestoId);
+        // Propietario propietario = vehiculo.getPropietario();  
    
        
-        double tarifa = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
-        Transito transito = new Transito(puesto, tarifa, vehiculo, propietario, fechaHora );
-        v.agregarTransito(transito);   
-        p.agregarTransito(transito);
+        // double tarifa = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
+        // Transito transito = new Transito(puesto, tarifa, vehiculo, propietario, fechaHora );
+        // vehiculo.agregarTransito(transito);   
+        // propietario.agregarTransito(transito);
     }
-
-    // public void agregarTransito(String puestoId, String matricula, String
-    // fechaHora) throws PeajeException {
-    // Vehiculo vehiculo = buscarVehiculoPorMatricula(matricula);
-    // Puesto propietario = buscarPuestoPorId(puestoId);
-    // Propietario propietario = v.getPropietario();
-    // Puesto p = buscarPuestoPorId(puestoId);
-    // // tenemos el propietario con el vehiculo
-    // Propietario propietario = v.getPropietario();
-    // // registramos el transito con los datos obtenidos
-    // Transito transito = new Transito(p, v, propietario);
-    // p.getTransitos().add(transito); //sera necesario? si es necesario hacer
-    // p.agregarTRas
-    // double tarifa = v.calcularTarifa();
-    // Transito transito = new Transito(propietario, tarifa, vehiculo, propietario);
-    // v.agregarTransito(transito);
-    // }
 
     public ArrayList<Transito> getTransitos() {
         return transitos;

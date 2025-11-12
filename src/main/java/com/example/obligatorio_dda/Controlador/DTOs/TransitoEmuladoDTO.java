@@ -12,12 +12,12 @@ public class TransitoEmuladoDTO {
     private double costoDelTransito;
     private double saldoLuegoDelTransito;
    
-    public transitoEmuladoDTO(Puesto puesto, Vehiculo vehiculo, Propietario propietario) {
+    public void transitoEmuladoDTO(Puesto puesto, Vehiculo vehiculo, Propietario propietario) {
         this.propietario = propietario;
         this.categoria = vehiculo.getCategoria().getNombre();
-        this.bonificacion = propietario.getBonificacion().getTipoBonificacion();
-        this.costoDelTransito = vehiculo.calcularTarifa();
-        this.saldoLuegoDelTransito = propietario.getSaldoDisponible() - costoDelTransito;
+        // this.bonificacion = propietario.getAsignaciones().getTipoBonificacion();  revisar
+        // this.costoDelTransito = vehiculo.calcularTarifa(); revisar
+        // this.saldoLuegoDelTransito = propietario.getSaldoDisponible() - costoDelTransito;  revisar
     }
 
 }
