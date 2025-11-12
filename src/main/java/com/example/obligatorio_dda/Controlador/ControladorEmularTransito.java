@@ -10,7 +10,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.ArrayList;
 
+import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
+import com.example.obligatorio_dda.Modelo.Tarifa;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Administrador;
@@ -41,28 +44,26 @@ public class ControladorEmularTransito {
         // espera otros parametros
     }
 
-    // @PostMapping("/tarifasPorPuesto")
-    // public List<Respuesta> tarifasPorPuestoSesion(HttpSession sesion) throws PeajeException {
-    //     String puestoId = (String) sesion.getAttribute("puestoSeleccionado");
-    //     if (puestoId == null) {
-    //         throw new PeajeException("No hay puesto seleccionado");
-    //     }
+    @PostMapping("/tarifasPorPuesto")
+    public List<Respuesta> tarifasPorPuestoSesion(HttpSession sesion,
+            @RequestParam(name = "puestoId", required = false) String puestoId) throws PeajeException {
+        // permitir que el cliente especifique el puesto por parámetro; si no se
+        // envía, usamos el valor almacenado en sesión (compatibilidad hacia atrás)
+        if (puestoId == null || puestoId.isEmpty()) {
+            puestoId = (String) sesion.getAttribute("puestoSeleccionado");
+        }
+        if (puestoId == null) {
+            throw new PeajeException("No hay puesto seleccionado");
+        }
 
-    //     // Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId); método
-    //     // buscarPuesotoPorId?
-    //     // if (puesto == null) {
-    //     // throw new PeajeException("Puesto no encontrado");
-    //     // }
+        Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
 
-    //     // List<Map<String, Object>> lista = new ArrayList<>();
-    //     // for (Tarifa t : puesto.getTarifas()) {
-    //     // Map<String, Object> fila = new HashMap<>();
-    //     // fila.put("categoria", t.getCategoria().getNombre());
-    //     // fila.put("monto", t.getMonto());
-    //     // lista.add(fila);
-    //     // }
+        List<TarifaDTO> lista = new ArrayList<>();
+        for (Tarifa t : puesto.getTarifas()) {
+            String nombreCategoria = t.getCategoria() != null ? t.getCategoria().getNombre() : null;
+            lista.add(new TarifaDTO(t.getMonto(), nombreCategoria));
+        }
 
-    //     return Respuesta.lista(new Respuesta("tarifasLista", lista));
-    // }
-
-} 
+        return Respuesta.lista(new Respuesta("tarifasLista", lista));
+    }
+}

@@ -42,6 +42,12 @@
                             <!-- carga dinamica -->
                         </select>
 
+                        <!-- Tarifas del peaje seleccionado -->
+                        <div id="tarifasBox" class="tarifas-box" aria-live="polite">
+                            <h4>Tarifas</h4>
+                            <div id="tarifasContent">Seleccione un puesto para ver las tarifas</div>
+                        </div>
+
                         <div class="action-row">
                             <button class="action-btn" id="btn-emular">Emular</button>
                         </div>
@@ -170,6 +176,20 @@
             submit('/puestos/listar', '');
         }
 
+        // Cuando se selecciona un puesto en Emular tránsito, pedir sus tarifas
+        document.addEventListener('change', function (e) {
+            if (e.target && e.target.id === 'peajeSelect') {
+                const puesto = e.target.value;
+                // si no hay selección limpia el recuadro
+                if (!puesto) {
+                    mostrar_tarifasLista([]);
+                    return;
+                }
+                // petición al backend pasando puestoId en body urlencoded
+                submit('/emularTransito/tarifasPorPuesto', 'puestoId=' + encodeURIComponent(puesto));
+            }
+        });
+
         // Cargar puestos en un select cualquiera por id (reutilizable)
         function cargarPuestosEn(selectId) {
             window._selectTargetForPuestos = selectId;
@@ -193,10 +213,12 @@
             if (!sel) return;
             sel.innerHTML = '<option value="">Seleccionar puesto</option>';
             if (!Array.isArray(lista)) return;
-            lista.forEach(nombre => {
+            lista.forEach(valor => {
                 const opt = document.createElement('option');
-                opt.value = nombre;
-                opt.textContent = nombre;
+                // el backend envía peajeString ("Nombre-Direccion"); usamos ese
+                // valor como value y lo mostramos tal cual para evitar ambigüedades.
+                opt.value = valor;
+                opt.textContent = valor;
                 sel.appendChild(opt);
             });
             // limpiar target
@@ -227,6 +249,24 @@
                 opt.textContent = nombre;
                 sel.appendChild(opt);
             });
+        }
+
+        function mostrar_tarifasLista(lista) {
+            const container = document.getElementById('tarifasContent');
+            if (!container) return;
+            if (!Array.isArray(lista) || lista.length === 0) {
+                container.innerHTML = '<em>No hay tarifas para este puesto</em>';
+                return;
+            }
+            // construir una tabla simple
+            let html = '<table class="tarifas-table"><thead><tr><th>Categoría</th><th>Monto</th></tr></thead><tbody>';
+            lista.forEach(t => {
+                const categoria = t.categoria || '';
+                const monto = (typeof t.monto === 'number') ? t.monto.toFixed(2) : t.monto;
+                html += '<tr><td>' + categoria + '</td><td>' + monto + '</td></tr>';
+            });
+            html += '</tbody></table>';
+            container.innerHTML = html;
         }
 
         // ---- Validaciones para selects/inputs ----

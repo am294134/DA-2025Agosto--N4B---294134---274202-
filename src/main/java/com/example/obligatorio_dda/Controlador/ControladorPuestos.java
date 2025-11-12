@@ -15,10 +15,11 @@ public class ControladorPuestos {
 
     @PostMapping("/listar")
     public List<Respuesta> listarPuestos() {
-        List<String> nombres = new ArrayList<>();
+        List<String> valores = new ArrayList<>();
         for (Puesto p : Fachada.getInstancia().getPuestos()) {
-            nombres.add(p.getNombre());
+            // devolvemos el identificador peajeString (nombre +direccion)
+            valores.add(p.getPeajeString());
         }
-        return Respuesta.lista(new Respuesta("puestosLista", nombres));
+        return Respuesta.lista(new Respuesta("puestosLista", valores));
     }
 }
