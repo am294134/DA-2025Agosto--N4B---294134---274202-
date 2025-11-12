@@ -48,9 +48,9 @@ public class Vehiculo {
         return propietario;
     }
 
-    public double calcularTarifa() {
-        double tarifa = categoria.obtenerTarifa();
-        return tarifa;
-    }
+    // public double calcularTarifa() {
+    //     double tarifa = categoria.obtenerTarifa();
+    //     return tarifa;
+    // }
     
 }

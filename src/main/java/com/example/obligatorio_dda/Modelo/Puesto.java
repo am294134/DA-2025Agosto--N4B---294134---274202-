@@ -24,7 +24,7 @@ public class Puesto {
         return direccion;
     }
 
-    public String getId() {
+    public String getPeajeString() {
         return nombre + "-" + direccion;
     }   
 

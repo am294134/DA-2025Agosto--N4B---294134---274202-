@@ -1,7 +1,5 @@
 package com.example.obligatorio_dda.Modelo;
 
-import java.util.ArrayList;
-
 public class Categoria {
     private String nombre;
     private ArrayList<Tarifa> tarifas;
