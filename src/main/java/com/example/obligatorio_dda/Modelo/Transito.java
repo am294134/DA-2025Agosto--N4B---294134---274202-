@@ -7,7 +7,7 @@ public class Transito {
     private Tarifa tarifa;
     private Vehiculo vehiculo;
     private Propietario propietario;
-    private DateTime fechaHora;
+    private LocalDateTime fechaHora;
 
     public Transito(Puesto puesto, Vehiculo vehiculo, Propietario propietario, Tarifa tarifa) {
         this.puesto = puesto;

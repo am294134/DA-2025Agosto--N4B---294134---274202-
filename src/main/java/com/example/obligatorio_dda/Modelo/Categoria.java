@@ -1,5 +1,7 @@
 package com.example.obligatorio_dda.Modelo;
 
+import java.util.ArrayList;
+
 public class Categoria {
     private String nombre;
     private ArrayList<Tarifa> tarifas;
@@ -14,7 +16,7 @@ public class Categoria {
 
     public double obtenerTarifa() { 
         if (tarifas == null || tarifas.isEmpty()) {
-            return throw PeajeException("No hay tarifas definidas para esta categoria");
+            return 0; //throw new PeajeException("No hay tarifas definidas para esta categoria"); revisar
         }
         // Suponiendo que queremos la tarifa más reciente o alguna lógica específica
         return tarifas.get(tarifas.size() - 1).getMonto();
