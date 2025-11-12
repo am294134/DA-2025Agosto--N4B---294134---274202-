@@ -1,6 +1,7 @@
 package com.example.obligatorio_dda.Controlador.DTOs;
 
 import com.example.obligatorio_dda.Modelo.Puesto;
+import com.example.obligatorio_dda.Modelo.Tarifa;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
 import com.example.obligatorio_dda.Modelo.Propietario;
 

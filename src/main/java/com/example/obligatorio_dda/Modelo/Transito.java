@@ -1,6 +1,6 @@
 package com.example.obligatorio_dda.Modelo;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 public class Transito {
     private Puesto puesto;
@@ -14,14 +14,11 @@ public class Transito {
         this.vehiculo = vehiculo;
         this.propietario = propietario;
         this.tarifa = tarifa;
+        this.fechaHora = LocalDateTime.now();
     }
 
     public Puesto getPuesto() {
         return puesto;
-    }
-
-    public ArrayList<Tarifa> getTarifas() {
-        return tarifas;
     }
 
     public Vehiculo getVehiculo() {
@@ -51,5 +48,7 @@ public class Transito {
         this.propietario = propietario;
     }
 
-
+    public LocalDateTime getFechaHora() {
+        return fechaHora;
+    }
 }
