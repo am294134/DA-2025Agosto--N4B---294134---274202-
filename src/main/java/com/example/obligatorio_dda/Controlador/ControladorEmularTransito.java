@@ -27,29 +27,39 @@ public class ControladorEmularTransito {
             throws PeajeException {
         // obtenemos session
         Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
+        
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
 
+        // Guardamos el puesto en la sesión del administrador
+        sesion.setAttribute("puestoSeleccionado", puestoId);
+
         Fachada.agregarTransito(puestoId, matricula, fechaHora);
     }
-    /* 
-        @PostMapping("/mostrar")
-        public TransitoEmuladoDTO mostrarTransito() throws PeajeException {
-            // obtenemos session
-            Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
-            if (admin == null) {
-                throw new PeajeException("No hay un administrador logueado");
-            }
-
-            // Fachada.mostrarTransito();
-
-        }
-            */
+    
+    @PostMapping("/tarifasPorPuesto")
+    public List<Respuesta> tarifasPorPuestoSesion(HttpSession sesion) throws PeajeException {
+    String puestoId = (String) sesion.getAttribute("puestoSeleccionado");
+    if (puestoId == null) {
+        throw new PeajeException("No hay puesto seleccionado");
     }
 
-    
+    Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
+    if (puesto == null) {
+        throw new PeajeException("Puesto no encontrado");
+    }
 
-    
+    List<Map<String, Object>> lista = new ArrayList<>();
+    for (Tarifa t : puesto.getTarifas()) {
+        Map<String, Object> fila = new HashMap<>();
+        fila.put("categoria", t.getCategoria().getNombre());
+        fila.put("monto", t.getMonto());
+        lista.add(fila);
+    }
+
+    return Respuesta.lista(new Respuesta("tarifasLista", lista));
+}
+ 
 
 }
