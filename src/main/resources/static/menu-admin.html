@@ -28,30 +28,38 @@
                 <div class="section-header"><h3>Emular tránsito</h3></div>
                 <div class="section-body">
                     <p>Simula el paso de un vehículo por un peaje.</p>
-                    <form id="form-emular" onsubmit="event.preventDefault();">
-                        <label for="matricula">Matrícula</label>
-                        <input id="matricula" type="text" placeholder="ABC1234">
 
-                        <label for="peajeSelect">Peaje</label>
-                        <select id="peajeSelect">
-                            <!-- carga dinamica -->
-                        </select>
+                    <!-- Two-column layout: left = form, right = tarifas -->
+                    <div class="emular-layout">
+                        <div class="emular-form">
+                            <form id="form-emular" onsubmit="event.preventDefault();">
+                                <label for="matricula">Matrícula</label>
+                                <input id="matricula" type="text" placeholder="ABC1234">
 
-                        <label for="categoriaSelect">Categoría</label>
-                        <select id="categoriaSelect">
-                            <!-- carga dinamica -->
-                        </select>
+                                <label for="peajeSelect">Peaje</label>
+                                <select id="peajeSelect">
+                                    <!-- carga dinamica -->
+                                </select>
 
-                        <!-- Tarifas del peaje seleccionado -->
-                        <div id="tarifasBox" class="tarifas-box" aria-live="polite">
-                            <h4>Tarifas</h4>
-                            <div id="tarifasContent">Seleccione un puesto para ver las tarifas</div>
+                                <label for="categoriaSelect">Categoría</label>
+                                <select id="categoriaSelect">
+                                    <!-- carga dinamica -->
+                                </select>
+
+                                <div class="action-row">
+                                    <button class="action-btn" id="btn-emular">Emular</button>
+                                </div>
+                            </form>
                         </div>
 
-                        <div class="action-row">
-                            <button class="action-btn" id="btn-emular">Emular</button>
-                        </div>
-                    </form>
+                        <aside class="tarifas-column" aria-labelledby="tarifasHeading">
+                            <div id="tarifasBox" class="tarifas-box" aria-live="polite">
+                                <h4 id="tarifasHeading">Tarifas</h4>
+                                <div id="tarifasContent">Seleccione un puesto para ver las tarifas</div>
+                            </div>
+                        </aside>
+                    </div>
+                    <!-- /emular-layout -->
                 </div>
             </div>
 

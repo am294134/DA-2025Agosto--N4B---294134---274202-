@@ -47,8 +47,7 @@ public class ControladorEmularTransito {
     @PostMapping("/tarifasPorPuesto")
     public List<Respuesta> tarifasPorPuestoSesion(HttpSession sesion,
             @RequestParam(name = "puestoId", required = false) String puestoId) throws PeajeException {
-        // permitir que el cliente especifique el puesto por parámetro; si no se
-        // envía, usamos el valor almacenado en sesión (compatibilidad hacia atrás)
+        // permitir que el cliente especifique el puesto por parámetro
         if (puestoId == null || puestoId.isEmpty()) {
             puestoId = (String) sesion.getAttribute("puestoSeleccionado");
         }
