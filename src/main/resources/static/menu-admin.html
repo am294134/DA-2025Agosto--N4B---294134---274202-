@@ -1,371 +1,440 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Menú Administrador</title>
-    <link rel="stylesheet" href="/css/login.css">
-    <link rel="stylesheet" href="/css/menu-admin.css">
+    <link rel="stylesheet" href="/css/login.css" />
+    <link rel="stylesheet" href="/css/menu-admin.css" />
     <!-- Styles moved to /css/menu-admin.css -->
-</head>
-<body class="admin">
+  </head>
+  <body class="admin">
     <div class="header">
-        <h1>Panel de Administrador</h1>
-        <div class="user-info">
-            Bienvenido, <span id="nombreUsuario"></span>
-        </div>
+      <h1>Panel de Administrador</h1>
+      <div class="user-info">Bienvenido, <span id="nombreUsuario"></span></div>
     </div>
     <!-- Pestañas modernas: un solo contenedor con 3 pestañas -->
     <div class="admin-sections tabs-container">
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="tab-emular">Emular tránsito</button>
-            <button class="tab-btn" data-tab="tab-bonificaciones">Asignar bonificaciones</button>
-            <button class="tab-btn" data-tab="tab-cambiar-estado">Cambiar estado</button>
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="tab-emular">
+          Emular tránsito
+        </button>
+        <button class="tab-btn" data-tab="tab-bonificaciones">
+          Asignar bonificaciones
+        </button>
+        <button class="tab-btn" data-tab="tab-cambiar-estado">
+          Cambiar estado
+        </button>
+      </div>
+
+      <div class="tab-contents">
+        <div id="tab-emular" class="tab-panel active menu-item">
+          <div class="section-header"><h3>Emular tránsito</h3></div>
+          <div class="section-body">
+            <p>Simula el paso de un vehículo por un peaje.</p>
+
+            <!-- Two-column layout: left = form, right = tarifas -->
+            <div class="emular-layout">
+              <div class="emular-form">
+                <form id="form-emular" onsubmit="event.preventDefault();">
+                  <label for="peajeSelect">Peaje</label>
+                  <select id="peajeSelect">
+                    <!-- carga dinamica -->
+                  </select>
+
+                  <label for="matricula">Matrícula</label>
+                  <input id="matricula" type="text" placeholder="ABC1234" />
+
+                  <label for="fechaHora">Fecha y hora</label>
+                  <input id="fechaHora" type="datetime-local" />
+
+                  <div class="action-row">
+                    <button class="action-btn" id="btn-emular">Emular</button>
+                  </div>
+                </form>
+              </div>
+
+              <aside class="tarifas-column" aria-labelledby="tarifasHeading">
+                <div id="tarifasBox" class="tarifas-box" aria-live="polite">
+                  <h4 id="tarifasHeading">Tarifas</h4>
+                  <div id="tarifasContent">
+                    Seleccione un puesto para ver las tarifas
+                  </div>
+                </div>
+
+                <!-- Nuevo bloque separado para información del propietario -->
+                <div
+                  id="propietarioBox"
+                  class="propietario-box"
+                  aria-live="polite"
+                >
+                  <h4>Propietario</h4>
+                  <div id="propietarioContent">
+                    Ingrese una matrícula para ver los datos del propietario
+                  </div>
+                </div>
+              </aside>
+            </div>
+            <!-- /emular-layout -->
+          </div>
         </div>
 
-        <div class="tab-contents">
-            <div id="tab-emular" class="tab-panel active menu-item">
-                <div class="section-header"><h3>Emular tránsito</h3></div>
-                <div class="section-body">
-                    <p>Simula el paso de un vehículo por un peaje.</p>
+        <div id="tab-bonificaciones" class="tab-panel menu-item">
+          <div class="section-header"><h3>Asignar bonificaciones</h3></div>
+          <div class="section-body">
+            <p>Asignar bonificaciones a un propietario</p>
+            <form id="form-bonificaciones" onsubmit="event.preventDefault();">
+              <label for="bon-propietario">Propietario (cédula)</label>
+              <input id="bon-propietario" type="text" placeholder="12345678" />
 
-                    <!-- Two-column layout: left = form, right = tarifas -->
-                    <div class="emular-layout">
-                        <div class="emular-form">
-                            <form id="form-emular" onsubmit="event.preventDefault();">
-                                <label for="matricula">Matrícula</label>
-                                <input id="matricula" type="text" placeholder="ABC1234">
+              <label for="bon-puesto">Puesto</label>
+              <select id="bon-puesto">
+                <!-- carga dinamica de puestos -->
+              </select>
 
-                                <label for="peajeSelect">Peaje</label>
-                                <select id="peajeSelect">
-                                    <!-- carga dinamica -->
-                                </select>
-
-                                <label for="fechaHora">Fecha y hora</label>
-                                <input id="fechaHora" type="datetime-local">
-
-                                <div class="action-row">
-                                    <button class="action-btn" id="btn-emular">Emular</button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <aside class="tarifas-column" aria-labelledby="tarifasHeading">
-                            <div id="tarifasBox" class="tarifas-box" aria-live="polite">
-                                <h4 id="tarifasHeading">Tarifas</h4>
-                                <div id="tarifasContent">Seleccione un puesto para ver las tarifas</div>
-                            </div>
-
-                            <!-- Nuevo bloque separado para información del propietario -->
-                            <div id="propietarioBox" class="propietario-box" aria-live="polite">
-                                <h4>Propietario</h4>
-                                <div id="propietarioContent">Ingrese una matrícula para ver los datos del propietario</div>
-                            </div>
-                        </aside>
-                    </div>
-                    <!-- /emular-layout -->
-                </div>
-            </div>
-
-            <div id="tab-bonificaciones" class="tab-panel menu-item">
-                <div class="section-header"><h3>Asignar bonificaciones</h3></div>
-                <div class="section-body">
-                    <p>Asignar bonificaciones a un propietario</p>
-                    <form id="form-bonificaciones" onsubmit="event.preventDefault();">
-                        <label for="bon-propietario">Propietario (cédula)</label>
-                        <input id="bon-propietario" type="text" placeholder="12345678">
-
-                        <label for="bon-puesto">Puesto</label>
-                        <select id="bon-puesto">
-                            <!-- carga dinamica de puestos -->
-                        </select>
-
-                        <label for="bon-tipo">Tipo de bonificación</label>
-                        <select id="bon-tipo">
-                        </select>
-                        <label id="data-bon">Exonerados: No pagan / Frecuentes: 50% de descuento / Trabajadores: 80% de descuento</label>
-                        <div class="action-row">
-                            <button class="action-btn" id="btn-asignar">Asignar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div id="tab-cambiar-estado" class="tab-panel menu-item">
-                <div class="section-header"><h3>Cambiar estado del propietario</h3></div>
-                <div class="section-body">
-                    <p>Modificar el estado actual</p>
-                    <form id="form-cambiar-estado" onsubmit="event.preventDefault();">
-                        <label for="estado-propietario">Propietario (cédula)</label>
-                        <input id="estado-propietario" type="text" placeholder="1">
-
-                        <label for="estado-select">Estado</label>
-                        <select id="estado-select">
-                            <option value="">Seleccionar estado</option>
-                            <option>Habilitado</option>
-                            <option>Penalizado</option>
-                            <option>Suspendido</option>
-                            <option>Deshabilitado</option>
-                        </select>
-
-                        <div class="action-row">
-                            <button class="action-btn" id="btn-cambiar-estado">Cambiar estado</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+              <label for="bon-tipo">Tipo de bonificación</label>
+              <select id="bon-tipo"></select>
+              <label id="data-bon"
+                >Exonerados: No pagan / Frecuentes: 50% de descuento /
+                Trabajadores: 80% de descuento</label
+              >
+              <div class="action-row">
+                <button class="action-btn" id="btn-asignar">Asignar</button>
+              </div>
+            </form>
+          </div>
         </div>
+
+        <div id="tab-cambiar-estado" class="tab-panel menu-item">
+          <div class="section-header">
+            <h3>Cambiar estado del propietario</h3>
+          </div>
+          <div class="section-body">
+            <p>Modificar el estado actual</p>
+            <form id="form-cambiar-estado" onsubmit="event.preventDefault();">
+              <label for="estado-propietario">Propietario (cédula)</label>
+              <input id="estado-propietario" type="text" placeholder="1" />
+
+              <label for="estado-select">Estado</label>
+              <select id="estado-select">
+                <option value="">Seleccionar estado</option>
+                <option>Habilitado</option>
+                <option>Penalizado</option>
+                <option>Suspendido</option>
+                <option>Deshabilitado</option>
+              </select>
+
+              <div class="action-row">
+                <button class="action-btn" id="btn-cambiar-estado">
+                  Cambiar estado
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="/utilesVista.js"></script>
     <script src="/vistaWeb.js"></script>
     <script>
-        // Inicialización de la vista
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configurar la URL para iniciar la vista
-            urlIniciarVista = "/acceso/iniciarAdministrador";
-            
-            // Manejar cierre de sesión cuando se cierra la ventana
-            urlCierreVista = "/acceso/cerrarSesion";
+      document.addEventListener("DOMContentLoaded", function () {
+        urlIniciarVista = "/acceso/iniciarAdministrador";
+        urlCierreVista = "/acceso/cerrarSesion";
 
-            // Cargar lista de puestos para el select de Emular tránsito
-    cargarPuestos();
-    // Poblar también el select de puestos usado en asignar bonificaciones
-    cargarPuestosEn('bon-puesto');
-    // NOTE: se removió la carga de categorías; ahora usamos fecha y hora en el formulario
-    cargarBonificacionesTipos();
+        cargarPuestos();
+        cargarPuestosEn("bon-puesto");
+        cargarBonificacionesTipos();
         initTabs();
+      });
+
+      // Inicializa el comportamiento de las pestañas
+      function initTabs() {
+        const tabButtons = document.querySelectorAll(".tab-btn");
+        tabButtons.forEach((btn) => {
+          btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+          btn.addEventListener("keydown", (e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              switchTab(btn.dataset.tab);
+            }
+          });
         });
+      }
 
-            // Inicializa el comportamiento de las pestañas
-            function initTabs() {
-                const tabButtons = document.querySelectorAll('.tab-btn');
-                tabButtons.forEach(btn => {
-                    btn.addEventListener('click', () => switchTab(btn.dataset.tab));
-                    btn.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            switchTab(btn.dataset.tab);
-                        }
-                    });
-                });
-            }
+      function switchTab(tabId) {
+        // buttons
+        document
+          .querySelectorAll(".tab-btn")
+          .forEach((b) => b.classList.remove("active"));
+        const activeBtn = document.querySelector(
+          `.tab-btn[data-tab="${tabId}"]`
+        );
+        if (activeBtn) activeBtn.classList.add("active");
 
-            function switchTab(tabId) {
-                // buttons
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                const activeBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
-                if (activeBtn) activeBtn.classList.add('active');
+        // panels
+        document
+          .querySelectorAll(".tab-panel")
+          .forEach((p) => p.classList.remove("active"));
+        const panel = document.getElementById(tabId);
+        if (panel) panel.classList.add("active");
 
-                // panels
-                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-                const panel = document.getElementById(tabId);
-                if (panel) panel.classList.add('active');
-
-                // lazy load puestos when switching to emular
-                if (tabId === 'tab-emular') {
-                    const sel = document.getElementById('peajeSelect');
-                    if (sel && sel.options.length === 0) cargarPuestos();
-                    // no hay select de categorías: usamos fecha y hora
-                    document.getElementById('matricula').focus();
-                }
-
-                // lazy load tipos de bonificaciones al cambiar a la pestaña correspondiente
-                if (tabId === 'tab-bonificaciones') {
-                    const selBon = document.getElementById('bon-tipo');
-                    if (selBon && selBon.options.length === 0) cargarBonificacionesTipos();
-                    const selPuesto = document.getElementById('bon-puesto');
-                    if (selPuesto && selPuesto.options.length === 0) cargarPuestosEn('bon-puesto');
-                }
-            }
-
-        // Cargar puestos desde el backend y poblar el select
-        // Usar submit (vistaWeb.submit) para obtener la lista de puestos y procesarla
-        function cargarPuestos() {
-            // indicamos destino por defecto
-            window._selectTargetForPuestos = 'peajeSelect';
-            submit('/puestos/listar', '');
+        // lazy load puestos when switching to emular
+        if (tabId === "tab-emular") {
+          const sel = document.getElementById("peajeSelect");
+          if (sel && sel.options.length === 0) cargarPuestos();
+          // no hay select de categorías: usamos fecha y hora
+          document.getElementById("matricula").focus();
         }
 
-        // Cuando se selecciona un puesto en Emular tránsito, pedir sus tarifas
-        document.addEventListener('change', function (e) {
-            if (e.target && e.target.id === 'peajeSelect') {
-                const puesto = e.target.value;
-                // si no hay selección limpia el recuadro
-                if (!puesto) {
-                    mostrar_tarifasLista([]);
-                    return;
-                }
-                // petición al backend pasando puestoId en body urlencoded
-                submit('/emularTransito/tarifasPorPuesto', 'puestoId=' + encodeURIComponent(puesto));
+        // lazy load tipos de bonificaciones al cambiar a la pestaña correspondiente
+        if (tabId === "tab-bonificaciones") {
+          const selBon = document.getElementById("bon-tipo");
+          if (selBon && selBon.options.length === 0)
+            cargarBonificacionesTipos();
+          const selPuesto = document.getElementById("bon-puesto");
+          if (selPuesto && selPuesto.options.length === 0)
+            cargarPuestosEn("bon-puesto");
+        }
+      }
+
+      // Cargar puestos desde el backend
+      // Usa submit de vistaweb para obtener la lista de puestos y procesarla
+      function cargarPuestos() {
+        // indicamos destino por defecto
+        window._selectTargetForPuestos = "peajeSelect";
+        submit("/puestos/listar", "");
+      }
+
+      // Cuando se selecciona un puesto en Emular tránsito, pedir sus tarifas
+      document.addEventListener("change", function (e) {
+        if (e.target && e.target.id === "peajeSelect") {
+          const puesto = e.target.value;
+          // si no hay selección limpia el recuadro
+          if (!puesto) {
+            mostrar_tarifasLista([]);
+            return;
+          }
+          // petición al backend pasando puestoId en body urlencoded
+          submit(
+            "/emularTransito/tarifasPorPuesto",
+            "puestoId=" + encodeURIComponent(puesto)
+          );
+        }
+      });
+
+      // Cuando el usuario ingresa una matrícula pedir la info del propietario y el costo
+      (function () {
+        let timer = null;
+        const input = document.getElementById("matricula");
+        if (!input) return;
+        input.addEventListener("input", function () {
+          clearTimeout(timer);
+          timer = setTimeout(function () {
+            const matricula = input.value.trim();
+            const puesto = document.getElementById("peajeSelect")
+              ? document.getElementById("peajeSelect").value
+              : null;
+            const infoDiv = document.getElementById("propietarioContent");
+            if (!matricula) {
+              if (infoDiv) infoDiv.innerHTML = "";
+              return;
             }
+            // solicitar info al servidor; incluir puestoId solo si fue seleccionado
+            let data = "matricula=" + encodeURIComponent(matricula);
+            if (puesto)
+              data = "puestoId=" + encodeURIComponent(puesto) + "&" + data;
+            submit("/emularTransito/infoMatricula", data);
+          }, 500);
         });
+      })();
 
-        // Cuando el usuario ingresa una matrícula pedir la info del propietario y el costo
-        (function(){
-            let timer = null;
-            const input = document.getElementById('matricula');
-            if (!input) return;
-            input.addEventListener('input', function () {
-                clearTimeout(timer);
-                timer = setTimeout(function () {
-                    const matricula = input.value.trim();
-                    const puesto = document.getElementById('peajeSelect') ? document.getElementById('peajeSelect').value : null;
-                    const infoDiv = document.getElementById('propietarioContent');
-                    if (!matricula) {
-                        if (infoDiv) infoDiv.innerHTML = '';
-                        return;
-                    }
-                    // solicitar info al servidor; incluir puestoId solo si fue seleccionado
-                    let data = 'matricula=' + encodeURIComponent(matricula);
-                    if (puesto) data = 'puestoId=' + encodeURIComponent(puesto) + '&' + data;
-                    submit('/emularTransito/infoMatricula', data);
-                }, 500);
-            });
-        })();
+      // Cargar puestos en un select cualquiera por id (reutilizable)
+      function cargarPuestosEn(selectId) {
+        window._selectTargetForPuestos = selectId;
+        submit("/puestos/listar", "");
+      }
 
-        // Cargar puestos en un select cualquiera por id (reutilizable)
-        function cargarPuestosEn(selectId) {
-            window._selectTargetForPuestos = selectId;
-            submit('/puestos/listar', '');
+      // Cargar tipos de bonificaciones desde el backend y poblar el select
+      function cargarBonificacionesTipos() {
+        submit("/bonificaciones/listarTipos", "");
+      }
+
+      // Handlers llamados por vistaWeb.process cuando llega Respuesta con id correspondiente
+      function mostrar_puestosLista(lista) {
+        const selId = window._selectTargetForPuestos || "peajeSelect";
+        const sel = document.getElementById(selId);
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Seleccionar puesto</option>';
+        if (!Array.isArray(lista)) return;
+        lista.forEach((valor) => {
+          const opt = document.createElement("option");
+          // el backend envía peajeString ("Nombre-Direccion"); usamos ese
+          // valor como value y lo mostramos tal cual para evitar ambigüedades.
+          opt.value = valor;
+          opt.textContent = valor;
+          sel.appendChild(opt);
+        });
+        // limpiar target
+        delete window._selectTargetForPuestos;
+      }
+
+      // categorias removed: no mostrar_categoriasLista handler needed
+
+      function mostrar_bonificacionesTipos(lista) {
+        const sel = document.getElementById("bon-tipo");
+        if (!sel) return;
+        sel.innerHTML = '<option value="">Seleccionar bonificación</option>';
+        if (!Array.isArray(lista)) return;
+        lista.forEach((nombre) => {
+          const opt = document.createElement("option");
+          opt.value = nombre;
+          opt.textContent = nombre;
+          sel.appendChild(opt);
+        });
+      }
+
+      function mostrar_tarifasLista(lista) {
+        const container = document.getElementById("tarifasContent");
+        if (!container) return;
+        if (!Array.isArray(lista) || lista.length === 0) {
+          container.innerHTML = "<em>No hay tarifas para este puesto</em>";
+          return;
         }
+        // construir una tabla simple
+        let html =
+          '<table class="tarifas-table"><thead><tr><th>Categoría</th><th>Monto</th></tr></thead><tbody>';
+        lista.forEach((t) => {
+          const categoria = t.categoria || "";
+          const monto =
+            typeof t.monto === "number" ? t.monto.toFixed(2) : t.monto;
+          html += "<tr><td>" + categoria + "</td><td>" + monto + "</td></tr>";
+        });
+        html += "</tbody></table>";
+        container.innerHTML = html;
+      }
 
-        // Cargar tipos de bonificaciones desde el backend y poblar el select
-        function cargarBonificacionesTipos() {
-            submit('/bonificaciones/listarTipos', '');
+      function mostrar_infoMatricula(dto) {
+        const div = document.getElementById("propietarioContent");
+        if (!div) return;
+        if (!dto) {
+          div.innerHTML =
+            '<div class="propietario-info notfound">No se encontró vehículo con esa matrícula.</div>';
+          return;
         }
+        // build a small info table
+        let html = '<table class="propietario-table">';
+        html +=
+          "<tr><th>Propietario</th><td>" +
+          (dto.propietarioNombre || "") +
+          "</td></tr>";
+        html +=
+          "<tr><th>Categoría</th><td>" + (dto.categoria || "") + "</td></tr>";
+          html +=
+            "<tr><th>Bonificación</th><td>" +
+            (dto.bonificacion || "(ninguna)") +
+            "</td></tr>";
+          // costo y saldo (si vinieron del servidor) 
+          if (typeof dto.monto !== 'undefined' && dto.monto !== null) {
+              const monto = (typeof dto.monto === 'number') ? dto.monto.toFixed(2) : dto.monto;
+              html += '<tr><th>Costo del tránsito</th><td>$' + monto + '</td></tr>';
+          } else {
+              html += '<tr><th>Costo del tránsito</th><td><em>Seleccione un puesto para ver el costo</em></td></tr>';
+          }
+          if (typeof dto.saldoLuegoDelTransito !== 'undefined' && dto.saldoLuegoDelTransito !== null) {
+              const saldo = (typeof dto.saldoLuegoDelTransito === 'number') ? dto.saldoLuegoDelTransito.toFixed(2) : dto.saldoLuegoDelTransito;
+              html += '<tr><th>Saldo luego del tránsito</th><td>$' + saldo + '</td></tr>';
+          } else {
+              html += '<tr><th>Saldo luego del tránsito</th><td><em>No disponible</em></td></tr>';
+          }
+        html += "</table>";
+        div.innerHTML = html;
+      }
 
-        // Handlers llamados por vistaWeb.process cuando llega Respuesta con id correspondiente
-        function mostrar_puestosLista(lista) {
-            const selId = window._selectTargetForPuestos || 'peajeSelect';
-            const sel = document.getElementById(selId);
-            if (!sel) return;
-            sel.innerHTML = '<option value="">Seleccionar puesto</option>';
-            if (!Array.isArray(lista)) return;
-            lista.forEach(valor => {
-                const opt = document.createElement('option');
-                // el backend envía peajeString ("Nombre-Direccion"); usamos ese
-                // valor como value y lo mostramos tal cual para evitar ambigüedades.
-                opt.value = valor;
-                opt.textContent = valor;
-                sel.appendChild(opt);
-            });
-            // limpiar target
-            delete window._selectTargetForPuestos;
+      // ---- Validaciones para selects/inputs ----
+      function validarSelect(selectId, mensaje) {
+        const sel = document.getElementById(selectId);
+        if (!sel) return true; // si no existe, no validar
+        if (!sel.value || sel.value === "") {
+          try {
+            excepcionDeAplicacion(mensaje);
+          } catch (e) {
+            alert(mensaje);
+          }
+          sel.focus();
+          return false;
         }
+        return true;
+      }
 
-        // categorias removed: no mostrar_categoriasLista handler needed
-
-        function mostrar_bonificacionesTipos(lista) {
-            const sel = document.getElementById('bon-tipo');
-            if (!sel) return;
-            sel.innerHTML = '<option value="">Seleccionar bonificación</option>';
-            if (!Array.isArray(lista)) return;
-            lista.forEach(nombre => {
-                const opt = document.createElement('option');
-                opt.value = nombre;
-                opt.textContent = nombre;
-                sel.appendChild(opt);
-            });
+      function validarNotEmpty(inputId, mensaje) {
+        const inp = document.getElementById(inputId);
+        if (!inp) return true;
+        if (inp.value.trim() === "") {
+          try {
+            excepcionDeAplicacion(mensaje);
+          } catch (e) {
+            alert(mensaje);
+          }
+          inp.focus();
+          return false;
         }
+        return true;
+      }
 
-        function mostrar_tarifasLista(lista) {
-            const container = document.getElementById('tarifasContent');
-            if (!container) return;
-            if (!Array.isArray(lista) || lista.length === 0) {
-                container.innerHTML = '<em>No hay tarifas para este puesto</em>';
-                return;
-            }
-            // construir una tabla simple
-            let html = '<table class="tarifas-table"><thead><tr><th>Categoría</th><th>Monto</th></tr></thead><tbody>';
-            lista.forEach(t => {
-                const categoria = t.categoria || '';
-                const monto = (typeof t.monto === 'number') ? t.monto.toFixed(2) : t.monto;
-                html += '<tr><td>' + categoria + '</td><td>' + monto + '</td></tr>';
-            });
-            html += '</tbody></table>';
-            container.innerHTML = html;
-        }
+      // Conectar validaciones a los botones
+      const btnEmular = document.getElementById("btn-emular");
+      if (btnEmular) {
+        btnEmular.addEventListener("click", function (e) {
+          if (
+            !validarNotEmpty("matricula", "Ingrese la matrícula") ||
+            !validarSelect("peajeSelect", "Seleccione un puesto") ||
+            !validarNotEmpty("fechaHora", "Seleccione fecha y hora")
+          ) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        });
+      }
 
-        function mostrar_infoMatricula(dto) {
-            const div = document.getElementById('propietarioContent');
-            if (!div) return;
-            if (!dto) {
-                div.innerHTML = '<div class="propietario-info notfound">No se encontró vehículo con esa matrícula.</div>';
-                return;
-            }
-            // build a small info table
-            let html = '<table class="propietario-table">';
-            html += '<tr><th>Propietario</th><td>' + (dto.propietarioNombre || '') + '</td></tr>';
-            html += '<tr><th>Categoría</th><td>' + (dto.categoria || '') + '</td></tr>';
-            html += '<tr><th>Bonificación</th><td>' + (dto.bonificacion || '(ninguna)') + '</td></tr>';
-            html += '</table>';
-            div.innerHTML = html;
-        }
+      const btnAsignar = document.getElementById("btn-asignar");
+      if (btnAsignar) {
+        btnAsignar.addEventListener("click", function (e) {
+          if (
+            !validarNotEmpty(
+              "bon-propietario",
+              "Ingrese la cédula del propietario"
+            ) ||
+            !validarSelect("bon-puesto", "Seleccione un puesto") ||
+            !validarSelect("bon-tipo", "Seleccione un tipo de bonificación")
+          ) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        });
+      }
 
-        // ---- Validaciones para selects/inputs ----
-        function validarSelect(selectId, mensaje) {
-            const sel = document.getElementById(selectId);
-            if (!sel) return true; // si no existe, no validar
-            if (!sel.value || sel.value === '') {
-                try { excepcionDeAplicacion(mensaje); } catch (e) { alert(mensaje); }
-                sel.focus();
-                return false;
-            }
-            return true;
-        }
+      const btnCambiar = document.getElementById("btn-cambiar-estado");
+      if (btnCambiar) {
+        btnCambiar.addEventListener("click", function (e) {
+          if (
+            !validarNotEmpty(
+              "estado-propietario",
+              "Ingrese la cédula del propietario"
+            ) ||
+            !validarSelect("estado-select", "Seleccione un estado")
+          ) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        });
+      }
 
-        function validarNotEmpty(inputId, mensaje) {
-            const inp = document.getElementById(inputId);
-            if (!inp) return true;
-            if (inp.value.trim() === '') {
-                try { excepcionDeAplicacion(mensaje); } catch (e) { alert(mensaje); }
-                inp.focus();
-                return false;
-            }
-            return true;
-        }
-
-        // Conectar validaciones a los botones
-        const btnEmular = document.getElementById('btn-emular');
-        if (btnEmular) {
-            btnEmular.addEventListener('click', function (e) {
-                if (!validarNotEmpty('matricula', 'Ingrese la matrícula') ||
-                    !validarSelect('peajeSelect', 'Seleccione un puesto') ||
-                    !validarNotEmpty('fechaHora', 'Seleccione fecha y hora')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-        }
-
-        const btnAsignar = document.getElementById('btn-asignar');
-        if (btnAsignar) {
-            btnAsignar.addEventListener('click', function (e) {
-                if (!validarNotEmpty('bon-propietario', 'Ingrese la cédula del propietario') ||
-                    !validarSelect('bon-puesto', 'Seleccione un puesto') ||
-                    !validarSelect('bon-tipo', 'Seleccione un tipo de bonificación')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-        }
-
-        const btnCambiar = document.getElementById('btn-cambiar-estado');
-        if (btnCambiar) {
-            btnCambiar.addEventListener('click', function (e) {
-                if (!validarNotEmpty('estado-propietario', 'Ingrese la cédula del propietario') ||
-                    !validarSelect('estado-select', 'Seleccione un estado')) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-        }
-
-        // Función para mostrar datos del usuario
-        function mostrar_datosUsuario(datos) {
-            document.getElementById('nombreUsuario').textContent = datos.nombre + " " + datos.apellido;
-        }
+      // Función para mostrar datos del usuario
+      function mostrar_datosUsuario(datos) {
+        document.getElementById("nombreUsuario").textContent =
+          datos.nombre + " " + datos.apellido;
+      }
     </script>
-</body>
+  </body>
 </html>

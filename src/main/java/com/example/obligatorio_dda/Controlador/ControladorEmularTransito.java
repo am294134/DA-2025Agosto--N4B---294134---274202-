@@ -14,6 +14,7 @@ import java.util.ArrayList;
 
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.TransitoInfoDTO;
+import com.example.obligatorio_dda.Modelo.Bonificacion;
 import com.example.obligatorio_dda.Modelo.Tarifa;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
@@ -98,6 +99,41 @@ public class ControladorEmularTransito {
     if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
+        // Si se proporcionó un puesto intentamos calcular el costo y saldo luego del tránsito
+        if (puesto != null) {
+            try {
+                double montoBase = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
+                double montoAPagar;
+                // si existe una bonificación asignada para este puesto, aplicar su regla
+                Bonificacion bon = null;
+                if (prop != null) {
+                    for (Asignacion a : prop.getAsignaciones()) {
+                        if (a.getPuesto() != null && puesto != null && a.getPuesto().getPeajeString().equals(puesto.getPeajeString())) {
+                            bon = a.getBonificacion();
+                            break;
+                        }
+                    }
+                }
+                if (bon != null) {
+                    montoAPagar = bon.calcularDescuento(montoBase);
+                } else {
+                    montoAPagar = montoBase;
+                }
+                Double saldoLuego = null;
+                if (prop != null) {
+                    try {
+                        saldoLuego = prop.getSaldoActual() - montoAPagar;
+                    } catch (Exception ex) {
+                        saldoLuego = null;
+                    }
+                }
+                dto.setMonto(montoAPagar);
+                dto.setSaldoLuegoDelTransito(saldoLuego);
+            } catch (PeajeException ex) {
+                // no hay tarifa definida para la categoría en ese puesto; dejamos monto/saldo en null
+            }
+        }
+
         return Respuesta.lista(new Respuesta("infoMatricula", dto));
     }
 
