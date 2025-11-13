@@ -294,3 +294,37 @@
   color: #666;
   font-style: italic;
 }
+
+/* Propietario box (separate from tarifas) */
+.propietario-box {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #e6e9ef;
+}
+.propietario-box h4 {
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+.propietario-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.propietario-table th {
+  text-align: left;
+  padding: 6px 8px;
+  color: #555;
+  width: 40%;
+  vertical-align: top;
+}
+.propietario-table td {
+  padding: 6px 8px;
+  color: #222;
+}
+.propietario-info.notfound {
+  color: #b00;
+  font-style: italic;
+}

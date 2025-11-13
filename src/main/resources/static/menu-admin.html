@@ -54,8 +54,12 @@
                             <div id="tarifasBox" class="tarifas-box" aria-live="polite">
                                 <h4 id="tarifasHeading">Tarifas</h4>
                                 <div id="tarifasContent">Seleccione un puesto para ver las tarifas</div>
-                                <!-- Información de matrícula: propietario / categoría / bonificación -->
-                                <div id="matriculaInfo" style="margin-top:12px;"></div>
+                            </div>
+
+                            <!-- Nuevo bloque separado para información del propietario -->
+                            <div id="propietarioBox" class="propietario-box" aria-live="polite">
+                                <h4>Propietario</h4>
+                                <div id="propietarioContent">Ingrese una matrícula para ver los datos del propietario</div>
                             </div>
                         </aside>
                     </div>
@@ -207,7 +211,7 @@
                 timer = setTimeout(function () {
                     const matricula = input.value.trim();
                     const puesto = document.getElementById('peajeSelect') ? document.getElementById('peajeSelect').value : null;
-                    const infoDiv = document.getElementById('matriculaInfo');
+                    const infoDiv = document.getElementById('propietarioContent');
                     if (!matricula) {
                         if (infoDiv) infoDiv.innerHTML = '';
                         return;
@@ -284,18 +288,18 @@
         }
 
         function mostrar_infoMatricula(dto) {
-            const div = document.getElementById('matriculaInfo');
+            const div = document.getElementById('propietarioContent');
             if (!div) return;
             if (!dto) {
-                div.innerHTML = '';
+                div.innerHTML = '<div class="propietario-info notfound">No se encontró vehículo con esa matrícula.</div>';
                 return;
             }
-            // build a small info block
-            let html = '<div class="matricula-info">';
-            html += '<div><strong>Propietario:</strong> ' + (dto.propietarioNombre || '') + '</div>';
-            html += '<div><strong>Categoría:</strong> ' + (dto.categoria || '') + '</div>';
-            html += '<div><strong>Bonificación:</strong> ' + (dto.bonificacion || '(ninguna)') + '</div>';
-            html += '</div>';
+            // build a small info table
+            let html = '<table class="propietario-table">';
+            html += '<tr><th>Propietario</th><td>' + (dto.propietarioNombre || '') + '</td></tr>';
+            html += '<tr><th>Categoría</th><td>' + (dto.categoria || '') + '</td></tr>';
+            html += '<tr><th>Bonificación</th><td>' + (dto.bonificacion || '(ninguna)') + '</td></tr>';
+            html += '</table>';
             div.innerHTML = html;
         }
 
