@@ -41,10 +41,8 @@
                                     <!-- carga dinamica -->
                                 </select>
 
-                                <label for="categoriaSelect">Categoría</label>
-                                <select id="categoriaSelect">
-                                    <!-- carga dinamica -->
-                                </select>
+                                <label for="fechaHora">Fecha y hora</label>
+                                <input id="fechaHora" type="datetime-local">
 
                                 <div class="action-row">
                                     <button class="action-btn" id="btn-emular">Emular</button>
@@ -56,6 +54,8 @@
                             <div id="tarifasBox" class="tarifas-box" aria-live="polite">
                                 <h4 id="tarifasHeading">Tarifas</h4>
                                 <div id="tarifasContent">Seleccione un puesto para ver las tarifas</div>
+                                <!-- Información de matrícula: propietario / categoría / bonificación -->
+                                <div id="matriculaInfo" style="margin-top:12px;"></div>
                             </div>
                         </aside>
                     </div>
@@ -128,7 +128,7 @@
     cargarPuestos();
     // Poblar también el select de puestos usado en asignar bonificaciones
     cargarPuestosEn('bon-puesto');
-    cargarCategorias();
+    // NOTE: se removió la carga de categorías; ahora usamos fecha y hora en el formulario
     cargarBonificacionesTipos();
         initTabs();
         });
@@ -162,8 +162,7 @@
                 if (tabId === 'tab-emular') {
                     const sel = document.getElementById('peajeSelect');
                     if (sel && sel.options.length === 0) cargarPuestos();
-                    const selCat = document.getElementById('categoriaSelect');
-                    if (selCat && selCat.options.length === 0) cargarCategorias();
+                    // no hay select de categorías: usamos fecha y hora
                     document.getElementById('matricula').focus();
                 }
 
@@ -198,15 +197,33 @@
             }
         });
 
+        // Cuando el usuario ingresa una matrícula pedir la info del propietario y el costo
+        (function(){
+            let timer = null;
+            const input = document.getElementById('matricula');
+            if (!input) return;
+            input.addEventListener('input', function () {
+                clearTimeout(timer);
+                timer = setTimeout(function () {
+                    const matricula = input.value.trim();
+                    const puesto = document.getElementById('peajeSelect') ? document.getElementById('peajeSelect').value : null;
+                    const infoDiv = document.getElementById('matriculaInfo');
+                    if (!matricula) {
+                        if (infoDiv) infoDiv.innerHTML = '';
+                        return;
+                    }
+                    // solicitar info al servidor; incluir puestoId solo si fue seleccionado
+                    let data = 'matricula=' + encodeURIComponent(matricula);
+                    if (puesto) data = 'puestoId=' + encodeURIComponent(puesto) + '&' + data;
+                    submit('/emularTransito/infoMatricula', data);
+                }, 500);
+            });
+        })();
+
         // Cargar puestos en un select cualquiera por id (reutilizable)
         function cargarPuestosEn(selectId) {
             window._selectTargetForPuestos = selectId;
             submit('/puestos/listar', '');
-        }
-
-        // Cargar categorías desde el backend y poblar el select
-        function cargarCategorias() {
-            submit('/categorias/listar', '');
         }
 
         // Cargar tipos de bonificaciones desde el backend y poblar el select
@@ -233,18 +250,7 @@
             delete window._selectTargetForPuestos;
         }
 
-        function mostrar_categoriasLista(lista) {
-            const sel = document.getElementById('categoriaSelect');
-            if (!sel) return;
-            sel.innerHTML = '<option value="">Seleccionar categoría</option>';
-            if (!Array.isArray(lista)) return;
-            lista.forEach(nombre => {
-                const opt = document.createElement('option');
-                opt.value = nombre;
-                opt.textContent = nombre;
-                sel.appendChild(opt);
-            });
-        }
+        // categorias removed: no mostrar_categoriasLista handler needed
 
         function mostrar_bonificacionesTipos(lista) {
             const sel = document.getElementById('bon-tipo');
@@ -277,6 +283,22 @@
             container.innerHTML = html;
         }
 
+        function mostrar_infoMatricula(dto) {
+            const div = document.getElementById('matriculaInfo');
+            if (!div) return;
+            if (!dto) {
+                div.innerHTML = '';
+                return;
+            }
+            // build a small info block
+            let html = '<div class="matricula-info">';
+            html += '<div><strong>Propietario:</strong> ' + (dto.propietarioNombre || '') + '</div>';
+            html += '<div><strong>Categoría:</strong> ' + (dto.categoria || '') + '</div>';
+            html += '<div><strong>Bonificación:</strong> ' + (dto.bonificacion || '(ninguna)') + '</div>';
+            html += '</div>';
+            div.innerHTML = html;
+        }
+
         // ---- Validaciones para selects/inputs ----
         function validarSelect(selectId, mensaje) {
             const sel = document.getElementById(selectId);
@@ -306,7 +328,7 @@
             btnEmular.addEventListener('click', function (e) {
                 if (!validarNotEmpty('matricula', 'Ingrese la matrícula') ||
                     !validarSelect('peajeSelect', 'Seleccione un puesto') ||
-                    !validarSelect('categoriaSelect', 'Seleccione una categoría')) {
+                    !validarNotEmpty('fechaHora', 'Seleccione fecha y hora')) {
                     e.preventDefault();
                     e.stopPropagation();
                 }

@@ -13,11 +13,15 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
+import com.example.obligatorio_dda.Controlador.DTOs.TransitoInfoDTO;
 import com.example.obligatorio_dda.Modelo.Tarifa;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Administrador;
 import com.example.obligatorio_dda.Modelo.Fachada;
+import com.example.obligatorio_dda.Modelo.Vehiculo;
+import com.example.obligatorio_dda.Modelo.Propietario;
+import com.example.obligatorio_dda.Modelo.Asignacion;
 
 @RestController
 @RequestMapping("/emularTransito")
@@ -42,6 +46,59 @@ public class ControladorEmularTransito {
 
         // Fachada.agregarTransito(puestoId, matricula, fechaHora); me da error porque
         // espera otros parametros
+    }
+
+    @PostMapping("/infoMatricula")
+    public List<Respuesta> infoMatricula(HttpSession sesion,
+            @RequestParam(name = "puestoId", required = false) String puestoId,
+            @RequestParam("matricula") String matricula) throws PeajeException {
+
+        // buscar vehículo en la fachada (comparación tolerante: quitar no-alfa-numéricos y comparar uppercase)
+        Vehiculo vehiculo = null;
+        String buscada = matricula == null ? "" : matricula.replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
+        for (Vehiculo v : Fachada.getInstancia().getVehiculos()) {
+            if (v == null || v.getMatricula() == null) continue;
+            String actual = v.getMatricula().replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
+            if (actual.equals(buscada)) {
+                vehiculo = v;
+                break;
+            }
+        }
+
+        if (vehiculo == null) {
+            // sin info
+            return Respuesta.lista(new Respuesta("infoMatricula", null));
+        }
+
+        Propietario prop = vehiculo.getPropietario();
+        String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
+        String categoria = (vehiculo.getCategoria() != null) ? vehiculo.getCategoria().getNombre() : "";
+
+        // Buscar si el propietario tiene alguna asignación (bonificación) para el puesto (si se proporcionó)
+        Puesto puesto = null;
+        if (puestoId != null && !"".equals(puestoId)) {
+            try {
+                puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
+            } catch (PeajeException ex) {
+                // si no se encuentra el puesto, no bloquearnos: dejamos puesto = null
+                puesto = null;
+            }
+        }
+        String bonificacionNombre = null;
+        if (prop != null) {
+            for (Asignacion a : prop.getAsignaciones()) {
+                if (puesto != null && a.getPuesto() != null && a.getPuesto().getPeajeString().equals(puesto.getPeajeString())) {
+                    if (a.getBonificacion() != null) {
+                        bonificacionNombre = a.getBonificacion().getNombre();
+                        break;
+                    }
+                }
+            }
+        }
+    if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
+
+        TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
+        return Respuesta.lista(new Respuesta("infoMatricula", dto));
     }
 
     @PostMapping("/tarifasPorPuesto")
