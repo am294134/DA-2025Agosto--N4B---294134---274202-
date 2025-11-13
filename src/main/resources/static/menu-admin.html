@@ -210,16 +210,27 @@
       document.addEventListener("change", function (e) {
         if (e.target && e.target.id === "peajeSelect") {
           const puesto = e.target.value;
-          // si no hay selección limpia el recuadro
+          // si no hay selección limpia el recuadro y actualiza la info del propietario
           if (!puesto) {
             mostrar_tarifasLista([]);
+            // si ya hay una matrícula en el formulario solicitar la info sin puesto
+            const input = document.getElementById('matricula');
+            if (input && input.value && input.value.trim() !== '') {
+              const matricula = input.value.trim();
+              // pedir info sin puestoId para que el servidor no devuelva el monto
+              submit('/emularTransito/infoMatricula', 'matricula=' + encodeURIComponent(matricula));
+            }
             return;
           }
           // petición al backend pasando puestoId en body urlencoded
-          submit(
-            "/emularTransito/tarifasPorPuesto",
-            "puestoId=" + encodeURIComponent(puesto)
-          );
+          submit('/emularTransito/tarifasPorPuesto', 'puestoId=' + encodeURIComponent(puesto));
+          // Si ya hay una matrícula ingresada, pedir también la info del propietario
+          const input = document.getElementById('matricula');
+          if (input && input.value && input.value.trim() !== '') {
+            const matricula = input.value.trim();
+            // solicitar info con el puesto seleccionado para recalcular costo
+            submit('/emularTransito/infoMatricula', 'puestoId=' + encodeURIComponent(puesto) + '&matricula=' + encodeURIComponent(matricula));
+          }
         }
       });
 

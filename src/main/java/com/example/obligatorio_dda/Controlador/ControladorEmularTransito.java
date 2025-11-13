@@ -81,7 +81,6 @@ public class ControladorEmularTransito {
             try {
                 puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
             } catch (PeajeException ex) {
-                // si no se encuentra el puesto, no bloquearnos: dejamos puesto = null
                 puesto = null;
             }
         }
