@@ -154,12 +154,68 @@ public class Datos {
         fachada.agregarVehiculo("LIN7890", "Rojo", "Irizar i6", "Omnibus", "55555555");
         // #endregion
 
-        // agregar Bonificaciones de prueba
+        // agregar Bonificaciones de prueba (registrarlas antes de crear asignaciones)
         fachada.agrgarBonificacion(new Exonerada("Exonerada"));
         fachada.agrgarBonificacion(new Trabajador("Trabajador"));
         fachada.agrgarBonificacion(new Frecuente("Frecuente"));
-        // #region Notificaciones de prueba
 
+        // #region Asignaciones de bonificaciones de prueba a algunos propietarios
+        // Buscamos bonificaciones creadas (usamos instanceof para evitar problemas de
+        // nombre)
+        Bonificacion bonExonerada = null;
+        Bonificacion bonTrabajador = null;
+        Bonificacion bonFrecuente = null;
+        for (Bonificacion b : fachada.getBonificaciones()) {
+            if (b instanceof Exonerada)
+                bonExonerada = b;
+            if (b instanceof Trabajador)
+                bonTrabajador = b;
+            if (b instanceof Frecuente)
+                bonFrecuente = b;
+        }
+
+        // Buscamos propietarios por cédula
+        Propietario prop111 = null;
+        Propietario prop222 = null;
+        Propietario prop333 = null;
+        for (Propietario p : fachada.getPropietarios()) {
+            if (p.getCedula().equals("11111111"))
+                prop111 = p;
+            if (p.getCedula().equals("22222222"))
+                prop222 = p;
+            if (p.getCedula().equals("33333333"))
+                prop333 = p;
+        }
+
+        // Asignamos Frecuente a 11111111 en Peaje de Pando Interbalnearia
+        if (prop111 != null && bonFrecuente != null) {
+            Puesto pando = fachada.buscarPuestoPorNombre("Peaje de Pando Interbalnearia");
+            Asignacion a1 = new Asignacion(new java.sql.Date(System.currentTimeMillis()), bonFrecuente, prop111,
+                    pando);
+            prop111.getAsignaciones().add(a1);
+            pando.getAsignaciones().add(a1);
+        }
+
+        // Asignamos Trabajador a 22222222 en Peaje Solís
+        if (prop222 != null && bonTrabajador != null) {
+            Puesto solis = fachada.buscarPuestoPorNombre("Peaje Solís");
+            Asignacion a2 = new Asignacion(new java.sql.Date(System.currentTimeMillis()), bonTrabajador, prop222,
+                    solis);
+            prop222.getAsignaciones().add(a2);
+            solis.getAsignaciones().add(a2);
+        }
+
+        // Asignamos Exonerada a 33333333 en Peaje Garzón
+        if (prop333 != null && bonExonerada != null) {
+            Puesto garzon = fachada.buscarPuestoPorNombre("Peaje Garzón");
+            Asignacion a3 = new Asignacion(new java.sql.Date(System.currentTimeMillis()), bonExonerada, prop333,
+                    garzon);
+            prop333.getAsignaciones().add(a3);
+            garzon.getAsignaciones().add(a3);
+        }
+        // #endregion
+
+        // #region Notificaciones de prueba
         // pruebita para ver las notifiaciones, dps vemos quién asigna las
         // notificaciones
         for (Propietario prop : fachada.getPropietarios()) {
