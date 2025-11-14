@@ -55,6 +55,9 @@ public class Propietario extends Usuario {
     public  void agregarTransito(Transito transito) {
         transitos.add(transito);
     }   
+    public java.util.List<Transito> getTransitos() {
+        return transitos;
+    }
     
 
 

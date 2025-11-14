@@ -24,6 +24,28 @@
             </div>
         </div>
     </div>
+    <!-- Sección de tránsitos del propietario -->
+    <div class="transitos-section">
+        <h2>Mis tránsitos</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Puesto</th>
+                        <th>Matrícula</th>
+                        <th>Monto Tarifa</th>
+                        <th>Bonificación</th>
+                        <th>Descuento</th>
+                        <th>Monto Pagado</th>
+                        <th>Fecha y Hora</th>
+                    </tr>
+                </thead>
+                <tbody id="transitosTableBody">
+                    <!-- Filas de tránsitos se insertarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 
     <div class="vehiculos-section">
         <h2>Mis vehículos</h2>
@@ -284,6 +306,9 @@
                 // Cargar bonificaciones asignadas
                 cargarBonificaciones();
 
+            // Cargar tránsitos del propietario
+            cargarTransitos();
+
             // Configurar el refresco periódico de notificaciones (cada 30 segundos)
             setInterval(cargarNotificaciones, 30000);
         });
@@ -298,6 +323,11 @@
         // Función para cargar las bonificaciones asignadas al propietario
         function cargarBonificaciones() {
             submit('/bonificaciones/porPropietario', '');
+        }
+
+        // Función para cargar los tránsitos del propietario
+        function cargarTransitos() {
+            submit('/transitos/misTransitos', '');
         }
 
         // Handlers para respuestas de submit
@@ -363,6 +393,60 @@
                 tr.innerHTML = `
                     <td>${nombre}</td>
                     <td>${puesto}</td>
+                    <td>${fecha}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Mostrar tránsitos en la tabla del propietario
+        function mostrar_misTransitos(payload) {
+            // payload puede venir como array (compatibilidad) o como Respuesta.parametro
+            let lista = [];
+            if (Array.isArray(payload)) {
+                lista = payload;
+            } else if (payload && typeof payload === 'object') {
+                // en muchos endpoints devolvemos un objeto con items o directamente la lista
+                if (payload.items && Array.isArray(payload.items)) {
+                    lista = payload.items;
+                } else if (Array.isArray(payload)) {
+                    lista = payload;
+                } else {
+                    // si es un DTO directo
+                    try {
+                        lista = payload;
+                    } catch (e) { lista = []; }
+                }
+            }
+
+            const tbody = document.getElementById('transitosTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (!Array.isArray(lista) || lista.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="8">No hay tránsitos registrados</td>`;
+                tbody.appendChild(tr);
+                return;
+            }
+
+            lista.forEach(t => {
+                const tr = document.createElement('tr');
+                const puesto = t.puesto || '';
+                const matricula = t.matricula || '';
+                const montoBase = (typeof t.montoBase !== 'undefined' && t.montoBase !== null) ? Number(t.montoBase).toFixed(2) : '';
+                const bon = t.bonificacion || '';
+                const descuento = (typeof t.descuento !== 'undefined' && t.descuento !== null) ? ('-' + Number(t.descuento).toFixed(2)) : '';
+                const pagado = (typeof t.montoPagado !== 'undefined' && t.montoPagado !== null) ? Number(t.montoPagado).toFixed(2) : '';
+                const fecha = t.fechaHora || '';
+
+                tr.innerHTML = `
+                    <td>${puesto}</td>
+                    <td>${matricula}</td>
+                    <td>$${montoBase}</td>
+                    <td>${bon}</td>
+                    <td>${descuento}</td>
+                    <td>$${pagado}</td>
                     <td>${fecha}</td>
                 `;
                 tbody.appendChild(tr);
