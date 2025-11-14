@@ -53,6 +53,12 @@ public class ControladorNotificaciones {
         result.put("pageSize", ps == Integer.MAX_VALUE ? totalItems : ps);
         result.put("totalPages", totalPages);
         result.put("totalItems", totalItems);
+        // contar no leídas
+        int totalUnread = 0;
+        for (Notificacion n : todas) {
+            if (!n.isLeida()) totalUnread++;
+        }
+        result.put("totalUnread", totalUnread);
 
         return Respuesta.lista(new Respuesta("notificaciones", result));
     }

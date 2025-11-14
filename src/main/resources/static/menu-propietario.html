@@ -76,10 +76,13 @@
         // Función para actualizar el contador de notificaciones
         function actualizarContadorNotificaciones() {
             const count = document.getElementById('notificationCount');
-            // Contador muestra solo las no leídas
-            const unread = notifications.filter(n => !n.leida).length;
-            count.textContent = unread;
-            count.style.display = unread > 0 ? 'block' : 'none';
+            // Mostrar el número de notificaciones NO LEÍDAS si está disponible, sino el total
+            const unread = (typeof window._notifTotalUnread !== 'undefined' && window._notifTotalUnread !== null)
+                ? window._notifTotalUnread
+                : (notifications ? notifications.filter(n => !n.leida).length : 0);
+            const total = unread;
+            count.textContent = total;
+            count.style.display = total > 0 ? 'block' : 'none';
         }
 
         // Función para marcar todas las notificaciones como leídas
@@ -115,12 +118,21 @@
             markReadBtn.textContent = 'Marcar como leídas';
             markReadBtn.onclick = marcarComoLeidas;
 
+            // selector de pageSize
             header.appendChild(title);
-            // Mostrar el botón solo si hay notificaciones no leídas
-            const anyUnread = notifications.some(n => !n.leida);
+            // agregar botón de marcar como leídas a la derecha
+            const headerTools = document.createElement('div');
+            headerTools.style.display = 'flex';
+            headerTools.style.gap = '8px';
+            headerTools.style.alignItems = 'center';
+            // Prefer server-provided totalUnread when deciding whether to show the button
+            const anyUnread = (typeof window._notifTotalUnread !== 'undefined' && window._notifTotalUnread !== null)
+                ? window._notifTotalUnread > 0
+                : notifications.some(n => !n.leida);
             if (anyUnread) {
-                header.appendChild(markReadBtn);
+                headerTools.appendChild(markReadBtn);
             }
+            header.appendChild(headerTools);
             dropdown.appendChild(header);
 
             if (!Array.isArray(notifications) || notifications.length === 0) {
@@ -147,29 +159,61 @@
                 });
             }
 
-            // agregar controles de paginación si corresponde
+            // agregar controles de paginación si corresponde (diseño más agradable)
             const totalPages = window._notifTotalPages || 1;
-            const currentPage = window._notifPage || 1;
+            let currentPage = window._notifPage || 1;
             if (totalPages > 1) {
                 const pager = document.createElement('div');
                 pager.className = 'notification-pager';
+                pager.style.display = 'flex';
+                pager.style.gap = '6px';
+                pager.style.alignItems = 'center';
+                pager.style.justifyContent = 'center';
+
+                const first = document.createElement('button');
+                first.textContent = '«';
+                first.title = 'Primera página';
+                first.disabled = currentPage <= 1;
+                first.onclick = () => { cargarNotificaciones(1, window._notifPageSize || 5); };
 
                 const prev = document.createElement('button');
-                prev.textContent = 'Anterior';
+                prev.textContent = '‹';
+                prev.title = 'Anterior';
                 prev.disabled = currentPage <= 1;
-                prev.onclick = () => { if (currentPage > 1) cargarNotificaciones(currentPage - 1); };
+                prev.onclick = () => { if (currentPage > 1) cargarNotificaciones(currentPage - 1, window._notifPageSize || 5); };
 
-                const info = document.createElement('span');
-                info.textContent = ' Página ' + currentPage + ' de ' + totalPages + ' ';
+                pager.appendChild(first);
+                pager.appendChild(prev);
+
+                // mostrar un conjunto de páginas centrado en la actual (máx 7 elementos)
+                const maxButtons = 7;
+                let start = Math.max(1, currentPage - Math.floor(maxButtons/2));
+                let end = Math.min(totalPages, start + maxButtons - 1);
+                start = Math.max(1, end - maxButtons + 1);
+
+                for (let i = start; i <= end; i++) {
+                    const pbtn = document.createElement('button');
+                    pbtn.textContent = String(i);
+                    pbtn.className = (i === currentPage) ? 'page-btn active' : 'page-btn';
+                    pbtn.disabled = (i === currentPage);
+                    pbtn.onclick = (function(page){ return function(){ cargarNotificaciones(page, window._notifPageSize || 5); }; })(i);
+                    pager.appendChild(pbtn);
+                }
 
                 const next = document.createElement('button');
-                next.textContent = 'Siguiente';
+                next.textContent = '›';
+                next.title = 'Siguiente';
                 next.disabled = currentPage >= totalPages;
-                next.onclick = () => { if (currentPage < totalPages) cargarNotificaciones(currentPage + 1); };
+                next.onclick = () => { if (currentPage < totalPages) cargarNotificaciones(currentPage + 1, window._notifPageSize || 5); };
 
-                pager.appendChild(prev);
-                pager.appendChild(info);
+                const last = document.createElement('button');
+                last.textContent = '»';
+                last.title = 'Última página';
+                last.disabled = currentPage >= totalPages;
+                last.onclick = () => { cargarNotificaciones(totalPages, window._notifPageSize || 5); };
+
                 pager.appendChild(next);
+                pager.appendChild(last);
                 dropdown.appendChild(pager);
             }
         }
@@ -189,6 +233,16 @@
                 dropdown.classList.remove('show');
             }
         });
+
+        // Evitar que un click dentro del contenedor cierre el dropdown (mantener abierto)
+        (function(){
+            const dropdown = document.getElementById('notificationDropdown');
+            if (dropdown) {
+                dropdown.addEventListener('click', function(e){
+                    e.stopPropagation();
+                });
+            }
+        })();
 
         // Función para cargar los vehículos (acepta ya sea un array o un objeto { nombreCompleto, vehiculos })
         function cargarVehiculos() {
@@ -253,14 +307,23 @@
                 notifications = payload;
                 window._notifPage = 1;
                 window._notifTotalPages = 1;
+                window._notifPageSize = notifications.length;
+                window._notifTotalItems = notifications.length;
             } else if (payload && typeof payload === 'object' && payload.items) {
                 notifications = Array.isArray(payload.items) ? payload.items : [];
                 window._notifPage = payload.page || 1;
                 window._notifTotalPages = payload.totalPages || 1;
+                window._notifPageSize = payload.pageSize || (notifications.length || 5);
+                window._notifTotalItems = payload.totalItems || (notifications.length || 0);
+                // Store totalUnread when provided by backend
+                window._notifTotalUnread = (typeof payload.totalUnread !== 'undefined') ? payload.totalUnread : null;
             } else {
                 notifications = [];
                 window._notifPage = 1;
                 window._notifTotalPages = 1;
+                window._notifPageSize = 5;
+                window._notifTotalItems = 0;
+                window._notifTotalUnread = 0;
             }
             actualizarContadorNotificaciones();
             actualizarDropdownNotificaciones();
@@ -306,5 +369,20 @@
             });
         }
     </script>
+    <style>
+    /* Small styles to make notification pager look nicer */
+    .notification-pager { padding:8px 10px; background: #fff; }
+    .notification-pager button { padding:6px 8px; border-radius:4px; border:1px solid #ddd; background:#f7f7f7; cursor:pointer; }
+    .notification-pager button:disabled { opacity:0.5; cursor:default; }
+    .notification-pager .page-btn.active { background:#1a73e8; color:#fff; border-color:#1666c1; }
+    .notification-header { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-bottom:1px solid #eee; }
+    .notification-header h4 { margin:0; font-size:1rem; }
+    .notification-header select { padding:6px; border-radius:4px; }
+    .notification-item { padding:8px 10px; border-bottom:1px solid #f2f2f2; }
+    .notification-item.unread { background:#f0f8ff; }
+    .notification-time { font-size:0.8rem; color:#666; margin-top:4px; }
+    .notification-dropdown { min-width:300px; max-width:420px; max-height:420px; overflow:auto; }
+    .notification-pager { margin:8px; }
+    </style>
 </body>
 </html>

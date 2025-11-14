@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.obligatorio_dda.Modelo.Puesto;
+import com.example.obligatorio_dda.Modelo.Notificacion;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 
 import jakarta.servlet.http.HttpSession;
@@ -169,6 +170,24 @@ public class ControladorBonificaciones {
             bon.getAsignaciones().add(a);
             if (puesto != null) {
                 puesto.getAsignaciones().add(a);
+            }
+            // Crear notificación para el propietario informando la nueva bonificación
+            try {
+                int numeroPuesto = -1;
+                java.util.List<Puesto> puestos = Fachada.getInstancia().getPuestos();
+                for (int i = 0; i < puestos.size(); i++) {
+                    if (puestos.get(i) == puesto) {
+                        numeroPuesto = i + 1;
+                        break;
+                    }
+                }
+                String nroTexto = (numeroPuesto > 0) ? String.valueOf(numeroPuesto) : "";
+                String nombrePuesto = (puesto != null && puesto.getNombre() != null) ? puesto.getNombre() : "";
+                String mensaje = "Se te asignó la bonificación \"" + (bon != null ? bon.getNombre() : "") + "\" en el puesto \"" + nombrePuesto + "\"" + (nroTexto.isEmpty() ? "" : (" #" + nroTexto));
+                Notificacion not = new Notificacion(mensaje, prop);
+                prop.getNotificaciones().add(not);
+            } catch (Exception ex) {
+                // no bloquear la asignación por fallo en la notificación
             }
         
             return Respuesta.lista(new Respuesta("asignacionResultado", "Bonificación asignada correctamente"));
