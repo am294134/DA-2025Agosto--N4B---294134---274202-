@@ -24,6 +24,51 @@
             </div>
         </div>
     </div>
+    <div class="top-row">
+        <div class="left-col">
+            <div class="vehiculos-section">
+                <h2>Mis vehículos</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Matrícula</th>
+                                <th>Modelo</th>
+                                <th>Color</th>
+                                <th>Categoría</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vehiculosTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="right-col">
+            <!-- Sección de bonificaciones asignadas -->
+            <div class="bonificaciones-section">
+                <h2>Mis bonificaciones asignadas</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre Bonificación</th>
+                                <th>Puesto</th>
+                                <th>Fecha Asignada</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bonificacionesTableBody">
+                            <!-- Filas de bonificaciones se insertarán aquí -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/utilesVista.js"></script>
+    <script src="/vistaWeb.js"></script>
+
     <!-- Sección de tránsitos del propietario -->
     <div class="transitos-section">
         <h2>Mis tránsitos</h2>
@@ -42,46 +87,6 @@
                 </thead>
                 <tbody id="transitosTableBody">
                     <!-- Filas de tránsitos se insertarán aquí -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div class="vehiculos-section">
-        <h2>Mis vehículos</h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Matrícula</th>
-                        <th>Modelo</th>
-                        <th>Color</th>
-                        <th>Categoría</th>
-                    </tr>
-                </thead>
-                <tbody id="vehiculosTableBody">
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <script src="/utilesVista.js"></script>
-    <script src="/vistaWeb.js"></script>
-    
-    <!-- Sección de bonificaciones asignadas -->
-    <div class="bonificaciones-section">
-        <h2>Mis bonificaciones asignadas</h2>
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nombre Bonificación</th>
-                        <th>Puesto</th>
-                        <th>Fecha Asignada</th>
-                    </tr>
-                </thead>
-                <tbody id="bonificacionesTableBody">
-                    <!-- Filas de bonificaciones se insertarán aquí -->
                 </tbody>
             </table>
         </div>
@@ -435,8 +440,10 @@
                 const puesto = t.puesto || '';
                 const matricula = t.matricula || '';
                 const montoBase = (typeof t.montoBase !== 'undefined' && t.montoBase !== null) ? Number(t.montoBase).toFixed(2) : '';
-                const bon = t.bonificacion || '';
-                const descuento = (typeof t.descuento !== 'undefined' && t.descuento !== null) ? ('-' + Number(t.descuento).toFixed(2)) : '';
+                const bon = (t.bonificacion && String(t.bonificacion).trim().length > 0) ? t.bonificacion : 'Ninguna';
+                const descuento = (typeof t.descuento !== 'undefined' && t.descuento !== null && Number(t.descuento) !== 0)
+                    ? ('-' + Number(t.descuento).toFixed(2))
+                    : 'Sin descuento';
                 const pagado = (typeof t.montoPagado !== 'undefined' && t.montoPagado !== null) ? Number(t.montoPagado).toFixed(2) : '';
                 const fecha = t.fechaHora || '';
 
@@ -467,6 +474,13 @@
     .notification-time { font-size:0.8rem; color:#666; margin-top:4px; }
     .notification-dropdown { min-width:300px; max-width:420px; max-height:420px; overflow:auto; }
     .notification-pager { margin:8px; }
+    /* Layout for propietario menu */
+    .top-row { display:flex; gap:20px; align-items:flex-start; margin:16px 0; }
+    .left-col { flex:1; }
+    .right-col { width:420px; }
+    .table-container { overflow:auto; max-width:100%; }
+    .vehiculos-section, .bonificaciones-section, .transitos-section { background:#fff; padding:8px; border:1px solid #eee; border-radius:6px; }
+    .vehiculos-section h2, .bonificaciones-section h2, .transitos-section h2 { margin-top:0; }
     </style>
 </body>
 </html>

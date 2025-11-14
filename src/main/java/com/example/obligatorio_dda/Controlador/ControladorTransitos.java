@@ -33,19 +33,10 @@ public class ControladorTransitos {
             String puesto = t.getPuesto() != null ? t.getPuesto().getNombre() : "";
             String matricula = t.getVehiculo() != null ? t.getVehiculo().getMatricula() : "";
             double montoBase = t.getTarifa() != null ? t.getTarifa().getMonto() : 0.0;
-            Bonificacion bon = null;
-            // intentar inferir bonificación utilizada (si existe una asignación para el puesto en el propietario)
-            if (propietario.getAsignaciones() != null) {
-                for (Asignacion a : propietario.getAsignaciones()) {
-                    if (a != null && a.getPuesto() != null && t.getPuesto() != null && a.getPuesto().getPeajeString().equals(t.getPuesto().getPeajeString())) {
-                        bon = a.getBonificacion();
-                        break;
-                    }
-                }
-            }
-            double montoPagado = (bon != null) ? bon.calcularDescuento(montoBase) : montoBase;
-            double descuento = montoBase - montoPagado;
-            String bonNombre = bon != null ? bon.getNombre() : "";
+            // Usar la información aplicada en el momento del tránsito (no inferir de asignaciones actuales)
+            String bonNombre = t.getBonificacionNombre() != null ? t.getBonificacionNombre() : "";
+            double montoPagado = t.getMontoPagado();
+            double descuento = t.getDescuentoAplicado();
             String fecha = t.getFechaHora() != null ? t.getFechaHora().format(fmt) : "";
 
             lista.add(new TransitoPropietarioDTO(puesto, matricula, montoBase, bonNombre, descuento, montoPagado, fecha));

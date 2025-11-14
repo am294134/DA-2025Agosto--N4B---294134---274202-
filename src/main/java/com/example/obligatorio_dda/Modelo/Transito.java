@@ -8,6 +8,10 @@ public class Transito {
     private Vehiculo vehiculo;
     private Propietario propietario;
     private LocalDateTime fechaHora;
+    // campos para registrar lo que se aplicó al momento del tránsito
+    private String bonificacionNombre;
+    private double montoPagado;
+    private double descuentoAplicado;
 
     public Transito(Puesto puesto, Vehiculo vehiculo, Propietario propietario, Tarifa tarifa) {
         this.puesto = puesto;
@@ -59,5 +63,29 @@ public class Transito {
 
     public LocalDateTime getFechaHora() {
         return fechaHora;
+    }
+
+    public String getBonificacionNombre() {
+        return bonificacionNombre;
+    }
+
+    public void setBonificacionNombre(String bonificacionNombre) {
+        this.bonificacionNombre = bonificacionNombre;
+    }
+
+    public double getMontoPagado() {
+        return montoPagado;
+    }
+
+    public void setMontoPagado(double montoPagado) {
+        this.montoPagado = montoPagado;
+    }
+
+    public double getDescuentoAplicado() {
+        return descuentoAplicado;
+    }
+
+    public void setDescuentoAplicado(double descuentoAplicado) {
+        this.descuentoAplicado = descuentoAplicado;
     }
 }

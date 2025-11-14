@@ -166,6 +166,18 @@ public class SistemaPeaje {
         Transito transito = (fecha != null)
                 ? new Transito(puesto, vehiculo, propietario, tarifa, fecha)
                 : new Transito(puesto, vehiculo, propietario, tarifa);
+        // registrar los valores efectivos aplicados al tránsito (no deben cambiar si luego se asigna una bonificación)
+        if (bon != null) {
+            double montoPagado = montoAPagar;
+            double descuento = montoBase - montoPagado;
+            transito.setBonificacionNombre(bon.getNombre());
+            transito.setMontoPagado(montoPagado);
+            transito.setDescuentoAplicado(descuento);
+        } else {
+            transito.setBonificacionNombre(null);
+            transito.setMontoPagado(montoAPagar);
+            transito.setDescuentoAplicado(0.0);
+        }
 
         // registrar en colecciones
         this.transitos.add(transito);
