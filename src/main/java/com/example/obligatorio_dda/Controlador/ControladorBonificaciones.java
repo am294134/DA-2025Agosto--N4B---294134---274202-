@@ -84,6 +84,21 @@ public class ControladorBonificaciones {
                         + (p.getApellido() != null ? p.getApellido() : "");
                 String estado = (p.getEstado() != null ? p.getEstado().getNombre() : "");
                 dto = new com.example.obligatorio_dda.Controlador.DTOs.PropietarioInfoBonDTO(nombre.trim(), estado);
+
+                // recolectar las bonificaciones asignadas a este propietario
+                java.util.List<com.example.obligatorio_dda.Controlador.DTOs.BonificacionAsignadaDTO> asignadas = new java.util.ArrayList<>();
+                for (Bonificacion b : Fachada.getInstancia().getBonificaciones()) {
+                    for (Asignacion a : b.getAsignaciones()) {
+                        if (a != null && a.getPropietario() != null && a.getPropietario().getCedula() != null
+                                && a.getPropietario().getCedula().equals(cedula)) {
+                            String nombrePuesto = "";
+                            if (a.getPuesto() != null && a.getPuesto().getNombre() != null) nombrePuesto = a.getPuesto().getNombre();
+                            String fecha = a.getFechaAsignacion() != null ? a.getFechaAsignacion().toString() : "";
+                            asignadas.add(new com.example.obligatorio_dda.Controlador.DTOs.BonificacionAsignadaDTO(b.getNombre(), nombrePuesto, fecha));
+                        }
+                    }
+                }
+                dto.setAsignadas(asignadas);
                 break;
             }
         }
@@ -130,6 +145,22 @@ public class ControladorBonificaciones {
                 puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
             } catch (PeajeException ex) {
                 puesto = null;
+            }
+            // Evitar asignaciones duplicadas para el mismo propietario en el mismo puesto
+            if (prop.getAsignaciones() != null && prop.getAsignaciones().size() > 0) {
+                for (Asignacion existente : prop.getAsignaciones()) {
+                    Puesto puestoExistente = existente.getPuesto();
+                    if (puesto == null && puestoExistente == null) {
+                        return Respuesta.lista(new Respuesta("asignacionResultado", "Ya hay una bonificación para este propietario en este puesto"));
+                    }
+                    if (puesto != null && puestoExistente != null) {
+                        String p1 = puesto.getPeajeString();
+                        String p2 = puestoExistente.getPeajeString();
+                        if (p1 != null && p1.equals(p2)) {
+                            return Respuesta.lista(new Respuesta("asignacionResultado", "Ya hay una bonificación para este propietario en este puesto"));
+                        }
+                    }
+                }
             }
             // crear asignacion
             Asignacion a = new Asignacion(new java.sql.Date(System.currentTimeMillis()), bon, prop, puesto);

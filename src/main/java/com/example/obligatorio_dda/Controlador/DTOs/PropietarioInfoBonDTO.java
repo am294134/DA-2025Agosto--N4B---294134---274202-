@@ -1,8 +1,12 @@
 package com.example.obligatorio_dda.Controlador.DTOs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PropietarioInfoBonDTO {
     private String nombreCompleto;
     private String estado;
+    private List<BonificacionAsignadaDTO> asignadas = new ArrayList<>();
 
     public PropietarioInfoBonDTO() {}
 
@@ -17,6 +21,14 @@ public class PropietarioInfoBonDTO {
 
     public String getEstado() {
         return estado;
+    }
+
+    public List<BonificacionAsignadaDTO> getAsignadas() {
+        return asignadas;
+    }
+
+    public void setAsignadas(List<BonificacionAsignadaDTO> asignadas) {
+        this.asignadas = asignadas;
     }
 
     public void setNombreCompleto(String nombreCompleto) {

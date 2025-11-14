@@ -83,27 +83,29 @@
           <div class="section-header"><h3>Asignar bonificaciones</h3></div>
           <div class="section-body">
             <p>Asignar bonificaciones a un propietario</p>
-            <form id="form-bonificaciones" onsubmit="event.preventDefault();">
-              <label for="bon-propietario">Propietario (cédula)</label>
-              <input id="bon-propietario" type="text" placeholder="12345678" />
-              <!-- Recuadro para mostrar información del propietario al ingresar la cédula -->
-              <div id="bon-propietario-info" class="propietario-quickinfo" aria-live="polite" style="margin-top:8px;font-size:0.95em;color:#222;"></div>
+            <div style="display:flex;gap:20px;align-items:flex-start;">
+              <form id="form-bonificaciones" onsubmit="event.preventDefault();" style="flex:1;min-width:220px;">
+                <label for="bon-propietario">Propietario (cédula)</label>
+                <input id="bon-propietario" type="text" placeholder="12345678" />
 
-              <label for="bon-puesto">Puesto</label>
-              <select id="bon-puesto">
-                <!-- carga dinamica de puestos -->
-              </select>
+                <label for="bon-puesto">Puesto</label>
+                <select id="bon-puesto">
+                  <!-- carga dinamica de puestos -->
+                </select>
 
-              <label for="bon-tipo">Tipo de bonificación</label>
-              <select id="bon-tipo"></select>
-              <label id="data-bon"
-                >Exonerados: No pagan / Frecuentes: 50% de descuento /
-                Trabajadores: 80% de descuento</label
-              >
-              <div class="action-row">
-                <button class="action-btn" id="btn-asignar">Asignar</button>
-              </div>
-            </form>
+                <label for="bon-tipo">Tipo de bonificación</label>
+                <select id="bon-tipo"></select>
+                <label id="data-bon">Exonerados: No pagan / Frecuentes: 50% de descuento / Trabajadores: 80% de descuento</label>
+                <div class="action-row">
+                  <button class="action-btn" id="btn-asignar">Asignar</button>
+                </div>
+              </form>
+
+              <aside id="propietarioBoxBon" class="propietario-box" style="width:360px;">
+                <h4>Propietario</h4>
+                  <div id="bon-propietario-info" class="propietario-quickinfo" aria-live="polite" style="margin-top:8px;font-size:0.95em;color:#222;">Ingrese una cédula para ver los datos del propietario</div>
+              </aside>
+            </div>
           </div>
         </div>
 
@@ -284,7 +286,9 @@
           timer = setTimeout(function(){
             const ced = input.value.trim();
             if (!ced) {
-              if (infoDiv) infoDiv.innerHTML = '';
+              // mostrar mensaje por defecto cuando no hay cédula ingresada
+              if (infoDiv) infoDiv.innerHTML = 'Ingrese una cédula para ver los datos del propietario';
+              window._lastPropietarioInfo = null;
               return;
             }
             // consultar endpoint que devuelve nombre completo y estado
@@ -393,11 +397,28 @@
           div.innerHTML = '<div class="propietario-info notfound">No se encontró propietario con esa cédula.</div>';
           return;
         }
-        // guardar última info para usarla en el modal de confirmación
-        window._lastPropietarioInfo = dto;
+  // guardar última info para usarla en el modal de confirmación
+  window._lastPropietarioInfo = dto;
         let html = '<div><strong>' + (dto.nombreCompleto || '') + '</strong>';
         if (dto.estado) html += '<div>Estado: ' + dto.estado + '</div>';
         html += '</div>';
+        // Mostrar lista de bonificaciones asignadas si existen
+        if (Array.isArray(dto.asignadas) && dto.asignadas.length > 0) {
+          html += '<div style="margin-top:8px;"><strong>Bonificaciones asignadas:</strong>';
+          html += '<table style="width:100%;margin-top:6px;border-collapse:collapse;">';
+          html += '<thead><tr><th style="text-align:left;padding:4px;border-bottom:1px solid #ddd;">Bonificación</th><th style="text-align:left;padding:4px;border-bottom:1px solid #ddd;">Puesto</th><th style="text-align:left;padding:4px;border-bottom:1px solid #ddd;">Fecha</th></tr></thead>';
+          html += '<tbody>';
+          dto.asignadas.forEach(a => {
+            html += '<tr>';
+            html += '<td style="padding:4px;border-bottom:1px solid #f2f2f2;">' + (a.nombreBonificacion || a.nombre || '') + '</td>';
+            html += '<td style="padding:4px;border-bottom:1px solid #f2f2f2;">' + (a.puesto || '') + '</td>';
+            html += '<td style="padding:4px;border-bottom:1px solid #f2f2f2;">' + (a.fechaAsignada || '') + '</td>';
+            html += '</tr>';
+          });
+          html += '</tbody></table></div>';
+        } else {
+          html += '<div style="margin-top:8px;font-style:italic;color:#666;">No tiene bonificaciones asignadas</div>';
+        }
         div.innerHTML = html;
       }
 
@@ -489,12 +510,12 @@
         } catch (e) {
           alert(msg);
         }
-        // si la asignación fue exitosa borramos el campo cedula y la info rápida
+        // si la asignación fue exitosa, recargar la info del propietario para reflejar la nueva asignación
         if (msg && msg.toLowerCase().includes('correctamente')) {
-          const inp = document.getElementById('bon-propietario');
-          const infoDiv = document.getElementById('bon-propietario-info');
-          if (inp) inp.value = '';
-          if (infoDiv) infoDiv.innerHTML = '';
+          const ced = window._lastRequestedCedula || document.getElementById('bon-propietario')?.value?.trim();
+          if (ced) {
+            submit('/bonificaciones/infoPorCedula', 'cedula=' + encodeURIComponent(ced));
+          }
         }
       }
 
@@ -539,7 +560,9 @@
         title.textContent = 'Confirmar asignación';
         body.innerHTML = '<div>¿Desea asignar <strong>"' + nombreBon + '"</strong> en el puesto <strong>"' + nombrePuesto + '"</strong> al propietario:</div>' + propietarioHtml;
         modal.style.display = 'flex';
-        // attach handlers
+  // guardar cedula solicitada para refresco posterior
+  window._lastRequestedCedula = ctx.cedula;
+  // attach handlers
         const cancel = document.getElementById('assignCancelBtn');
         const confirm = document.getElementById('assignConfirmBtn');
         function doClose() {
