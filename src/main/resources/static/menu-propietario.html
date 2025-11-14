@@ -24,6 +24,7 @@
             </div>
         </div>
     </div>
+    <div class="page-center">
     <div class="top-row">
         <div class="left-col">
             <div class="vehiculos-section">
@@ -89,7 +90,9 @@
                     <!-- Filas de tránsitos se insertarán aquí -->
                 </tbody>
             </table>
+            <div id="transitosPager" style="margin-top:8px; display:flex; justify-content:center;"></div>
         </div>
+    </div>
     </div>
     <script>
         let notifications = [];
@@ -335,6 +338,73 @@
             submit('/transitos/misTransitos', '');
         }
 
+        // variables para paginación de tránsitos (cliente)
+        window._allTransitos = window._allTransitos || [];
+        window._transPage = window._transPage || 1;
+        window._transPageSize = window._transPageSize || 5;
+
+        function renderTransitosPage(page = 1) {
+            window._transPage = page;
+            const pageSize = window._transPageSize || 5;
+            const list = Array.isArray(window._allTransitos) ? window._allTransitos : [];
+            const total = list.length;
+            const totalPages = Math.max(1, Math.ceil(total / pageSize));
+            const start = (page - 1) * pageSize;
+            const pageItems = list.slice(start, start + pageSize);
+
+            const tbody = document.getElementById('transitosTableBody');
+            tbody.innerHTML = '';
+            if (pageItems.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td colspan="7">No hay tránsitos registrados</td>`;
+                tbody.appendChild(tr);
+            } else {
+                pageItems.forEach(t => {
+                    const tr = document.createElement('tr');
+                    const puesto = t.puesto || '';
+                    const matricula = t.matricula || '';
+                    const montoBase = (typeof t.montoBase !== 'undefined' && t.montoBase !== null) ? Number(t.montoBase).toFixed(2) : '';
+                    const bon = (t.bonificacion && String(t.bonificacion).trim().length > 0) ? t.bonificacion : 'Ninguna';
+                    const descuento = (typeof t.descuento !== 'undefined' && t.descuento !== null && Number(t.descuento) !== 0)
+                        ? ('-' + Number(t.descuento).toFixed(2))
+                        : 'Sin descuento';
+                    const pagado = (typeof t.montoPagado !== 'undefined' && t.montoPagado !== null) ? Number(t.montoPagado).toFixed(2) : '';
+                    const fecha = t.fechaHora || '';
+
+                    tr.innerHTML = `
+                        <td>${puesto}</td>
+                        <td>${matricula}</td>
+                        <td>$${montoBase}</td>
+                        <td>${bon}</td>
+                        <td>${descuento}</td>
+                        <td>$${pagado}</td>
+                        <td>${fecha}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // render pager if needed
+            const pager = document.getElementById('transitosPager');
+            pager.innerHTML = '';
+            if (totalPages > 1) {
+                const first = document.createElement('button'); first.textContent = '«'; first.disabled = page <= 1; first.onclick = () => renderTransitosPage(1);
+                const prev = document.createElement('button'); prev.textContent = '‹'; prev.disabled = page <= 1; prev.onclick = () => { if (page>1) renderTransitosPage(page-1); };
+                pager.appendChild(first); pager.appendChild(prev);
+
+                // page buttons (limit to 7)
+                const maxButtons = 7; let startP = Math.max(1, page - Math.floor(maxButtons/2)); let endP = Math.min(totalPages, startP + maxButtons -1); startP = Math.max(1, endP - maxButtons +1);
+                for (let i=startP;i<=endP;i++){
+                    const b = document.createElement('button'); b.textContent = String(i); b.className = (i===page)?'page-btn active':'page-btn'; b.disabled = (i===page); b.onclick = (function(p){return function(){ renderTransitosPage(p); };})(i);
+                    pager.appendChild(b);
+                }
+
+                const next = document.createElement('button'); next.textContent = '›'; next.disabled = page >= totalPages; next.onclick = () => { if (page<totalPages) renderTransitosPage(page+1); };
+                const last = document.createElement('button'); last.textContent = '»'; last.disabled = page >= totalPages; last.onclick = () => renderTransitosPage(totalPages);
+                pager.appendChild(next); pager.appendChild(last);
+            }
+        }
+
         // Handlers para respuestas de submit
         function mostrar_notificaciones(payload) {
             // payload puede ser un array (compatibilidad antigua) o un objeto con items/page/meta
@@ -424,40 +494,9 @@
                 }
             }
 
-            const tbody = document.getElementById('transitosTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-
-            if (!Array.isArray(lista) || lista.length === 0) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td colspan="8">No hay tránsitos registrados</td>`;
-                tbody.appendChild(tr);
-                return;
-            }
-
-            lista.forEach(t => {
-                const tr = document.createElement('tr');
-                const puesto = t.puesto || '';
-                const matricula = t.matricula || '';
-                const montoBase = (typeof t.montoBase !== 'undefined' && t.montoBase !== null) ? Number(t.montoBase).toFixed(2) : '';
-                const bon = (t.bonificacion && String(t.bonificacion).trim().length > 0) ? t.bonificacion : 'Ninguna';
-                const descuento = (typeof t.descuento !== 'undefined' && t.descuento !== null && Number(t.descuento) !== 0)
-                    ? ('-' + Number(t.descuento).toFixed(2))
-                    : 'Sin descuento';
-                const pagado = (typeof t.montoPagado !== 'undefined' && t.montoPagado !== null) ? Number(t.montoPagado).toFixed(2) : '';
-                const fecha = t.fechaHora || '';
-
-                tr.innerHTML = `
-                    <td>${puesto}</td>
-                    <td>${matricula}</td>
-                    <td>$${montoBase}</td>
-                    <td>${bon}</td>
-                    <td>${descuento}</td>
-                    <td>$${pagado}</td>
-                    <td>${fecha}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+            // store full list and render first page
+            window._allTransitos = lista || [];
+            renderTransitosPage(1);
         }
     </script>
     <style>
@@ -481,6 +520,13 @@
     .table-container { overflow:auto; max-width:100%; }
     .vehiculos-section, .bonificaciones-section, .transitos-section { background:#fff; padding:8px; border:1px solid #eee; border-radius:6px; }
     .vehiculos-section h2, .bonificaciones-section h2, .transitos-section h2 { margin-top:0; }
+    /* center page container */
+    .page-center { max-width:1100px; margin:18px auto; padding:8px; }
+    /* table tweaks for transitos */
+    .transitos-section table { width:100%; border-collapse:collapse; }
+    .transitos-section th, .transitos-section td { padding:8px 10px; border-bottom:1px solid #f1f1f1; text-align:left; }
+    .transitos-section tr:nth-child(even) { background:#fafafa; }
+    .transitos-section { box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
     </style>
 </body>
 </html>
