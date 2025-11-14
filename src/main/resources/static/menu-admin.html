@@ -166,6 +166,72 @@
         });
       }
 
+      // Handler para la respuesta del endpoint /emularTransito/agregar
+      function mostrar_emularResultado(param) {
+        const msg = (typeof param === 'string') ? param : (param && param.message) ? param.message : 'Resultado desconocido';
+        try {
+          if (typeof mostrarMensaje === 'function') {
+            mostrarMensaje(msg);
+          } else {
+            alert(msg);
+          }
+        } catch (e) {
+          alert(msg);
+        }
+        if (msg && msg.toLowerCase().includes('correctamente')) {
+          // recargar info de matrícula para actualizar saldo mostrado
+          const matricula = document.getElementById('matricula')?.value?.trim();
+          const puesto = document.getElementById('peajeSelect')?.value || '';
+          if (matricula) {
+            let data = 'matricula=' + encodeURIComponent(matricula);
+            if (puesto) data = 'puestoId=' + encodeURIComponent(puesto) + '&' + data;
+            submit('/emularTransito/infoMatricula', data);
+          }
+        }
+      }
+
+      // Mostrar modal de confirmación para emular tránsito
+      function showEmularModal(ctx) {
+        // crear/obtener elementos del modal
+        let modal = document.getElementById('emularModal');
+        const body = document.getElementById('emularModalBody');
+        const title = document.getElementById('emularModalTitle');
+        if (!modal || !body || !title) return;
+
+        const puestoText = ctx.puestoText || ctx.puesto || '';
+        const matricula = ctx.matricula || '';
+        const fechaHora = ctx.fechaHora || '';
+
+        title.textContent = 'Confirmar emulación de tránsito';
+        let html = '<div>¿Desea registrar el tránsito para la matrícula <strong>' + matricula + '</strong> en el puesto <strong>' + puestoText + '</strong> en la fecha <strong>' + fechaHora + '</strong>?</div>';
+        body.innerHTML = html;
+        modal.style.display = 'flex';
+
+        // guardar contexto para posible uso posterior
+        window._lastEmularCtx = ctx;
+
+        const cancel = document.getElementById('emularCancelBtn');
+        const confirm = document.getElementById('emularConfirmBtn');
+        function doClose() {
+          modal.style.display = 'none';
+          cancel.removeEventListener('click', onCancel);
+          confirm.removeEventListener('click', onConfirm);
+        }
+        function onCancel(e) { e.preventDefault(); doClose(); }
+        function onConfirm(e) {
+          e.preventDefault();
+          confirm.disabled = true;
+          const data = 'puestoId=' + encodeURIComponent(ctx.puesto || '') + '&matricula=' + encodeURIComponent(ctx.matricula || '') + '&fechaHora=' + encodeURIComponent(ctx.fechaHora || '');
+          submit('/emularTransito/agregar', data);
+          doClose();
+          setTimeout(() => { confirm.disabled = false; }, 1500);
+        }
+        function onKey(e){ if(e.key === 'Escape') doClose(); }
+        cancel.addEventListener('click', onCancel);
+        confirm.addEventListener('click', onConfirm);
+        window.addEventListener('keydown', onKey, {once:true});
+      }
+
       function switchTab(tabId) {
         // buttons
         document
@@ -465,6 +531,17 @@
             e.preventDefault();
             e.stopPropagation();
           }
+          else {
+            // si todo es válido, mostrar modal de confirmación antes de enviar
+            const puestoSel = document.getElementById('peajeSelect');
+            const puesto = puestoSel ? puestoSel.value : '';
+            const puestoText = (puestoSel && puestoSel.selectedIndex >= 0) ? puestoSel.options[puestoSel.selectedIndex].text : puesto;
+            const matricula = document.getElementById('matricula')?.value?.trim() || '';
+            const fechaHora = document.getElementById('fechaHora')?.value || '';
+            showEmularModal({ puesto, puestoText, matricula, fechaHora });
+            e.preventDefault();
+            e.stopPropagation();
+          }
         });
       }
 
@@ -595,6 +672,18 @@
         <div style="text-align:right;margin-top:12px;">
           <button id="assignCancelBtn" style="margin-right:8px;padding:6px 12px;">Cancelar</button>
           <button id="assignConfirmBtn" style="background:#1a73e8;color:#fff;border:none;padding:6px 12px;border-radius:4px;">Confirmar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de confirmación para emular tránsito -->
+    <div id="emularModal" class="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:2000;">
+      <div class="modal-content" style="background:#fff;padding:18px;border-radius:6px;max-width:520px;margin:0 16px;">
+        <h3 id="emularModalTitle">Confirmar emulación</h3>
+        <div id="emularModalBody" style="margin:8px 0;line-height:1.4;color:#222;"></div>
+        <div style="text-align:right;margin-top:12px;">
+          <button id="emularCancelBtn" style="margin-right:8px;padding:6px 12px;">Cancelar</button>
+          <button id="emularConfirmBtn" style="background:#1a73e8;color:#fff;border:none;padding:6px 12px;border-radius:4px;">Confirmar</button>
         </div>
       </div>
     </div>

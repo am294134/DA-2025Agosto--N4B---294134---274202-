@@ -17,6 +17,15 @@ public class Transito {
         this.fechaHora = LocalDateTime.now();
     }
 
+    // constructor que permite especificar la fecha/hora del tránsito
+    public Transito(Puesto puesto, Vehiculo vehiculo, Propietario propietario, Tarifa tarifa, LocalDateTime fechaHora) {
+        this.puesto = puesto;
+        this.vehiculo = vehiculo;
+        this.propietario = propietario;
+        this.tarifa = tarifa;
+        this.fechaHora = fechaHora != null ? fechaHora : LocalDateTime.now();
+    }
+
     public Puesto getPuesto() {
         return puesto;
     }

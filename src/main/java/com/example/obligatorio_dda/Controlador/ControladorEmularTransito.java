@@ -30,7 +30,7 @@ public class ControladorEmularTransito {
     // private String categoria;
 
     @PostMapping("/agregar")
-    public void agregarTransito(HttpSession sesion,
+    public List<Respuesta> agregarTransito(HttpSession sesion,
             @RequestParam("puestoId") String puestoId,
             @RequestParam("matricula") String matricula,
             @RequestParam("fechaHora") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fechaHora)
@@ -45,8 +45,18 @@ public class ControladorEmularTransito {
         // Guardamos el puesto en la sesión del administrador
         sesion.setAttribute("puestoSeleccionado", puestoId);
 
-        // Fachada.agregarTransito(puestoId, matricula, fechaHora); me da error porque
-        // espera otros parametros
+        // Delegamos la creación del tránsito a la fachada. Fachada acepta fechaHora como String
+        String fechaStr = null;
+        if (fechaHora != null) {
+            java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+            fechaStr = fechaHora.format(fmt);
+        }
+        try {
+            Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaStr);
+            return Respuesta.lista(new Respuesta("emularResultado", "Tránsito registrado correctamente"));
+        } catch (PeajeException ex) {
+            return Respuesta.lista(new Respuesta("emularResultado", ex.getMessage()));
+        }
     }
 
     @PostMapping("/infoMatricula")

@@ -48,6 +48,10 @@ public class Propietario extends Usuario {
         return asignaciones;
     }
 
+    public void descontarSaldo(double monto) {
+        this.saldoActual = this.saldoActual - monto;
+    }
+
     public  void agregarTransito(Transito transito) {
         transitos.add(transito);
     }   

@@ -102,15 +102,84 @@ public class SistemaPeaje {
     }
     
     public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-        // Vehiculo vehiculo = buscarVehiculoPorMatricula(matricula);
-        // Puesto puesto = buscarPuestoPorId(puestoId);
-        // Propietario propietario = vehiculo.getPropietario();  
-        
-        
-        // double tarifa = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
-        // Transito transito = new Transito(puesto, tarifa, vehiculo, propietario, fechaHora );
-        // vehiculo.agregarTransito(transito);   
-        // propietario.agregarTransito(transito);
+        // Normalizar matrícula (si en el sistema las matriculas se guardaron con ciertos caracteres,
+        // asumimos aquí que deben coincidir exactamente con la almacenada en la colección)
+        if (matricula == null || matricula.trim().isEmpty()) {
+            throw new PeajeException("Matrícula inválida");
+        }
+        Vehiculo vehiculo = null;
+        for (Vehiculo v : this.vehiculos) {
+            if (v != null && v.getMatricula() != null && v.getMatricula().equals(matricula)) {
+                vehiculo = v;
+                break;
+            }
+        }
+        if (vehiculo == null) {
+            throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
+        }
+
+        if (puestoId == null || puestoId.trim().isEmpty()) {
+            throw new PeajeException("Puesto inválido");
+        }
+        Puesto puesto = buscarPuestoPorNombrePuesto(puestoId);
+
+        // buscar la tarifa para la categoría del vehículo
+        Tarifa tarifa = null;
+        for (Tarifa t : puesto.getTarifas()) {
+            if (t.getCategoria() != null && vehiculo.getCategoria() != null && t.getCategoria().getNombre().equals(vehiculo.getCategoria().getNombre())) {
+                tarifa = t;
+                break;
+            }
+        }
+        if (tarifa == null) {
+            throw new PeajeException("No hay tarifa definida para la categoría del vehículo en este puesto");
+        }
+
+        Propietario propietario = vehiculo.getPropietario();
+
+        // calcular monto a pagar aplicando la bonificación si corresponde
+        double montoBase = tarifa.getMonto();
+        Bonificacion bon = null;
+        if (propietario != null) {
+            for (Asignacion a : propietario.getAsignaciones()) {
+                if (a != null && a.getPuesto() != null && a.getPuesto().getPeajeString().equals(puesto.getPeajeString())) {
+                    bon = a.getBonificacion();
+                    break;
+                }
+            }
+        }
+        double montoAPagar = (bon != null) ? bon.calcularDescuento(montoBase) : montoBase;
+
+        // parsear la fecha/hora proporcionada (se espera formato yyyy-MM-dd'T'HH:mm)
+        java.time.LocalDateTime fecha = null;
+        if (fechaHora != null && !fechaHora.trim().isEmpty()) {
+            try {
+                java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+                fecha = java.time.LocalDateTime.parse(fechaHora, fmt);
+            } catch (Exception ex) {
+                // si falla el parseo, dejamos la fecha null y el constructor del transito usará now
+                fecha = null;
+            }
+        }
+
+        // crear transito con la tarifa encontrada y la fecha/hora indicada
+        Transito transito = (fecha != null)
+                ? new Transito(puesto, vehiculo, propietario, tarifa, fecha)
+                : new Transito(puesto, vehiculo, propietario, tarifa);
+
+        // registrar en colecciones
+        this.transitos.add(transito);
+        puesto.getTransitos().add(transito);
+        vehiculo.agregarTransito(transito);
+        if (propietario != null) {
+            propietario.agregarTransito(transito);
+            // actualizar saldo del propietario
+            try {
+                propietario.descontarSaldo(montoAPagar);
+            } catch (Exception ex) {
+                // no bloquear el registro por fallo en actualizacion de saldo
+            }
+        }
     }
     
     public ArrayList<Transito> getTransitos() {
