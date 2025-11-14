@@ -179,6 +179,24 @@ public class SistemaPeaje {
             } catch (Exception ex) {
                 // no bloquear el registro por fallo en actualizacion de saldo
             }
+            // Crear una notificación y agregarla al propietario
+            try {
+                int numeroPuesto = -1;
+                for (int i = 0; i < this.puestos.size(); i++) {
+                    if (this.puestos.get(i) == puesto) {
+                        numeroPuesto = i + 1; // numeración 1-based
+                        break;
+                    }
+                }
+                String nroTexto = (numeroPuesto > 0) ? String.valueOf(numeroPuesto) : "";
+                String nombrePuesto = puesto != null ? puesto.getNombre() : "";
+                String placa = vehiculo != null ? vehiculo.getMatricula() : "";
+                String mensaje = "Pasaste por el puesto \"" + nombrePuesto + "\" " + (nroTexto.isEmpty() ? "" : ("#" + nroTexto + " ")) + "con el vehículo " + placa;
+                Notificacion not = new Notificacion(mensaje, propietario);
+                propietario.getNotificaciones().add(not);
+            } catch (Exception ex) {
+                // no impedir el flujo si falla la notificación
+            }
         }
     }
     

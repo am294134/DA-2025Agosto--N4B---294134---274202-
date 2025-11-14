@@ -67,10 +67,10 @@
     <script>
         let notifications = [];
 
-        // Función para cargar las notificaciones
-        function cargarNotificaciones() {
-            // usar vistaWeb.submit para obtener notificaciones (devuelve Respuesta lista con id 'notificaciones')
-            submit('/notificaciones/listar', '');
+        // Función para cargar las notificaciones (paginadas: 5 por página)
+        function cargarNotificaciones(page = 1, pageSize = 5) {
+            // usar vistaWeb.submit para obtener notificaciones paginadas
+            submit('/notificaciones/listar', 'page=' + encodeURIComponent(page) + '&pageSize=' + encodeURIComponent(pageSize));
         }
 
         // Función para actualizar el contador de notificaciones
@@ -98,23 +98,23 @@
             }
         }
 
-        // Función para actualizar el contenido del dropdown de notificaciones
+        // Función para actualizar el contenido del dropdown de notificaciones (con paginación)
         function actualizarDropdownNotificaciones() {
             const dropdown = document.getElementById('notificationDropdown');
             dropdown.innerHTML = '';
-            
+
             // Agregar el encabezado con el botón de marcar como leídas
             const header = document.createElement('div');
             header.className = 'notification-header';
-            
+
             const title = document.createElement('h4');
             title.textContent = 'Notificaciones';
-            
+
             const markReadBtn = document.createElement('button');
             markReadBtn.className = 'mark-read-btn';
             markReadBtn.textContent = 'Marcar como leídas';
             markReadBtn.onclick = marcarComoLeidas;
-            
+
             header.appendChild(title);
             // Mostrar el botón solo si hay notificaciones no leídas
             const anyUnread = notifications.some(n => !n.leida);
@@ -122,30 +122,56 @@
                 header.appendChild(markReadBtn);
             }
             dropdown.appendChild(header);
-            
-            if (notifications.length === 0) {
+
+            if (!Array.isArray(notifications) || notifications.length === 0) {
                 const noNotifs = document.createElement('div');
                 noNotifs.className = 'notification-item';
                 noNotifs.textContent = 'No hay notificaciones nuevas';
                 dropdown.appendChild(noNotifs);
-                return;
+            } else {
+                // Mostrar solo las notificaciones en la página actual
+                notifications.forEach(notif => {
+                    const notifItem = document.createElement('div');
+                    notifItem.className = 'notification-item ' + (notif.leida ? 'read' : 'unread');
+
+                    const mensaje = document.createElement('div');
+                    mensaje.textContent = notif.mensaje;
+
+                    const tiempo = document.createElement('div');
+                    tiempo.className = 'notification-time';
+                    tiempo.textContent = notif.fechaHora;
+
+                    notifItem.appendChild(mensaje);
+                    notifItem.appendChild(tiempo);
+                    dropdown.appendChild(notifItem);
+                });
             }
-            // Mostrar todas las notificaciones, diferenciando por clase
-            notifications.forEach(notif => {
-                const notifItem = document.createElement('div');
-                notifItem.className = 'notification-item ' + (notif.leida ? 'read' : 'unread');
 
-                const mensaje = document.createElement('div');
-                mensaje.textContent = notif.mensaje;
+            // agregar controles de paginación si corresponde
+            const totalPages = window._notifTotalPages || 1;
+            const currentPage = window._notifPage || 1;
+            if (totalPages > 1) {
+                const pager = document.createElement('div');
+                pager.className = 'notification-pager';
 
-                const tiempo = document.createElement('div');
-                tiempo.className = 'notification-time';
-                tiempo.textContent = notif.fechaHora;
+                const prev = document.createElement('button');
+                prev.textContent = 'Anterior';
+                prev.disabled = currentPage <= 1;
+                prev.onclick = () => { if (currentPage > 1) cargarNotificaciones(currentPage - 1); };
 
-                notifItem.appendChild(mensaje);
-                notifItem.appendChild(tiempo);
-                dropdown.appendChild(notifItem);
-            });
+                const info = document.createElement('span');
+                info.textContent = ' Página ' + currentPage + ' de ' + totalPages + ' ';
+
+                const next = document.createElement('button');
+                next.textContent = 'Siguiente';
+                next.disabled = currentPage >= totalPages;
+                next.onclick = () => { if (currentPage < totalPages) cargarNotificaciones(currentPage + 1); };
+
+                pager.appendChild(prev);
+                pager.appendChild(info);
+                pager.appendChild(next);
+                dropdown.appendChild(pager);
+            }
         }
 
         // Función para mostrar/ocultar el dropdown de notificaciones
@@ -221,9 +247,21 @@
         }
 
         // Handlers para respuestas de submit
-        function mostrar_notificaciones(lista) {
-            // lista es el array de NotificacionDTO
-            notifications = Array.isArray(lista) ? lista : [];
+        function mostrar_notificaciones(payload) {
+            // payload puede ser un array (compatibilidad antigua) o un objeto con items/page/meta
+            if (Array.isArray(payload)) {
+                notifications = payload;
+                window._notifPage = 1;
+                window._notifTotalPages = 1;
+            } else if (payload && typeof payload === 'object' && payload.items) {
+                notifications = Array.isArray(payload.items) ? payload.items : [];
+                window._notifPage = payload.page || 1;
+                window._notifTotalPages = payload.totalPages || 1;
+            } else {
+                notifications = [];
+                window._notifPage = 1;
+                window._notifTotalPages = 1;
+            }
             actualizarContadorNotificaciones();
             actualizarDropdownNotificaciones();
         }
