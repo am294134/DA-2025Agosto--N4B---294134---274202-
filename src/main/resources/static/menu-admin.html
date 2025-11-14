@@ -86,6 +86,8 @@
             <form id="form-bonificaciones" onsubmit="event.preventDefault();">
               <label for="bon-propietario">Propietario (cédula)</label>
               <input id="bon-propietario" type="text" placeholder="12345678" />
+              <!-- Recuadro para mostrar información del propietario al ingresar la cédula -->
+              <div id="bon-propietario-info" class="propietario-quickinfo" aria-live="polite" style="margin-top:8px;font-size:0.95em;color:#222;"></div>
 
               <label for="bon-puesto">Puesto</label>
               <select id="bon-puesto">
@@ -271,6 +273,27 @@
         submit("/bonificaciones/listarTipos", "");
       }
 
+      // Pedir info del propietario por cédula (usado en la pestaña Asignar bonificaciones)
+      (function(){
+        let timer = null;
+        const input = document.getElementById('bon-propietario');
+        const infoDiv = document.getElementById('bon-propietario-info');
+        if (!input) return;
+        input.addEventListener('input', function(){
+          clearTimeout(timer);
+          timer = setTimeout(function(){
+            const ced = input.value.trim();
+            if (!ced) {
+              if (infoDiv) infoDiv.innerHTML = '';
+              return;
+            }
+            // consultar endpoint que devuelve nombre completo y estado
+            const data = 'cedula=' + encodeURIComponent(ced);
+            submit('/bonificaciones/infoPorCedula', data);
+          }, 500);
+        });
+      })();
+
       // Handlers llamados por vistaWeb.process cuando llega Respuesta con id correspondiente
       function mostrar_puestosLista(lista) {
         const selId = window._selectTargetForPuestos || "peajeSelect";
@@ -362,6 +385,22 @@
         div.innerHTML = html;
       }
 
+      // Mostrar info del propietario recibida desde /bonificaciones/infoPorCedula
+      function mostrar_infoPropietario(dto) {
+        const div = document.getElementById('bon-propietario-info');
+        if (!div) return;
+        if (!dto) {
+          div.innerHTML = '<div class="propietario-info notfound">No se encontró propietario con esa cédula.</div>';
+          return;
+        }
+        // guardar última info para usarla en el modal de confirmación
+        window._lastPropietarioInfo = dto;
+        let html = '<div><strong>' + (dto.nombreCompleto || '') + '</strong>';
+        if (dto.estado) html += '<div>Estado: ' + dto.estado + '</div>';
+        html += '</div>';
+        div.innerHTML = html;
+      }
+
       // ---- Validaciones para selects/inputs ----
       function validarSelect(selectId, mensaje) {
         const sel = document.getElementById(selectId);
@@ -421,8 +460,42 @@
           ) {
             e.preventDefault();
             e.stopPropagation();
+            return; // salimos si no es válido
           }
+
+          // si llegó hasta acá, mostrar modal de confirmación con los datos
+          const cedula = document.getElementById('bon-propietario').value.trim();
+          const puestoSel = document.getElementById('bon-puesto');
+          const tipoSel = document.getElementById('bon-tipo');
+          const puesto = puestoSel ? puestoSel.value : '';
+          const puestoText = (puestoSel && puestoSel.selectedIndex >= 0) ? puestoSel.options[puestoSel.selectedIndex].text : puesto;
+          const tipo = tipoSel ? tipoSel.value : '';
+          const tipoText = (tipoSel && tipoSel.selectedIndex >= 0) ? tipoSel.options[tipoSel.selectedIndex].text : tipo;
+          showAssignModal({cedula, puesto, puestoText, tipo, tipoText, propietario: window._lastPropietarioInfo});
+          e.preventDefault();
+          e.stopPropagation();
         });
+      }
+
+      // Handler para la respuesta del endpoint /bonificaciones/asignar
+      function mostrar_asignacionResultado(param) {
+        const msg = (typeof param === 'string') ? param : (param && param.message) ? param.message : 'Resultado desconocido';
+        try {
+          if (typeof mostrarMensaje === 'function') {
+            mostrarMensaje(msg);
+          } else {
+            alert(msg);
+          }
+        } catch (e) {
+          alert(msg);
+        }
+        // si la asignación fue exitosa borramos el campo cedula y la info rápida
+        if (msg && msg.toLowerCase().includes('correctamente')) {
+          const inp = document.getElementById('bon-propietario');
+          const infoDiv = document.getElementById('bon-propietario-info');
+          if (inp) inp.value = '';
+          if (infoDiv) infoDiv.innerHTML = '';
+        }
       }
 
       const btnCambiar = document.getElementById("btn-cambiar-estado");
@@ -446,6 +519,61 @@
         document.getElementById("nombreUsuario").textContent =
           datos.nombre + " " + datos.apellido;
       }
+
+      // Modal helpers
+      function showAssignModal(ctx) {
+        const modal = document.getElementById('assignModal');
+        const body = document.getElementById('assignModalBody');
+        const title = document.getElementById('assignModalTitle');
+        if (!modal || !body) return;
+        const nombreBon = ctx.tipoText || ctx.tipo || '';
+        const nombrePuesto = ctx.puestoText || ctx.puesto || '';
+        let propietarioHtml = '';
+        if (ctx.propietario) {
+          propietarioHtml = '<div><strong>' + (ctx.propietario.nombreCompleto || '') + '</strong>';
+          if (ctx.propietario.estado) propietarioHtml += '<div>Estado: ' + ctx.propietario.estado + '</div>';
+          propietarioHtml += '</div>';
+        } else {
+          propietarioHtml = '<div>Propietario: ' + (ctx.cedula || '') + '</div>';
+        }
+        title.textContent = 'Confirmar asignación';
+        body.innerHTML = '<div>¿Desea asignar <strong>"' + nombreBon + '"</strong> en el puesto <strong>"' + nombrePuesto + '"</strong> al propietario:</div>' + propietarioHtml;
+        modal.style.display = 'flex';
+        // attach handlers
+        const cancel = document.getElementById('assignCancelBtn');
+        const confirm = document.getElementById('assignConfirmBtn');
+        function doClose() {
+          modal.style.display = 'none';
+          cancel.removeEventListener('click', onCancel);
+          confirm.removeEventListener('click', onConfirm);
+        }
+        function onCancel(e) { e.preventDefault(); doClose(); }
+        function onConfirm(e) {
+          e.preventDefault();
+          // enviar asignación
+          confirm.disabled = true;
+          const data = 'cedula=' + encodeURIComponent(ctx.cedula || '') + '&puesto=' + encodeURIComponent(ctx.puesto || '') + '&tipo=' + encodeURIComponent(ctx.tipo || '');
+          submit('/bonificaciones/asignar', data);
+          // close modal immediately; mensaje llegará por mostrar_asignacionResultado
+          doClose();
+          setTimeout(() => { confirm.disabled = false; }, 1500);
+        }
+        function onKey(e){ if(e.key === 'Escape') doClose(); }
+        cancel.addEventListener('click', onCancel);
+        confirm.addEventListener('click', onConfirm);
+        window.addEventListener('keydown', onKey, {once:true});
+      }
     </script>
+    <!-- Modal de confirmación para asignar bonificación -->
+    <div id="assignModal" class="modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);align-items:center;justify-content:center;z-index:2000;">
+      <div class="modal-content" style="background:#fff;padding:18px;border-radius:6px;max-width:520px;margin:0 16px;">
+        <h3 id="assignModalTitle">Confirmar asignación</h3>
+        <div id="assignModalBody" style="margin:8px 0;line-height:1.4;color:#222;"></div>
+        <div style="text-align:right;margin-top:12px;">
+          <button id="assignCancelBtn" style="margin-right:8px;padding:6px 12px;">Cancelar</button>
+          <button id="assignConfirmBtn" style="background:#1a73e8;color:#fff;border:none;padding:6px 12px;border-radius:4px;">Confirmar</button>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
