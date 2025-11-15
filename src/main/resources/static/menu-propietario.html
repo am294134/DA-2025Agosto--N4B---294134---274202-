@@ -514,19 +514,23 @@
     .notification-dropdown { min-width:300px; max-width:420px; max-height:420px; overflow:auto; }
     .notification-pager { margin:8px; }
     /* Layout for propietario menu */
-    .top-row { display:flex; gap:20px; align-items:flex-start; margin:16px 0; }
-    .left-col { flex:1; }
-    .right-col { width:420px; }
+    .top-row { display:flex; gap:28px; align-items:flex-start; margin:18px 0; }
+    .left-col { flex:1; min-width:320px; }
+    .right-col { width:480px; }
     .table-container { overflow:auto; max-width:100%; }
-    .vehiculos-section, .bonificaciones-section, .transitos-section { background:#fff; padding:8px; border:1px solid #eee; border-radius:6px; }
-    .vehiculos-section h2, .bonificaciones-section h2, .transitos-section h2 { margin-top:0; }
+    .vehiculos-section, .bonificaciones-section, .transitos-section { background:#fff; padding:12px; border:1px solid #eee; border-radius:8px; }
+    .vehiculos-section h2, .bonificaciones-section h2, .transitos-section h2 { margin-top:0; font-size:1.05rem; }
     /* center page container */
-    .page-center { max-width:1100px; margin:18px auto; padding:8px; }
+    .page-center { max-width:1300px; margin:22px auto; padding:12px; }
     /* table tweaks for transitos */
-    .transitos-section table { width:100%; border-collapse:collapse; }
-    .transitos-section th, .transitos-section td { padding:8px 10px; border-bottom:1px solid #f1f1f1; text-align:left; }
+    .transitos-section table { width:100%; border-collapse:collapse; font-size:0.95rem; }
+    .transitos-section th, .transitos-section td { padding:10px 12px; border-bottom:1px solid #f1f1f1; text-align:left; }
+    .transitos-section th { background:#fbfbfb; font-weight:600; }
     .transitos-section tr:nth-child(even) { background:#fafafa; }
-    .transitos-section { box-shadow: 0 2px 6px rgba(0,0,0,0.03); }
+    .transitos-section { box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+    /* pager button tweaks */
+    #transitosPager button { margin:0 4px; padding:6px 8px; border-radius:4px; border:1px solid #ddd; background:#f7f7f7; cursor:pointer; }
+    #transitosPager .page-btn.active { background:#1a73e8; color:#fff; border-color:#1666c1; }
     </style>
 </body>
 </html>
