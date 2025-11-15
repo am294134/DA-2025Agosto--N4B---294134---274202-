@@ -138,7 +138,7 @@ public class ControladorEmularTransito {
 
         List<TarifaDTO> lista = new ArrayList<>();
         for (Tarifa t : puesto.getTarifas()) {
-            String nombreCategoria = t.getCategoria() != null ? t.getCategoria().getNombre() : null;
+            String nombreCategoria = t.getCategoria().getNombre();
             lista.add(new TarifaDTO(t.getMonto(), nombreCategoria));
         }
 

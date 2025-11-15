@@ -201,8 +201,8 @@ public class SistemaPeaje {
                     }
                 }
                 String nroTexto = (numeroPuesto > 0) ? String.valueOf(numeroPuesto) : "";
-                String nombrePuesto = puesto != null ? puesto.getNombre() : "";
-                String placa = vehiculo != null ? vehiculo.getMatricula() : "";
+                String nombrePuesto = puesto.getNombre();
+                String placa = vehiculo.getMatricula();
                 String mensaje = "Pasaste por el puesto \"" + nombrePuesto + "\" " + (nroTexto.isEmpty() ? "" : ("#" + nroTexto + " ")) + "con el vehículo " + placa;
                 Notificacion not = new Notificacion(mensaje, propietario);
                 propietario.getNotificaciones().add(not);

@@ -36,6 +36,6 @@ public class Asignacion {
     }
 
     public String getFechaAsignacionString() {
-        return fechaAsignacion != null ? fechaAsignacion.toString() : "";
+        return fechaAsignacion.toString();
     }
 }

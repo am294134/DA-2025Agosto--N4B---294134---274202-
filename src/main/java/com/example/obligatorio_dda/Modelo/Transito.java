@@ -27,7 +27,7 @@ public class Transito {
         this.vehiculo = vehiculo;
         this.propietario = propietario;
         this.tarifa = tarifa;
-        this.fechaHora = fechaHora != null ? fechaHora : LocalDateTime.now();
+        this.fechaHora = fechaHora;
     }
 
     public Puesto getPuesto() {
@@ -91,19 +91,19 @@ public class Transito {
 
     // Expert convenience methods: expose data belonging to this transito
     public double getMontoBase() {
-        return tarifa != null ? tarifa.getMonto() : 0.0;
+        return tarifa.getMonto();
     }
 
     public String getPuestoNombre() {
-        return puesto != null ? puesto.getNombre() : "";
+        return puesto.getNombre();
     }
 
     public String getMatricula() {
-        return vehiculo != null ? vehiculo.getMatricula() : "";
+        return vehiculo.getMatricula();
     }
 
     public String getBonificacionNombreOrEmpty() {
-        return bonificacionNombre != null ? bonificacionNombre : "";
+        return bonificacionNombre;
     }
 
     public String getFechaHoraFormatted(java.time.format.DateTimeFormatter fmt) {
