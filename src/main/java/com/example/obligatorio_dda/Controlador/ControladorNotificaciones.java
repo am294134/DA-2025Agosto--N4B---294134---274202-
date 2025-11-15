@@ -28,18 +28,16 @@ public class ControladorNotificaciones {
         int p = (page == null || page < 1) ? 1 : page;
         int ps = (pageSize == null || pageSize < 1) ? Integer.MAX_VALUE : pageSize;
 
-        // copiar y ordenar notificaciones por fecha descendente (recientes primero)
-        List<Notificacion> todas = new ArrayList<>(propietario.getNotificaciones());
-        todas.sort((a, b) -> b.getFechaHora().compareTo(a.getFechaHora()));
-
-        int totalItems = todas.size();
-        int totalPages = (ps == Integer.MAX_VALUE) ? 1 : (int) Math.max(1, Math.ceil((double) totalItems / ps));
-        int fromIndex = (ps == Integer.MAX_VALUE) ? 0 : Math.min(totalItems, (p - 1) * ps);
-        int toIndex = (ps == Integer.MAX_VALUE) ? totalItems : Math.min(totalItems, fromIndex + ps);
+        // Use Propietario (Expert) to obtain paged/ordered notifications
+        List<Notificacion> pageItems;
+        if (ps == Integer.MAX_VALUE) {
+            pageItems = propietario.listarNotificacionesOrdenadasDesc();
+        } else {
+            pageItems = propietario.obtenerNotificacionesPagina(p, ps);
+        }
 
         List<NotificacionDTO> notificacionesDTO = new ArrayList<>();
-        for (int i = fromIndex; i < toIndex; i++) {
-            Notificacion notif = todas.get(i);
+        for (Notificacion notif : pageItems) {
             notificacionesDTO.add(new NotificacionDTO(
                 notif.getMensaje(),
                 notif.getFechaHoraFormateada(),
@@ -47,17 +45,17 @@ public class ControladorNotificaciones {
             ));
         }
 
+        int totalItems = propietario.getTotalNotificaciones();
+        int totalPages = (ps == Integer.MAX_VALUE) ? 1 : propietario.getTotalPagesFor(ps);
+
         java.util.Map<String, Object> result = new java.util.HashMap<>();
         result.put("items", notificacionesDTO);
         result.put("page", p);
         result.put("pageSize", ps == Integer.MAX_VALUE ? totalItems : ps);
         result.put("totalPages", totalPages);
         result.put("totalItems", totalItems);
-        // contar no leídas
-        int totalUnread = 0;
-        for (Notificacion n : todas) {
-            if (!n.isLeida()) totalUnread++;
-        }
+        // contar no leídas (delegado a Propietario)
+        int totalUnread = propietario.getTotalNotificacionesNoLeidas();
         result.put("totalUnread", totalUnread);
 
         return Respuesta.lista(new Respuesta("notificaciones", result));

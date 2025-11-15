@@ -12,8 +12,6 @@ import java.util.List;
 import com.example.obligatorio_dda.Controlador.DTOs.TransitoPropietarioDTO;
 import com.example.obligatorio_dda.Modelo.Propietario;
 import com.example.obligatorio_dda.Modelo.Transito;
-import com.example.obligatorio_dda.Modelo.Bonificacion;
-import com.example.obligatorio_dda.Modelo.Asignacion;
 
 @RestController
 @RequestMapping("/transitos")
@@ -30,14 +28,13 @@ public class ControladorTransitos {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         for (Transito t : propietario.getTransitos()) {
-            String puesto = t.getPuesto() != null ? t.getPuesto().getNombre() : "";
-            String matricula = t.getVehiculo() != null ? t.getVehiculo().getMatricula() : "";
-            double montoBase = t.getTarifa() != null ? t.getTarifa().getMonto() : 0.0;
-            // Usar la información aplicada en el momento del tránsito (no inferir de asignaciones actuales)
-            String bonNombre = t.getBonificacionNombre() != null ? t.getBonificacionNombre() : "";
+            String puesto = t.getPuestoNombre();
+            String matricula = t.getMatricula();
+            double montoBase = t.getMontoBase();
+            String bonNombre = t.getBonificacionNombreOrEmpty();
             double montoPagado = t.getMontoPagado();
             double descuento = t.getDescuentoAplicado();
-            String fecha = t.getFechaHora() != null ? t.getFechaHora().format(fmt) : "";
+            String fecha = t.getFechaHoraFormatted(fmt);
 
             lista.add(new TransitoPropietarioDTO(puesto, matricula, montoBase, bonNombre, descuento, montoPagado, fecha));
         }

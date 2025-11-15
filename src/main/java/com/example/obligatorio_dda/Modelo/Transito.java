@@ -88,4 +88,30 @@ public class Transito {
     public void setDescuentoAplicado(double descuentoAplicado) {
         this.descuentoAplicado = descuentoAplicado;
     }
+
+    // Expert convenience methods: expose data belonging to this transito
+    public double getMontoBase() {
+        return tarifa != null ? tarifa.getMonto() : 0.0;
+    }
+
+    public String getPuestoNombre() {
+        return puesto != null ? puesto.getNombre() : "";
+    }
+
+    public String getMatricula() {
+        return vehiculo != null ? vehiculo.getMatricula() : "";
+    }
+
+    public String getBonificacionNombreOrEmpty() {
+        return bonificacionNombre != null ? bonificacionNombre : "";
+    }
+
+    public String getFechaHoraFormatted(java.time.format.DateTimeFormatter fmt) {
+        if (fechaHora == null) return "";
+        try {
+            return fechaHora.format(fmt);
+        } catch (Exception ex) {
+            return fechaHora.toString();
+        }
+    }
 }

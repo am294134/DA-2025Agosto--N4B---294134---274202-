@@ -30,4 +30,12 @@ public class Asignacion {
     public Puesto getPuesto() {
         return puesto;
     }
+
+    public String getPuestoNombreOrEmpty() {
+        return (puesto != null && puesto.getNombre() != null) ? puesto.getNombre() : "";
+    }
+
+    public String getFechaAsignacionString() {
+        return fechaAsignacion != null ? fechaAsignacion.toString() : "";
+    }
 }

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.TransitoInfoDTO;
-import com.example.obligatorio_dda.Modelo.Bonificacion;
 import com.example.obligatorio_dda.Modelo.Tarifa;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
@@ -22,7 +21,6 @@ import com.example.obligatorio_dda.Modelo.Administrador;
 import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
 import com.example.obligatorio_dda.Modelo.Propietario;
-import com.example.obligatorio_dda.Modelo.Asignacion;
 
 @RestController
 @RequestMapping("/emularTransito")
@@ -96,42 +94,21 @@ public class ControladorEmularTransito {
         }
         String bonificacionNombre = null;
         if (prop != null) {
-            for (Asignacion a : prop.getAsignaciones()) {
-                if (puesto != null && a.getPuesto() != null && a.getPuesto().getPeajeString().equals(puesto.getPeajeString())) {
-                    if (a.getBonificacion() != null) {
-                        bonificacionNombre = a.getBonificacion().getNombre();
-                        break;
-                    }
-                }
-            }
+            com.example.obligatorio_dda.Modelo.Bonificacion b = prop.getBonificacionForPuesto(puesto);
+            if (b != null) bonificacionNombre = b.getNombre();
         }
-    if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
+        if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
         // Si se proporcionó un puesto intentamos calcular el costo y saldo luego del tránsito
         if (puesto != null) {
             try {
                 double montoBase = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
-                double montoAPagar;
-                // si existe una bonificación asignada para este puesto, aplicar su regla
-                Bonificacion bon = null;
-                if (prop != null) {
-                    for (Asignacion a : prop.getAsignaciones()) {
-                        if (a.getPuesto() != null && puesto != null && a.getPuesto().getPeajeString().equals(puesto.getPeajeString())) {
-                            bon = a.getBonificacion();
-                            break;
-                        }
-                    }
-                }
-                if (bon != null) {
-                    montoAPagar = bon.calcularDescuento(montoBase);
-                } else {
-                    montoAPagar = montoBase;
-                }
+                double montoAPagar = (prop != null) ? prop.calcularMontoAPagarParaPuesto(puesto, montoBase) : montoBase;
                 Double saldoLuego = null;
                 if (prop != null) {
                     try {
-                        saldoLuego = prop.getSaldoActual() - montoAPagar;
+                        saldoLuego = prop.calcularSaldoLuegoDePago(montoAPagar);
                     } catch (Exception ex) {
                         saldoLuego = null;
                     }
