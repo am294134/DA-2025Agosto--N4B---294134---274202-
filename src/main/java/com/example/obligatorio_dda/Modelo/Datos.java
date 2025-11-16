@@ -189,7 +189,7 @@ public class Datos {
 
         // Asignamos Frecuente a 11111111 en Peaje de Pando Interbalnearia
         if (prop111 != null && bonFrecuente != null) {
-            Puesto pando = fachada.buscarPuestoPorNombre("Peaje de Pando Interbalnearia");
+            Puesto pando = fachada.buscarPuestoPorId("Peaje de Pando Interbalnearia-Km 32.500 Ruta Interbalnearia");
             Asignacion a1 = new Asignacion(new java.sql.Date(System.currentTimeMillis()), bonFrecuente, prop111,
                     pando);
             prop111.getAsignaciones().add(a1);
@@ -198,7 +198,7 @@ public class Datos {
 
         // Asignamos Trabajador a 22222222 en Peaje Solís
         if (prop222 != null && bonTrabajador != null) {
-            Puesto solis = fachada.buscarPuestoPorNombre("Peaje Solís");
+            Puesto solis = fachada.buscarPuestoPorId("Peaje Solís-Km 80.000 Ruta Interbalnearia");
             Asignacion a2 = new Asignacion(new java.sql.Date(System.currentTimeMillis()), bonTrabajador, prop222,
                     solis);
             prop222.getAsignaciones().add(a2);
@@ -207,7 +207,7 @@ public class Datos {
 
         // Asignamos Exonerada a 33333333 en Peaje Garzón
         if (prop333 != null && bonExonerada != null) {
-            Puesto garzon = fachada.buscarPuestoPorNombre("Peaje Garzón");
+            Puesto garzon = fachada.buscarPuestoPorId("Peaje Garzón-Km 187.500 Ruta 9");
             Asignacion a3 = new Asignacion(new java.sql.Date(System.currentTimeMillis()), bonExonerada, prop333,
                     garzon);
             prop333.getAsignaciones().add(a3);

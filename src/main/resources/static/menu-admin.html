@@ -115,25 +115,32 @@
           </div>
           <div class="section-body">
             <p>Modificar el estado actual</p>
-            <form id="form-cambiar-estado" onsubmit="event.preventDefault();">
-              <label for="estado-propietario">Propietario (cédula)</label>
-              <input id="estado-propietario" type="text" placeholder="1" />
+            <div style="display:flex;gap:20px;align-items:flex-start;">
+              <form id="form-cambiar-estado" onsubmit="event.preventDefault();" style="flex:1;min-width:220px;">
+                <label for="estado-propietario">Propietario (cédula)</label>
+                <input id="estado-propietario" type="text" placeholder="1" />
 
-              <label for="estado-select">Estado</label>
-              <select id="estado-select">
-                <option value="">Seleccionar estado</option>
-                <option>Habilitado</option>
-                <option>Penalizado</option>
-                <option>Suspendido</option>
-                <option>Deshabilitado</option>
-              </select>
+                <label for="estado-select">Estado</label>
+                <select id="estado-select">
+                  <option value="">Seleccionar estado</option>
+                  <option>Habilitado</option>
+                  <option>Penalizado</option>
+                  <option>Suspendido</option>
+                  <option>Deshabilitado</option>
+                </select>
 
-              <div class="action-row">
-                <button class="action-btn" id="btn-cambiar-estado">
-                  Cambiar estado
-                </button>
-              </div>
-            </form>
+                <div class="action-row">
+                  <button class="action-btn" id="btn-cambiar-estado">
+                    Cambiar estado
+                  </button>
+                </div>
+              </form>
+
+              <aside id="propietarioBoxEstado" class="propietario-box" style="width:360px;">
+                <h4>Propietario</h4>
+                <div id="estado-propietario-info" class="propietario-quickinfo" aria-live="polite" style="margin-top:8px;font-size:0.95em;color:#222;">Ingrese una cédula para ver los datos del propietario</div>
+              </aside>
+            </div>
           </div>
         </div>
       </div>
@@ -364,6 +371,30 @@
         });
       })();
 
+      // Pedir info del propietario por cédula para cambiar estado
+      (function(){
+        let timer = null;
+        const input = document.getElementById('estado-propietario');
+        const infoDiv = document.getElementById('estado-propietario-info');
+        const estadoSelect = document.getElementById('estado-select');
+        if (!input) return;
+        input.addEventListener('input', function(){
+          clearTimeout(timer);
+          timer = setTimeout(function(){
+            const ced = input.value.trim();
+            if (!ced) {
+              if (infoDiv) infoDiv.innerHTML = 'Ingrese una cédula para ver los datos del propietario';
+              window._lastPropietarioEstado = null;
+              return;
+            }
+            // consultar el mismo endpoint que bonificaciones
+            const data = 'cedula=' + encodeURIComponent(ced);
+            window._estadoPropietarioRequest = true;
+            submit('/bonificaciones/infoPorCedula', data);
+          }, 500);
+        });
+      })();
+
       // Handlers llamados por vistaWeb.process cuando llega Respuesta con id correspondiente
       function mostrar_puestosLista(lista) {
         const selId = window._selectTargetForPuestos || "peajeSelect";
@@ -457,6 +488,31 @@
 
       // Mostrar info del propietario recibida desde /bonificaciones/infoPorCedula
       function mostrar_infoPropietario(dto) {
+        // Verificar si la petición vino desde cambiar estado
+        if (window._estadoPropietarioRequest) {
+          window._estadoPropietarioRequest = false;
+          const div = document.getElementById('estado-propietario-info');
+          const estadoSelect = document.getElementById('estado-select');
+          if (!div) return;
+          if (!dto) {
+            div.innerHTML = '<div class="propietario-info notfound">No se encontró propietario con esa cédula.</div>';
+            return;
+          }
+          window._lastPropietarioEstado = dto;
+          let html = '<div><strong>' + (dto.nombreCompleto || '') + '</strong>';
+          if (dto.estado) {
+            html += '<div>Estado actual: <strong>' + dto.estado + '</strong></div>';
+            // Preseleccionar el estado actual en el select
+            if (estadoSelect) {
+              estadoSelect.value = dto.estado;
+            }
+          }
+          html += '</div>';
+          div.innerHTML = html;
+          return;
+        }
+
+        // Si no es de cambiar estado, es de bonificaciones
         const div = document.getElementById('bon-propietario-info');
         if (!div) return;
         if (!dto) {
@@ -596,6 +652,23 @@
         }
       }
 
+      // Botón buscar propietario para cambiar estado
+      const btnBuscar = document.getElementById("btn-buscar-propietario");
+      if (btnBuscar) {
+        btnBuscar.addEventListener("click", function (e) {
+          if (!validarNotEmpty("estado-propietario", "Ingrese la cédula del propietario")) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+          const cedula = document.getElementById("estado-propietario").value.trim();
+          const data = 'cedula=' + encodeURIComponent(cedula);
+          submit('/cambiarEstado/buscar', data);
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      }
+
       const btnCambiar = document.getElementById("btn-cambiar-estado");
       if (btnCambiar) {
         btnCambiar.addEventListener("click", function (e) {
@@ -608,8 +681,64 @@
           ) {
             e.preventDefault();
             e.stopPropagation();
+          } else {
+            // Enviar solicitud de cambio de estado
+            const cedula = document.getElementById("estado-propietario").value.trim();
+            const estado = document.getElementById("estado-select").value;
+            const data = 'cedula=' + encodeURIComponent(cedula) + '&estado=' + encodeURIComponent(estado);
+            submit('/cambiarEstado/cambiar', data);
+            e.preventDefault();
+            e.stopPropagation();
           }
         });
+      }
+
+      // Handler para mostrar propietario encontrado
+      function mostrar_propietarioEncontrado(dto) {
+        const div = document.getElementById('estado-propietario-info');
+        const datosProp = document.getElementById('datos-propietario');
+        const estadoSelect = document.getElementById('estado-select');
+        
+        if (!dto) {
+          if (div) div.innerHTML = '<div class="propietario-info notfound">No se encontró propietario con esa cédula.</div>';
+          if (datosProp) datosProp.style.display = 'none';
+          return;
+        }
+
+        // Mostrar información del propietario
+        if (div) {
+          let html = '<div><strong>' + (dto.nombreCompleto || '') + '</strong>';
+          html += '<div>Estado actual: <strong>' + (dto.estadoActual || 'Sin estado') + '</strong></div>';
+          html += '</div>';
+          div.innerHTML = html;
+        }
+
+        // Mostrar el select de estados y preseleccionar el estado actual
+        if (datosProp) datosProp.style.display = 'block';
+        if (estadoSelect && dto.estadoActual) {
+          estadoSelect.value = dto.estadoActual;
+        }
+      }
+
+      // Handler para la respuesta del cambio de estado
+      function mostrar_cambioEstadoResultado(param) {
+        const msg = (typeof param === 'string') ? param : (param && param.message) ? param.message : 'Resultado desconocido';
+        try {
+          if (typeof mostrarMensaje === 'function') {
+            mostrarMensaje(msg);
+          } else {
+            alert(msg);
+          }
+        } catch (e) {
+          alert(msg);
+        }
+        // Si el cambio fue exitoso, buscar de nuevo para actualizar
+        if (msg && msg.toLowerCase().includes('correctamente')) {
+          const cedula = document.getElementById("estado-propietario")?.value?.trim();
+          if (cedula) {
+            submit('/cambiarEstado/buscar', 'cedula=' + encodeURIComponent(cedula));
+          }
+        }
       }
 
       // Función para mostrar datos del usuario

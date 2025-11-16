@@ -130,7 +130,8 @@ public class Fachada extends Observable {
         return sistemaPeaje.buscarPuestoPorNombrePuesto(nombre);
     }
 
-   
+    public Vehiculo buscarVehiculoPorMatricula(String matricula) throws PeajeException {
+        return sistemaPeaje.buscarVehiculoPorMatricula(matricula);
+    }
     // #endregion
-
-}
+}   
