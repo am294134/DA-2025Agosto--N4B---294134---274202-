@@ -25,6 +25,12 @@ public class Datos {
                 new Estado("Deshabilitado"));
         // #endregion
 
+        //Estados
+        fachada.agregarEstado("Habilitado");
+        fachada.agregarEstado("Deshabilitado");
+        fachada.agregarEstado("Suspendido");
+        fachada.agregarEstado("Penalizado");
+
         // #region Categorías
         fachada.agregarCategoria("Automóvil");
         fachada.agregarCategoria("Moto");

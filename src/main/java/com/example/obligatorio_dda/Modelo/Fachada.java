@@ -17,7 +17,7 @@ public class Fachada extends Observable {
     }
 
     private Fachada() {
-        this.sistemaAcceso = new SistemaAcceso(new ArrayList<>(), new ArrayList<>());
+        this.sistemaAcceso = new SistemaAcceso();
         this.sistemaPeaje = new SistemaPeaje(new ArrayList<Puesto>(), new ArrayList<Tarifa>(),
                 new ArrayList<Categoria>(), new ArrayList<Bonificacion>(), new ArrayList<Vehiculo>(),
                 new ArrayList<Propietario>());
@@ -133,5 +133,16 @@ public class Fachada extends Observable {
     public Vehiculo buscarVehiculoPorMatricula(String matricula) throws PeajeException {
         return sistemaPeaje.buscarVehiculoPorMatricula(matricula);
     }
-    // #endregion
-}   
+
+    public Propietario buscarPropietarioPorCedula(String cedula) throws PeajeException {
+        return sistemaAcceso.buscarPropietarioPorCedula(cedula);
+    }
+
+    public void cambiarEstado(String cedula, String estadoNombre) throws PeajeException {
+        sistemaAcceso.cambiarEstado(cedula, estadoNombre);
+    }
+    
+    public void agregarEstado(String nombreEstado) {
+        sistemaAcceso.agregarEstado(new Estado(nombreEstado));
+    }
+}

@@ -1,19 +1,23 @@
 package com.example.obligatorio_dda.Modelo;
 
 import java.util.ArrayList;
+import com.example.obligatorio_dda.Modelo.PeajeException;
 
 public class SistemaAcceso {
     private ArrayList<Propietario> propietarios;
     private ArrayList<Administrador> administradores;
+    private ArrayList<Estado> estados;
 
-    protected SistemaAcceso(ArrayList<Propietario> propietarios, ArrayList<Administrador> administradores) {
+    protected SistemaAcceso(ArrayList<Propietario> propietarios, ArrayList<Administrador> administradores, ArrayList<Estado> estados) {
         this.propietarios = propietarios;
         this.administradores = administradores;
+        this.estados = estados;
     }
 
     public SistemaAcceso() {
         this.propietarios = new ArrayList<>();
         this.administradores = new ArrayList<>();
+        this.estados = new ArrayList<>();
     }
 
     public Propietario agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
@@ -32,9 +36,11 @@ public class SistemaAcceso {
         Propietario prop = (Propietario) this.login(name, pass, this.propietarios);
         if (prop == null) {
             throw new PeajeException("Usuario o contraseña incorrectos");
-        } else {
-            return prop;
         }
+        if (prop.getEstado() != null && "Deshabilitado".equalsIgnoreCase(prop.getEstado().getNombre())) {
+            throw new PeajeException("Usuario deshabilitado, no puede ingresar al sistema");
+        }
+        return prop;
     }
 
     public Administrador loginAdministrador(String name, String pass) throws PeajeException {
@@ -66,4 +72,38 @@ public class SistemaAcceso {
     public ArrayList<Administrador> getAdministradores() {
         return administradores;
     }
- }
+
+    public Propietario buscarPropietarioPorCedula(String cedula) throws PeajeException {
+        for (Propietario propietario : propietarios) {
+            if (propietario.getCedula().equals(cedula)) {
+                return propietario;
+            }
+        }
+        throw new PeajeException("No se encontró el propietario con cédula: " + cedula);
+    }
+
+    public void cambiarEstado(String cedula, String nombreEstado) throws PeajeException {
+        Propietario propietario = buscarPropietarioPorCedula(cedula);
+        Estado estado = buscarEstadoPorNombre(nombreEstado);
+        propietario.setEstado(estado);
+        
+        // Registrar notificación
+        String mensaje = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) 
+                + " Se ha cambiado tu estado en el sistema. Tu estado actual es " + nombreEstado;
+        Notificacion notificacion = new Notificacion(mensaje, propietario);
+        propietario.getNotificaciones().add(notificacion);
+    }
+
+    public Estado buscarEstadoPorNombre(String nombreEstado) throws PeajeException {
+        for (Estado estado : estados) {
+            if (estado.getNombre().equalsIgnoreCase(nombreEstado)) {
+                return estado;
+            }
+        }
+        throw new PeajeException("No se encontró el estado con nombre: " + nombreEstado);
+    }
+
+    public void agregarEstado(Estado estado) {
+        this.estados.add(estado);
+    }
+ } 

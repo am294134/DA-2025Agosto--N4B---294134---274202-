@@ -33,6 +33,9 @@ public class Propietario extends Usuario {
         return estado;
     }
 
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
 
     public ArrayList<Vehiculo> getVehiculos() {
         return vehiculos;

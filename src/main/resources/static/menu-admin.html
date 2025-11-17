@@ -747,6 +747,19 @@
           datos.nombre + " " + datos.apellido;
       }
 
+      // Handler para mensajes de error generales
+      function mostrar_mensaje(texto) {
+        try {
+          if (typeof mostrarMensaje === 'function') {
+            mostrarMensaje(texto);
+          } else {
+            alert(texto);
+          }
+        } catch (e) {
+          alert(texto);
+        }
+      }
+
       // Modal helpers
       function showAssignModal(ctx) {
         const modal = document.getElementById('assignModal');

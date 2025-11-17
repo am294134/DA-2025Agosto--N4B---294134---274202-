@@ -84,9 +84,17 @@ public class ControladorBonificaciones {
         
         for (Propietario p : Fachada.getInstancia().getPropietarios()) {
             if (p != null && p.getCedula() != null && p.getCedula().equals(cedula)) {
-            String nombre = p.getNombre() + " " + p.getApellido();
-            String estado = p.getEstado().getNombre();
-            dto = new PropietarioInfoBonDTO(nombre.trim(), estado);
+                // Validar si el propietario está deshabilitado
+                if (p.getEstado() != null && "Deshabilitado".equalsIgnoreCase(p.getEstado().getNombre())) {
+                    return Respuesta.lista(
+                        new Respuesta("infoPropietario", null),
+                        new Respuesta("mensaje", "El propietario está deshabilitado y no puede recibir bonificaciones")
+                    );
+                }
+                
+                String nombre = p.getNombre() + " " + p.getApellido();
+                String estado = p.getEstado().getNombre();
+                dto = new PropietarioInfoBonDTO(nombre.trim(), estado);
 
                 // recolectar las bonificaciones asignadas a este propietario
                 List<BonificacionAsignadaDTO> asignadas = new ArrayList<>();
@@ -111,13 +119,27 @@ public class ControladorBonificaciones {
         }
         return Respuesta.lista(new Respuesta("infoPropietario", dto));
     }
+         
 
     @PostMapping("/asignar")
     public List<Respuesta> asignarBonificacion(HttpSession sesion,
             @RequestParam(name = "cedula") String cedula,
             @RequestParam(name = "puesto") String puestoId,
             @RequestParam(name = "tipo") String tipoBonificacion) {
+                
+    
         // validar inputs básicos
+        Propietario prop = null;
+        for (Propietario p : Fachada.getInstancia().getPropietarios()) {
+            if (p != null && p.getCedula() != null && p.getCedula().equals(cedula.trim())) {
+                prop = p;
+            }
+        }
+
+        // if (prop.getEstado() != null && "Deshabilitado".equalsIgnoreCase(prop.getEstado().getNombre())) {
+        //     throw new PeajeException("Usuario deshabilitado, no puede ingresar al sistema");
+        // }
+
         if (cedula == null || cedula.trim().isEmpty()) {
             return Respuesta.lista(new Respuesta("asignacionResultado", "Cédula inválida"));
         }
@@ -125,16 +147,11 @@ public class ControladorBonificaciones {
             return Respuesta.lista(new Respuesta("asignacionResultado", "Seleccione un tipo de bonificación"));
         }
         // buscar propietario
-        Propietario prop = null;
-        for (Propietario p : Fachada.getInstancia().getPropietarios()) {
-            if (p != null && p.getCedula() != null && p.getCedula().equals(cedula.trim())) {
-                prop = p;
-                break;
-            }
-        }
+        
         if (prop == null) {
             return Respuesta.lista(new Respuesta("asignacionResultado", "No se encontró propietario con esa cédula"));
         }
+        
         // buscar bonificacion por nombre
         Bonificacion bon = null;
         for (Bonificacion b : Fachada.getInstancia().getBonificaciones()) {
@@ -203,3 +220,4 @@ public class ControladorBonificaciones {
     }
 
 }
+
