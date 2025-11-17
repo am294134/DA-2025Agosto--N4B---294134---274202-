@@ -47,12 +47,11 @@ public class ControladorEmularTransito {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         fechaStr = fechaHora.format(fmt);
         }
-
-        // ACA NO HAY TRY-CATCH
         Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaStr);
 
         return Respuesta.lista(new Respuesta("emularResultado", "Tránsito registrado correctamente"));
         }
+
 
     @PostMapping("/infoMatricula")
     public List<Respuesta> infoMatricula(HttpSession sesion,
@@ -66,12 +65,10 @@ public class ControladorEmularTransito {
             String actual = v.getMatricula().replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
             if (actual.equals(buscada)) {
                 vehiculo = v;
-                break;
             }
         }
 
         if (vehiculo == null) {
-            // sin info
             return Respuesta.lista(new Respuesta("infoMatricula", null));
         }
 
@@ -97,6 +94,7 @@ public class ControladorEmularTransito {
                 puesto = null;
             }
         }
+
         String bonificacionNombre = null;
         if (prop != null) {
             com.example.obligatorio_dda.Modelo.Bonificacion b = prop.getBonificacionForPuesto(puesto);
@@ -124,7 +122,6 @@ public class ControladorEmularTransito {
                 // no hay tarifa definida para la categoría en ese puesto; dejamos monto/saldo en null
             }
         }
-
         return Respuesta.lista(new Respuesta("infoMatricula", dto));
     }
 
