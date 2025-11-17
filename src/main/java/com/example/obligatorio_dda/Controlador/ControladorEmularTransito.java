@@ -40,6 +40,19 @@ public class ControladorEmularTransito {
             throw new PeajeException("No hay un administrador logueado");
         }
 
+        // Validar estados que impiden realizar tránsito
+        Vehiculo vehiculo = Fachada.getInstancia().buscarVehiculoPorMatricula(matricula);
+        Propietario propietario = vehiculo.getPropietario();
+        if (propietario != null && propietario.getEstado() != null) {
+            String estadoNombre = propietario.getEstado().getNombre();
+            if (estadoNombre != null && (
+                    estadoNombre.equalsIgnoreCase("Deshabilitado") ||
+                    estadoNombre.equalsIgnoreCase("Suspendido")
+                )) {
+                throw new PeajeException("Usuario Suspendido, no puede realizar tránsito");
+            }
+        }
+
         // Guardamos el puesto en la sesión del administrador
         sesion.setAttribute("puestoSeleccionado", puestoId);
 
@@ -74,6 +87,7 @@ public class ControladorEmularTransito {
             }
         }
 
+
         if (vehiculo == null) {
             // sin info
             return Respuesta.lista(new Respuesta("infoMatricula", null));
@@ -83,6 +97,15 @@ public class ControladorEmularTransito {
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
         String categoria = (vehiculo.getCategoria() != null) ? vehiculo.getCategoria().getNombre() : "";
 
+        if(prop.getEstado() != null) {
+            String estadoNombre = prop.getEstado().getNombre();
+            if (estadoNombre != null && (
+                    estadoNombre.equalsIgnoreCase("Deshabilitado") ||
+                    estadoNombre.equalsIgnoreCase("Suspendido")
+                )) {
+                throw new PeajeException("Usuario " + estadoNombre + ", no puede realizar tránsito");
+            }
+        }
         // Buscar si el propietario tiene alguna asignación (bonificación) para el puesto (si se proporcionó)
         Puesto puesto = null;
         if (puestoId != null && !"".equals(puestoId)) {
