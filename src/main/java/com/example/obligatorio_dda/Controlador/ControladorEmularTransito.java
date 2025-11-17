@@ -25,7 +25,6 @@ import com.example.obligatorio_dda.Modelo.Propietario;
 @RestController
 @RequestMapping("/emularTransito")
 public class ControladorEmularTransito {
-    // private String categoria;
 
     @PostMapping("/agregar")
     public List<Respuesta> agregarTransito(HttpSession sesion,
@@ -33,49 +32,33 @@ public class ControladorEmularTransito {
             @RequestParam("matricula") String matricula,
             @RequestParam("fechaHora") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fechaHora)
             throws PeajeException {
-        // obtenemos session
+
         Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
 
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
 
-        // Validar estados que impiden realizar tránsito
-        Vehiculo vehiculo = Fachada.getInstancia().buscarVehiculoPorMatricula(matricula);
-        Propietario propietario = vehiculo.getPropietario();
-        if (propietario != null && propietario.getEstado() != null) {
-            String estadoNombre = propietario.getEstado().getNombre();
-            if (estadoNombre != null && (
-                    estadoNombre.equalsIgnoreCase("Deshabilitado") ||
-                    estadoNombre.equalsIgnoreCase("Suspendido")
-                )) {
-                throw new PeajeException("Usuario Suspendido, no puede realizar tránsito");
-            }
-        }
-
         // Guardamos el puesto en la sesión del administrador
         sesion.setAttribute("puestoSeleccionado", puestoId);
 
-        // Delegamos la creación del tránsito a la fachada. Fachada acepta fechaHora como String
         String fechaStr = null;
         if (fechaHora != null) {
-            java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-            fechaStr = fechaHora.format(fmt);
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        fechaStr = fechaHora.format(fmt);
         }
-        try {
-            Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaStr);
-            return Respuesta.lista(new Respuesta("emularResultado", "Tránsito registrado correctamente"));
-        } catch (PeajeException ex) {
-            return Respuesta.lista(new Respuesta("emularResultado", ex.getMessage()));
+
+        // ACA NO HAY TRY-CATCH
+        Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaStr);
+
+        return Respuesta.lista(new Respuesta("emularResultado", "Tránsito registrado correctamente"));
         }
-    }
 
     @PostMapping("/infoMatricula")
     public List<Respuesta> infoMatricula(HttpSession sesion,
             @RequestParam(name = "puestoId", required = false) String puestoId,
             @RequestParam("matricula") String matricula) throws PeajeException {
 
-        // buscar vehículo en la fachada (comparación tolerante: quitar no-alfa-numéricos y comparar uppercase)
         Vehiculo vehiculo = null;
         String buscada = matricula == null ? "" : matricula.replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
         for (Vehiculo v : Fachada.getInstancia().getVehiculos()) {
@@ -86,7 +69,6 @@ public class ControladorEmularTransito {
                 break;
             }
         }
-
 
         if (vehiculo == null) {
             // sin info
