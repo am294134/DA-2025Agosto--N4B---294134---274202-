@@ -138,6 +138,6 @@ public class Fachada extends Observable {
     }
     
     public void agregarEstado(String nombreEstado) {
-        sistemaAcceso.agregarEstado(new Estado(nombreEstado));
+        sistemaAcceso.agregarEstado(nombreEstado);
     }
 }

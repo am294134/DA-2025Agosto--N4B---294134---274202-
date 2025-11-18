@@ -103,7 +103,8 @@ public class SistemaAcceso {
         throw new PeajeException("No se encontró el estado con nombre: " + nombreEstado);
     }
 
-    public void agregarEstado(Estado estado) {
+    public void agregarEstado(String nombre) {
+        Estado estado = new Estado(nombre);
         this.estados.add(estado);
     }
  } 
