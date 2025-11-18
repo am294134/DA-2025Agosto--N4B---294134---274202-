@@ -177,7 +177,8 @@ public class SistemaPeaje {
         return transitos;
     }
     
-    public void agregarPuesto(Puesto puesto) {
+    public void agregarPuesto(String nombre, String ubicacion) {
+        Puesto puesto = new Puesto(nombre, ubicacion);
         puestos.add(puesto);
     }
     

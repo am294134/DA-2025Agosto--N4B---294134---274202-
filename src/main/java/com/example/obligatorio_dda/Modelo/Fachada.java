@@ -51,7 +51,7 @@ public class Fachada extends Observable {
     }
 
     public void agregarPuesto(String nombre, String ubicacion) {
-        sistemaPeaje.agregarPuesto(new Puesto(nombre, ubicacion));
+        sistemaPeaje.agregarPuesto(nombre, ubicacion);
     }
 
     public void agregarCategoria(String nombre) {
