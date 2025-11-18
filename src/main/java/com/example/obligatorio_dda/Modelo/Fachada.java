@@ -46,12 +46,7 @@ public class Fachada extends Observable {
 
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
             double saldoActual, double saldoMinimo, Estado estado) {
-        // delegamos la creación al sistema de acceso y notificar al observador
-        Propietario p = sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual,
-                saldoMinimo, estado);
-        // registramos prop en sistema peaje
-        sistemaPeaje.agregarPropietario(p);
-        // avisamos a los observadores que se agrega prop
+        sistemaPeaje.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
         avisar(new Object[] { Eventos.propietarioAgregado, p });
     }
 

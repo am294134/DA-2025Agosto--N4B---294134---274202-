@@ -61,8 +61,9 @@ public class ControladorEmularTransito {
         Vehiculo v = sistemaPeaje.buscarVehiculoPorMatricula(matricula);
     
         Propietario prop = vehiculo.getPropietario();
+        
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
-        String categoria = (vehiculo.getCategoria() != null) ? vehiculo.getCategoria().getNombre() : "";
+        String categoria = (v.getCategoria() != null) ? v.getCategoria().getNombre() : "";
 
         if(prop.getEstado() != null) {
             String estadoNombre = prop.getEstado().getNombre();
@@ -116,6 +117,7 @@ public class ControladorEmularTransito {
     @PostMapping("/tarifasPorPuesto")
     public List<Respuesta> tarifasPorPuestoSesion(HttpSession sesion,
             @RequestParam(name = "puestoId", required = false) String puestoId) throws PeajeException {
+        
         // permitir que el cliente especifique el puesto por parámetro
         if (puestoId == null || puestoId.isEmpty()) {
             puestoId = (String) sesion.getAttribute("puestoSeleccionado");
