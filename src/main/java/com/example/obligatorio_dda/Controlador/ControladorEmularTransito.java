@@ -9,6 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -97,7 +98,7 @@ public class ControladorEmularTransito {
 
         String bonificacionNombre = null;
         if (prop != null) {
-            com.example.obligatorio_dda.Modelo.Bonificacion b = prop.getBonificacionForPuesto(puesto);
+            com.example.obligatorio_dda.Modelo.Bonificacion b = prop.getBonificacionEnPuesto(puesto);
             if (b != null) bonificacionNombre = b.getNombre();
         }
         if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";

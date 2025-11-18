@@ -1,7 +1,6 @@
 package com.example.obligatorio_dda.Modelo;
 
 import java.util.ArrayList;
-import java.time.LocalDateTime;
 
 public class SistemaPeaje {
     private ArrayList<Puesto> puestos;
@@ -137,18 +136,8 @@ public class SistemaPeaje {
 
         Propietario propietario = vehiculo.getPropietario();
 
-        // calcular monto a pagar aplicando la bonificación si corresponde
-        double montoBase = tarifa.getMonto();
-        Bonificacion bon = null;
-        if (propietario != null) {
-            for (Asignacion a : propietario.getAsignaciones()) {
-                if (a != null && a.getPuesto() != null && a.getPuesto().getPeajeString().equals(puesto.getPeajeString())) {
-                    bon = a.getBonificacion();
-                    break;
-                }
-            }
-        }
-        double montoAPagar = (bon != null) ? bon.calcularDescuento(montoBase) : montoBase;
+        // calculamos consultando al prop
+        Bonificacion bon = (propietario != null) ? propietario.getBonificacionEnPuesto(puesto) : null;
 
         // parsear la fecha/hora proporcionada (se espera formato yyyy-MM-dd'T'HH:mm)
         java.time.LocalDateTime fecha = null;
@@ -162,53 +151,17 @@ public class SistemaPeaje {
             }
         }
 
-        // crear transito con la tarifa encontrada y la fecha/hora indicada
-        Transito transito = (fecha != null)
-                ? new Transito(puesto, vehiculo, propietario, tarifa, fecha)
-                : new Transito(puesto, vehiculo, propietario, tarifa);
-        // registrar los valores efectivos aplicados al tránsito (no deben cambiar si luego se asigna una bonificación)
-        if (bon != null) {
-            double montoPagado = montoAPagar;
-            double descuento = montoBase - montoPagado;
-            transito.setBonificacionNombre(bon.getNombre());
-            transito.setMontoPagado(montoPagado);
-            transito.setDescuentoAplicado(descuento);
-        } else {
-            transito.setBonificacionNombre(null);
-            transito.setMontoPagado(montoAPagar);
-            transito.setDescuentoAplicado(0.0);
-        }
+        // crea el transito con la tarifa encontrada y la fecha/hora indicada; Transito crea y guarda los valores aplicados
+        Transito transito = Transito.crearConValoresAplicados(puesto, vehiculo, propietario, tarifa, bon, fecha);
 
         // registrar en colecciones
         this.transitos.add(transito);
         puesto.getTransitos().add(transito);
         vehiculo.agregarTransito(transito);
         if (propietario != null) {
-            propietario.agregarTransito(transito);
-            // actualizar saldo del propietario
-            try {
-                propietario.descontarSaldo(montoAPagar);
-            } catch (Exception ex) {
-                // no bloquear el registro por fallo en actualizacion de saldo
-            }
-            // Crear una notificación y agregarla al propietario
-            try {
-                int numeroPuesto = -1;
-                for (int i = 0; i < this.puestos.size(); i++) {
-                    if (this.puestos.get(i) == puesto) {
-                        numeroPuesto = i + 1; // numeración 1-based
-                        break;
-                    }
-                }
-                String nroTexto = (numeroPuesto > 0) ? String.valueOf(numeroPuesto) : "";
-                String nombrePuesto = puesto.getNombre();
-                String placa = vehiculo.getMatricula();
-                String mensaje = "Pasaste por el puesto \"" + nombrePuesto + "\" " + (nroTexto.isEmpty() ? "" : ("#" + nroTexto + " ")) + "con el vehículo " + placa;
-                Notificacion not = new Notificacion(mensaje, propietario);
-                propietario.getNotificaciones().add(not);
-            } catch (Exception ex) {
-                // no impedir el flujo si falla la notificación
-            }
+            double montoAPagar = transito.getMontoPagado();
+            // delegar al propietario la actualización de su estado (saldo, notificaciones, lista de tránsitos)
+            propietario.registrarTransitoYAplicarPago(transito, montoAPagar);
         }
     }
     

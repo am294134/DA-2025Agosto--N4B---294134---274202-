@@ -1,6 +1,7 @@
 package com.example.obligatorio_dda.Modelo;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Transito {
     private Puesto puesto;
@@ -46,18 +47,19 @@ public class Transito {
         return tarifa;
     }
 
-    public void setTarifa (Tarifa tarifa) {
+    public void setTarifa(Tarifa tarifa) {
         this.tarifa = tarifa;
     }
-    
-    public void setPuesto (Puesto puesto) {
+
+    public void setPuesto(Puesto puesto) {
         this.puesto = puesto;
     }
-    public void setVehiculo (Vehiculo vehiculo) {
+
+    public void setVehiculo(Vehiculo vehiculo) {
         this.vehiculo = vehiculo;
     }
 
-    public void setPropietario (Propietario propietario) {
+    public void setPropietario(Propietario propietario) {
         this.propietario = propietario;
     }
 
@@ -89,7 +91,7 @@ public class Transito {
         this.descuentoAplicado = descuentoAplicado;
     }
 
-    // Expert convenience methods: expose data belonging to this transito
+    // exponemos datos que pertenecen a este tránsito
     public double getMontoBase() {
         return tarifa.getMonto();
     }
@@ -106,12 +108,36 @@ public class Transito {
         return bonificacionNombre;
     }
 
-    public String getFechaHoraFormatted(java.time.format.DateTimeFormatter fmt) {
-        if (fechaHora == null) return "";
+    public String getFechaHoraFormatted(DateTimeFormatter fmt) {
+        if (fechaHora == null)
+            return "";
         try {
             return fechaHora.format(fmt);
         } catch (Exception ex) {
             return fechaHora.toString();
         }
+    }
+
+    // sería como la fabrica, crea un tránsito y calcula almacenando los valores ya
+    // aplicados
+    public static Transito crearConValoresAplicados(Puesto puesto, Vehiculo vehiculo, Propietario propietario,
+            Tarifa tarifa, Bonificacion bon, LocalDateTime fecha) {
+        Transito t = new Transito(puesto, vehiculo, propietario, tarifa, fecha);
+
+        double montoBase = tarifa.getMonto();
+
+        double montoPagado;
+        if (bon != null) {
+            montoPagado = bon.calcularDescuento(montoBase);
+        } else {
+            montoPagado = montoBase;
+        }
+
+        double descuento = montoBase - montoPagado;
+
+        t.setBonificacionNombre(bon != null ? bon.getNombre() : null);
+        t.setMontoPagado(montoPagado);
+        t.setDescuentoAplicado(descuento);
+        return t;
     }
 }

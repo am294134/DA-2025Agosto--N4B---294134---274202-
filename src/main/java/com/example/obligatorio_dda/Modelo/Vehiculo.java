@@ -48,9 +48,11 @@ public class Vehiculo {
         return propietario;
     }
 
-    // public double calcularTarifa() {
-    //     double tarifa = categoria.obtenerTarifa();
-    //     return tarifa;
-    // }
-    
+    // Normaliza y compara matrículas de forma tolerante (quita no alfanuméricos y compara en mayúsculas)
+    public boolean matchesMatriculaTolerant(String input) {
+        if (input == null || this.matricula == null) return false;
+        String a = this.matricula.replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
+        String b = input.replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
+        return a.equals(b);
+    }
 }

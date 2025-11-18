@@ -1,6 +1,7 @@
 package com.example.obligatorio_dda.Modelo;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Propietario extends Usuario {
     private double saldoActual;
@@ -10,24 +11,22 @@ public class Propietario extends Usuario {
     private ArrayList<Notificacion> notificaciones = new ArrayList<>();
     private ArrayList<Asignacion> asignaciones = new ArrayList<>();
     private ArrayList<Transito> transitos = new ArrayList<>();
-    
+
     public Propietario(String nombre, String apellido, String cedula, String contrasenia,
-                      double saldoActual, double saldoMinimo, Estado estado) {
+            double saldoActual, double saldoMinimo, Estado estado) {
         super(nombre, apellido, cedula, contrasenia);
         this.saldoActual = saldoActual;
         this.saldoMinimo = saldoMinimo;
         this.estado = estado;
-    }   
-    
+    }
+
     public double getSaldoActual() {
         return saldoActual;
     }
 
-
     public double getSaldoMinimo() {
         return saldoMinimo;
     }
-
 
     public Estado getEstado() {
         return estado;
@@ -41,22 +40,22 @@ public class Propietario extends Usuario {
         return vehiculos;
     }
 
-
     public ArrayList<Notificacion> getNotificaciones() {
         return notificaciones;
     }
 
-    // Expert: devolver una copia ordenada de las notificaciones (recientes primero)
-    public java.util.List<Notificacion> listarNotificacionesOrdenadasDesc() {
-        java.util.List<Notificacion> copia = new java.util.ArrayList<>(notificaciones);
+    // Copia ordenada de las notificaciones (recientes primero)
+    public List<Notificacion> listarNotificacionesOrdenadasDesc() {
+        List<Notificacion> copia = new ArrayList<>(notificaciones);
         copia.sort((a, b) -> b.getFechaHora().compareTo(a.getFechaHora()));
         return copia;
     }
 
-    // Expert: obtener una página de notificaciones ordenadas
-    public java.util.List<Notificacion> obtenerNotificacionesPagina(int page, int pageSize) {
-        java.util.List<Notificacion> ordenadas = listarNotificacionesOrdenadasDesc();
-        if (pageSize <= 0) return ordenadas;
+    // Obtener una página de notificaciones ordenadas
+    public List<Notificacion> obtenerNotificacionesPagina(int page, int pageSize) {
+        List<Notificacion> ordenadas = listarNotificacionesOrdenadasDesc();
+        if (pageSize <= 0)
+            return ordenadas;
         int totalItems = ordenadas.size();
         int fromIndex = Math.max(0, Math.min(totalItems, (page - 1) * pageSize));
         int toIndex = Math.min(totalItems, fromIndex + pageSize);
@@ -68,26 +67,30 @@ public class Propietario extends Usuario {
     }
 
     public int getTotalPagesFor(int pageSize) {
-        if (pageSize <= 0) return 1;
+        if (pageSize <= 0)
+            return 1;
         return Math.max(1, (int) Math.ceil((double) notificaciones.size() / pageSize));
     }
 
     public int getTotalNotificacionesNoLeidas() {
         int c = 0;
-        for (Notificacion n : notificaciones) if (!n.isLeida()) c++;
+        for (Notificacion n : notificaciones)
+            if (!n.isLeida())
+                c++;
         return c;
     }
-
 
     public ArrayList<Asignacion> getAsignaciones() {
         return asignaciones;
     }
 
-    // Expert: encontrar la bonificación (si existe) para un puesto dado
-    public Bonificacion getBonificacionForPuesto(Puesto puesto) {
-        if (puesto == null || asignaciones == null) return null;
+    // devuelve la bon asignada al propietario para el puesto, sino null
+    public Bonificacion getBonificacionEnPuesto(Puesto puesto) {
+        if (puesto == null || asignaciones == null)
+            return null;
         for (Asignacion a : asignaciones) {
-            if (a == null || a.getPuesto() == null) continue;
+            if (a == null || a.getPuesto() == null)
+                continue;
             if (a.getPuesto().getPeajeString().equals(puesto.getPeajeString())) {
                 return a.getBonificacion();
             }
@@ -95,10 +98,11 @@ public class Propietario extends Usuario {
         return null;
     }
 
-    // Expert: calcular el monto a pagar en un puesto dado aplicando la bonificación si corresponde
+    // calcula el monto a pagar en un puesto y si hay bon aploca descuento
     public double calcularMontoAPagarParaPuesto(Puesto puesto, double montoBase) {
-        Bonificacion b = getBonificacionForPuesto(puesto);
-        if (b != null) return b.calcularDescuento(montoBase);
+        Bonificacion b = getBonificacionEnPuesto(puesto);
+        if (b != null)
+            return b.calcularDescuento(montoBase);
         return montoBase;
     }
 
@@ -107,16 +111,22 @@ public class Propietario extends Usuario {
         return this.saldoActual - montoAPagar;
     }
 
-    // Expert: verificar si ya existe una asignación para un puesto (acepta puesto null)
-    public boolean hasAsignacionForPuestoNullable(Puesto puesto) {
-        if (asignaciones == null) return false;
-        for (Asignacion existente : asignaciones) {
-            Puesto puestoExistente = existente.getPuesto();
-            if (puesto == null && puestoExistente == null) return true;
+    // verificamos si ya existe una asignación para un puesto
+    public boolean existeAsignacionEnPuesto(Puesto puesto) {
+        if (asignaciones == null)
+            return false;
+
+        for (Asignacion asg : asignaciones) {
+            Puesto puestoExistente = asg.getPuesto();
+
+            if (puesto == null && puestoExistente == null)
+                return true;
+
             if (puesto != null && puestoExistente != null) {
                 String p1 = puesto.getPeajeString();
                 String p2 = puestoExistente.getPeajeString();
-                if (p1 != null && p1.equals(p2)) return true;
+                if (p1 != null && p1.equals(p2))
+                    return true;
             }
         }
         return false;
@@ -126,14 +136,25 @@ public class Propietario extends Usuario {
         this.saldoActual = this.saldoActual - monto;
     }
 
-    public  void agregarTransito(Transito transito) {
+    public void agregarTransito(Transito transito) {
         transitos.add(transito);
-    }   
+    }
+
+    public void registrarTransitoYAplicarPago(Transito transito, double montoAPagar) {
+        // registrar tránsito en la lista del propietario
+        agregarTransito(transito);
+        descontarSaldo(montoAPagar);
+
+        // creamos noti
+        String nombrePuesto = (transito.getPuesto() != null) ? transito.getPuesto().getNombre() : "";
+        String matri = (transito.getVehiculo() != null) ? transito.getVehiculo().getMatricula() : "";
+        String mensaje = "Pasaste por el puesto \"" + nombrePuesto + "\" con el vehículo " + matri;
+        Notificacion not = new Notificacion(mensaje, this);
+        this.notificaciones.add(not);
+    }
+
     public java.util.List<Transito> getTransitos() {
         return transitos;
     }
-    
-
-
 
 }
