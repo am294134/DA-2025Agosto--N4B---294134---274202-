@@ -113,11 +113,7 @@ public class Fachada extends Observable {
         return sistemaPeaje.getTransitos();
     }
 
-    /**
-     * Helper: buscar puesto por id/nombre delegando al SistemaPeaje.
-     */
     public Puesto buscarPuestoPorId(String puestoId) throws PeajeException {
-        // backward-compat: delegate to sistemaPeaje's search by name method
         return sistemaPeaje.buscarPuestoPorNombrePuesto(puestoId);
     }
 

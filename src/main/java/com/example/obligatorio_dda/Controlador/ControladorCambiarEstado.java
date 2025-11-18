@@ -59,12 +59,8 @@ public class ControladorCambiarEstado {
             throw new PeajeException("No hay un administrador logueado");
         }
 
-        try {
-            Fachada.getInstancia().cambiarEstado(cedula, estado);
-            return Respuesta.lista(new Respuesta("cambioEstadoResultado",
-                    "Estado cambiado correctamente a: " + estado));
-        } catch (PeajeException ex) {
-            return Respuesta.lista(new Respuesta("cambioEstadoResultado", ex.getMessage()));
-        }
+        Fachada.getInstancia().cambiarEstado(cedula, estado);
+        
+         return Respuesta.lista(new Respuesta("cambioEstadoResultado","Estado cambiado correctamente a: " + estado));
     }
 }
