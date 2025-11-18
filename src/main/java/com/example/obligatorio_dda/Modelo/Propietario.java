@@ -160,4 +160,7 @@ public class Propietario extends Usuario {
     public void cambiarEstado(Estado nuevoEstado) {
         this.estado = nuevoEstado;
     }
+    public void agregarVehiculo(Vehiculo vehiculo) {
+        this.vehiculos.add(vehiculo);
+    }
 }

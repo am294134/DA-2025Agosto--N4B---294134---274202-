@@ -54,13 +54,12 @@ public class SistemaPeaje {
     
     public void agregarVehiculo(String matricula, String color, String modelo, Categoria categoria,
     Propietario propietario) {
-        // Crea veh
+
         Vehiculo vehiculo = new Vehiculo(matricula, color, modelo, categoria, propietario);
         
-        // agrega el vehículo a la lista general
         vehiculos.add(vehiculo);
         // agrega el vehiculo a la lista del propietario (relación bidireccional)
-        propietario.getVehiculos().add(vehiculo);
+        propietario.agregarVehiculo(vehiculo);
     }
     
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
