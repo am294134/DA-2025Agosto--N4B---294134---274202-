@@ -88,13 +88,13 @@ public class SistemaPeaje {
     }
 
     
-    public Puesto buscarPuestoPorNombrePuesto(String puestoNombre) throws PeajeException {
+    public Puesto buscarPuestoPorId(String puestoId) throws PeajeException {
         for (Puesto p : puestos) {
-            if (p.getPeajeString().equals(puestoNombre)) {
+            if (p.getPeajeString().equals(puestoId)) {
                 return p;
             }
         }
-        throw new PeajeException("No existe el puesto con nombre: " + puestoNombre);
+        throw new PeajeException("No existe el puesto con id: " + puestoId);
     }
     
     public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
@@ -109,7 +109,7 @@ public class SistemaPeaje {
             throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
         }
 
-        Puesto puesto = buscarPuestoPorNombrePuesto(puestoId);
+        Puesto puesto = buscarPuestoPorId(puestoId);
 
         if (puestoId == null || puestoId.trim().isEmpty()) {
             throw new PeajeException("Puesto inválido");
@@ -173,14 +173,6 @@ public class SistemaPeaje {
     }
 
     //#region métodos auxiliares de búsqueda
-    private Puesto buscarPuesto(String nombrePuesto) throws PeajeException {
-        for (Puesto p : puestos) {
-            if (p.getNombre().equals(nombrePuesto)) {
-                return p;
-            }
-        }
-        throw new PeajeException("No existe el puesto: " + nombrePuesto);
-    }
     
     private Categoria buscarCategoria(String nombreCategoria) throws PeajeException {
         for (Categoria c : categorias) {

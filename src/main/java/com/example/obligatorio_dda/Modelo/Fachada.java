@@ -114,11 +114,7 @@ public class Fachada extends Observable {
     }
 
     public Puesto buscarPuestoPorId(String puestoId) throws PeajeException {
-        return sistemaPeaje.buscarPuestoPorNombrePuesto(puestoId);
-    }
-
-    public Puesto buscarPuestoPorNombre(String nombre) throws PeajeException {
-        return sistemaPeaje.buscarPuestoPorNombrePuesto(nombre);
+        return sistemaPeaje.buscarPuestoPorId(puestoId);
     }
 
     public Vehiculo buscarVehiculoPorMatricula(String matricula) throws PeajeException {
