@@ -11,15 +11,19 @@ public class TransitoPropietarioDTO {
 
     public TransitoPropietarioDTO() {}
 
-    public TransitoPropietarioDTO(String puesto, String matricula, Double montoBase, String bonificacion, Double descuento, Double montoPagado, String fechaHora) {
+    public TransitoPropietarioDTO(String puesto, String matricula, Double montoBase, String bonificacion, Double descuento, Double montoPagado, LocalDateTime fechaHora) {
         this.puesto = puesto;
         this.matricula = matricula;
         this.montoBase = montoBase;
         this.bonificacion = bonificacion;
         this.descuento = descuento;
         this.montoPagado = montoPagado;
-        this.fechaHora = fechaHora;
+     
+    DateTimeFormatter fmt =DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
+        this.fechaHora = fechaHora.format(fmt);
     }
+
+
 
     public String getPuesto() { return puesto; }
     public String getMatricula() { return matricula; }

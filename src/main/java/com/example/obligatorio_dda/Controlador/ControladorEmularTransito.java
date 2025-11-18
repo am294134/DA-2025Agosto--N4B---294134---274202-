@@ -41,14 +41,8 @@ public class ControladorEmularTransito {
 
         // Guardamos el puesto en la sesión del administrador
         sesion.setAttribute("puestoSeleccionado", puestoId);
-
-        String fechaStr = null;
-        if (fechaHora != null) {
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        fechaStr = fechaHora.format(fmt);
-        }
         
-        Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaStr);
+        Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaHora);
         return Respuesta.lista(new Respuesta("emularResultado", "Tránsito registrado correctamente"));
         }
 
