@@ -157,4 +157,7 @@ public class Propietario extends Usuario {
         return transitos;
     }
 
+    public void cambiarEstado(Estado nuevoEstado) {
+        this.estado = nuevoEstado;
+    }
 }

@@ -85,7 +85,7 @@ public class SistemaAcceso {
     public void cambiarEstado(String cedula, String nombreEstado) throws PeajeException {
         Propietario propietario = buscarPropietarioPorCedula(cedula);
         Estado estado = buscarEstadoPorNombre(nombreEstado);
-        propietario.setEstado(estado);
+        propietario.cambiarEstado(estado);
         
         // Registrar notificación
         String mensaje = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) 
