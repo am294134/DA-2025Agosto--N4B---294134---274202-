@@ -62,7 +62,7 @@ public class ControladorBonificaciones {
 
     @PostMapping("/listarTipos")
     public List<Respuesta> listarTipos() {
-        
+
         List<String> tipos = new ArrayList<>();
         for (Bonificacion b : Fachada.getInstancia().getBonificaciones()) {
             tipos.add(b.getNombre());
@@ -73,18 +73,18 @@ public class ControladorBonificaciones {
     @PostMapping("/infoPorCedula")
     public List<Respuesta> infoPorCedula(HttpSession sesion,
             @RequestParam(name = "cedula", required = false) String cedula) {
-        
-                if (cedula == null || cedula.trim().isEmpty()) {
+
+        if (cedula == null || cedula.trim().isEmpty()) {
             return Respuesta.lista(new Respuesta("infoPropietario", null));
         }
 
         cedula = cedula.trim();
         // buscar propietario en la fachada
         PropietarioInfoBonDTO dto = null;
-        
+
         for (Propietario p : Fachada.getInstancia().getPropietarios()) {
             if (p != null && p.getCedula() != null && p.getCedula().equals(cedula)) {
-                
+
                 String nombre = p.getNombre() + " " + p.getApellido();
                 String estado = p.getEstado().getNombre();
                 dto = new PropietarioInfoBonDTO(nombre.trim(), estado);
@@ -92,7 +92,7 @@ public class ControladorBonificaciones {
                 // recolectar las bonificaciones asignadas a este propietario
                 List<BonificacionAsignadaDTO> asignadas = new ArrayList<>();
 
-                //por cada bon buscamos en las asignaciones
+                // por cada bon buscamos en las asignaciones
                 for (Bonificacion b : Fachada.getInstancia().getBonificaciones()) {
                     for (Asignacion a : b.getAsignaciones()) {
                         if (a != null && a.getPropietario() != null && a.getPropietario().getCedula() != null
@@ -100,7 +100,7 @@ public class ControladorBonificaciones {
 
                             String nombrePuesto = a.getPuesto().getNombre();
                             String fecha = a.getFechaAsignacion().toString();
-                            
+
                             asignadas.add(new BonificacionAsignadaDTO(
                                     b.getNombre(), nombrePuesto, fecha));
                         }
@@ -112,15 +112,13 @@ public class ControladorBonificaciones {
         }
         return Respuesta.lista(new Respuesta("infoPropietario", dto));
     }
-         
 
     @PostMapping("/asignar")
     public List<Respuesta> asignarBonificacion(HttpSession sesion,
             @RequestParam(name = "cedula") String cedula,
             @RequestParam(name = "puesto") String puestoId,
             @RequestParam(name = "tipo") String tipoBonificacion) {
-                
-    
+
         // validar inputs básicos
         Propietario prop = null;
         for (Propietario p : Fachada.getInstancia().getPropietarios()) {
@@ -129,8 +127,10 @@ public class ControladorBonificaciones {
             }
         }
 
-        // if (prop.getEstado() != null && "Deshabilitado".equalsIgnoreCase(prop.getEstado().getNombre())) {
-        //     throw new PeajeException("Usuario deshabilitado, no puede ingresar al sistema");
+        // if (prop.getEstado() != null &&
+        // "Deshabilitado".equalsIgnoreCase(prop.getEstado().getNombre())) {
+        // throw new PeajeException("Usuario deshabilitado, no puede ingresar al
+        // sistema");
         // }
 
         if (cedula == null || cedula.trim().isEmpty()) {
@@ -140,11 +140,11 @@ public class ControladorBonificaciones {
             return Respuesta.lista(new Respuesta("asignacionResultado", "Seleccione un tipo de bonificación"));
         }
         // buscar propietario
-        
+
         if (prop == null) {
             return Respuesta.lista(new Respuesta("asignacionResultado", "No se encontró propietario con esa cédula"));
         }
-        
+
         // buscar bonificacion por nombre
         Bonificacion bon = null;
         for (Bonificacion b : Fachada.getInstancia().getBonificaciones()) {
@@ -158,11 +158,13 @@ public class ControladorBonificaciones {
         }
         // buscar puesto (se pasa el peajeString como value en selects)
         Puesto puesto = null;
+        
         try {
             puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
         } catch (PeajeException ex) {
             puesto = null;
         }
+
         // Evitar asignaciones duplicadas para el mismo propietario en el mismo puesto
         if (prop.getAsignaciones() != null && prop.getAsignaciones().size() > 0) {
             for (Asignacion existente : prop.getAsignaciones()) {
@@ -189,28 +191,33 @@ public class ControladorBonificaciones {
         if (puesto != null) {
             puesto.getAsignaciones().add(a);
         }
+
         // Crear notificación para el propietario informando la nueva bonificación
-        try {
-            int numeroPuesto = -1;
-            java.util.List<Puesto> puestos = Fachada.getInstancia().getPuestos();
-            for (int i = 0; i < puestos.size(); i++) {
-                if (puestos.get(i) == puesto) {
-                    numeroPuesto = i + 1;
-                    break;
-                }
+        List<Puesto> puestos = Fachada.getInstancia().getPuestos();
+        int numeroPuesto = -1;
+
+        // Buscamos el número del puesto
+        for (int i = 0; i < puestos.size(); i++) {
+            if (puestos.get(i) == puesto) {
+                numeroPuesto = i + 1; // para empezar por 1
+                break;
             }
-                String nroTexto = (numeroPuesto > 0) ? String.valueOf(numeroPuesto) : "";
-                String nombrePuesto = puesto.getNombre();
-                String mensaje = "Se te asignó la bonificación \"" + bon.getNombre()
-                    + "\" en el puesto \"" + nombrePuesto + "\"" + (nroTexto.isEmpty() ? "" : (" #" + nroTexto));
-            Notificacion not = new Notificacion(mensaje, prop);
-            prop.getNotificaciones().add(not);
-        } catch (Exception ex) {
-            // no bloquear la asignación por fallo en la notificación
         }
+
+        String nroTexto = "";
+        if (numeroPuesto > 0) {
+            nroTexto = " #" + numeroPuesto;
+        }
+
+        // Armamos el mensaje
+        String mensaje = "Se te asignó la bonificación \"" + bon.getNombre() +
+                "\" en el puesto \"" + puesto.getNombre() + "\"" + nroTexto;
+
+        // Creamos y guardamos la notificación
+        Notificacion notificacion = new Notificacion(mensaje, prop);
+        prop.getNotificaciones().add(notificacion);
 
         return Respuesta.lista(new Respuesta("asignacionResultado", "Bonificación asignada correctamente"));
     }
 
 }
-

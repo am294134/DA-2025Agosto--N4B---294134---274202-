@@ -17,48 +17,52 @@ import com.example.obligatorio_dda.Modelo.PeajeException;
 @RestController
 @RequestMapping("/cambiarEstado")
 public class ControladorCambiarEstado {
-    
+
     @PostMapping("/buscar")
     public List<Respuesta> buscarPropietario(HttpSession sesion,
             @RequestParam("cedula") String cedula) throws PeajeException {
-        
+
         // Verificar que hay un administrador logueado
         Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
-        
-        try {
-            Propietario propietario = Fachada.getInstancia().buscarPropietarioPorCedula(cedula);
-            
-            String nombreCompleto = propietario.getNombre() + " " + propietario.getApellido();
-            String estadoActual = propietario.getEstado() != null ? 
-                propietario.getEstado().getNombre() : "Sin estado";
-            
-            PropietarioEstadoDTO dto = new PropietarioEstadoDTO(nombreCompleto, estadoActual);
-            
-            return Respuesta.lista(new Respuesta("propietarioEncontrado", dto));
-        } catch (PeajeException ex) {
-            return Respuesta.lista(new Respuesta("propietarioEncontrado", null),
-                                  new Respuesta("mensaje", ex.getMessage()));
+
+        Propietario propietario = Fachada.getInstancia().buscarPropietarioPorCedula(cedula);
+
+        if (propietario == null) {
+            return Respuesta.lista(
+                    new Respuesta("propietarioEncontrado", null),
+                    new Respuesta("mensaje", "No existe un propietario con esa cédula."));
         }
+
+        String nombre = propietario.getNombre() + " " + propietario.getApellido();
+        String estado;
+        if (propietario.getEstado() == null) {
+            estado = "Sin estado";
+        } else {
+            estado = propietario.getEstado().getNombre();
+        }
+
+        PropietarioEstadoDTO dto = new PropietarioEstadoDTO(nombre, estado);
+        return Respuesta.lista(new Respuesta("propietarioEncontrado", dto));
     }
-    
+
     @PostMapping("/cambiar")
     public List<Respuesta> cambiarEstado(HttpSession sesion,
             @RequestParam("cedula") String cedula,
             @RequestParam("estado") String estado) throws PeajeException {
-        
+
         // Verificar que hay un administrador logueado
         Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
-        
+
         try {
             Fachada.getInstancia().cambiarEstado(cedula, estado);
-            return Respuesta.lista(new Respuesta("cambioEstadoResultado", 
-                "Estado cambiado correctamente a: " + estado));
+            return Respuesta.lista(new Respuesta("cambioEstadoResultado",
+                    "Estado cambiado correctamente a: " + estado));
         } catch (PeajeException ex) {
             return Respuesta.lista(new Respuesta("cambioEstadoResultado", ex.getMessage()));
         }

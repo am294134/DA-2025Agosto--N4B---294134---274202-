@@ -35,7 +35,6 @@ public class ControladorEmularTransito {
             throws PeajeException {
 
         Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
-
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
@@ -48,8 +47,8 @@ public class ControladorEmularTransito {
         DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
         fechaStr = fechaHora.format(fmt);
         }
+        
         Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaStr);
-
         return Respuesta.lista(new Respuesta("emularResultado", "Tránsito registrado correctamente"));
         }
 

@@ -25,7 +25,7 @@ public class ControladorNotificaciones {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
 
-        //PAGINADO
+        // PAGINADO
         // default pagination values
         int p = (page == null || page < 1) ? 1 : page;
         int ps = (pageSize == null || pageSize < 1) ? Integer.MAX_VALUE : pageSize;
@@ -41,10 +41,9 @@ public class ControladorNotificaciones {
         List<NotificacionDTO> notificacionesDTO = new ArrayList<>();
         for (Notificacion notif : pageItems) {
             notificacionesDTO.add(new NotificacionDTO(
-                notif.getMensaje(),
-                notif.getFechaHoraFormateada(),
-                notif.isLeida()
-            ));
+                    notif.getMensaje(),
+                    notif.getFechaHoraFormateada(),
+                    notif.isLeida()));
         }
 
         int totalItems = propietario.getTotalNotificaciones();
@@ -56,15 +55,14 @@ public class ControladorNotificaciones {
         result.put("pageSize", ps == Integer.MAX_VALUE ? totalItems : ps);
         result.put("totalPages", totalPages);
         result.put("totalItems", totalItems);
-        // contar no leídas
         int totalUnread = propietario.getTotalNotificacionesNoLeidas();
         result.put("totalUnread", totalUnread);
 
         return Respuesta.lista(new Respuesta("notificaciones", result));
     }
-    
+
     @PostMapping("/marcarLeidas")
-    public java.util.List<Respuesta> marcarNotificacionesComoLeidas(HttpSession sesion) throws Exception {
+    public List<Respuesta> marcarNotificacionesComoLeidas(HttpSession sesion) throws Exception {
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));

@@ -18,7 +18,6 @@ public class ControladorLogin {
     @PostMapping("/loginPropietario")
     public List<Respuesta> loginPropietario(HttpSession sesionHttp, @RequestParam String cedula,
         @RequestParam String contrasenia) throws PeajeException {
-
         // login al modelo
         Propietario propietario = Fachada.getInstancia().loginPropietario(cedula, contrasenia);
 
@@ -29,6 +28,7 @@ public class ControladorLogin {
 
         // se guarda el propietario en la sesionHttp
         sesionHttp.setAttribute("usuarioPropietario", propietario);
+        
         // devolvemos el los datos del usuario
         String nombreCompleto = propietario.getNombre() + " " + propietario.getApellido();
         return Respuesta.lista(
