@@ -21,7 +21,7 @@ public class ControladorVehiculos {
         // obtenemos session
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
-            throw new Exception("No hay un propietario logueado");
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
 
         // Convertimos los vehículos a DTO para enviar solo la información necesaria

@@ -21,7 +21,7 @@ public class ControladorTransitos {
     public java.util.List<Respuesta> listarMisTransitos(HttpSession sesion) throws Exception {
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
-            throw new Exception("No hay un propietario logueado");
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
 
         List<TransitoPropietarioDTO> lista = new ArrayList<>();

@@ -328,6 +328,15 @@
             document.getElementById('nombreUsuario').textContent = datos.nombre + " " + datos.apellido;
         }
 
+        // Handler para redirecciones solicitadas por el servidor cuando no hay sesión
+        function mostrar_redirLoginPropietario(url) {
+            if (typeof url === 'string' && url.length>0) {
+                window.location.href = url;
+            } else {
+                window.location.href = '/login-propietario.html';
+            }
+        }
+
         // Función para cargar las bonificaciones asignadas al propietario
         function cargarBonificaciones() {
             submit('/bonificaciones/porPropietario', '');

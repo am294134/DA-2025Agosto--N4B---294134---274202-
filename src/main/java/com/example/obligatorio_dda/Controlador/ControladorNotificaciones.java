@@ -22,13 +22,15 @@ public class ControladorNotificaciones {
             @RequestParam(name = "pageSize", required = false) Integer pageSize) throws Exception {
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
-            throw new Exception("No hay un propietario logueado");
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
+
+        //PAGINADO
         // default pagination values
         int p = (page == null || page < 1) ? 1 : page;
         int ps = (pageSize == null || pageSize < 1) ? Integer.MAX_VALUE : pageSize;
 
-        // Use Propietario (Expert) to obtain paged/ordered notifications
+        // Use Propietario to obtain paged/ordered notifications
         List<Notificacion> pageItems;
         if (ps == Integer.MAX_VALUE) {
             pageItems = propietario.listarNotificacionesOrdenadasDesc();
@@ -54,7 +56,7 @@ public class ControladorNotificaciones {
         result.put("pageSize", ps == Integer.MAX_VALUE ? totalItems : ps);
         result.put("totalPages", totalPages);
         result.put("totalItems", totalItems);
-        // contar no leídas (delegado a Propietario)
+        // contar no leídas
         int totalUnread = propietario.getTotalNotificacionesNoLeidas();
         result.put("totalUnread", totalUnread);
 
@@ -62,15 +64,16 @@ public class ControladorNotificaciones {
     }
     
     @PostMapping("/marcarLeidas")
-    public void marcarNotificacionesComoLeidas(HttpSession sesion) throws Exception {
+    public java.util.List<Respuesta> marcarNotificacionesComoLeidas(HttpSession sesion) throws Exception {
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
-            throw new Exception("No hay un propietario logueado");
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
 
         // acá marcamos todas como leídas
         for (Notificacion notif : propietario.getNotificaciones()) {
             notif.marcarComoLeida();
         }
+        return Respuesta.lista(new Respuesta("notificacionesMarcadas", "OK"));
     }
 }

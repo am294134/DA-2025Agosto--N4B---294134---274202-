@@ -27,7 +27,7 @@ public class ControladorBonificaciones {
 
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
-            throw new Exception("No hay un propietario logueado");
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
 
         List<BonificacionAsignadaDTO> bonis = new ArrayList<>();
@@ -84,13 +84,6 @@ public class ControladorBonificaciones {
         
         for (Propietario p : Fachada.getInstancia().getPropietarios()) {
             if (p != null && p.getCedula() != null && p.getCedula().equals(cedula)) {
-                // Validar si el propietario está deshabilitado
-                if (p.getEstado() != null && "Deshabilitado".equalsIgnoreCase(p.getEstado().getNombre())) {
-                    return Respuesta.lista(
-                        new Respuesta("infoPropietario", null),
-                        new Respuesta("mensaje", "El propietario está deshabilitado y no puede recibir bonificaciones")
-                    );
-                }
                 
                 String nombre = p.getNombre() + " " + p.getApellido();
                 String estado = p.getEstado().getNombre();
