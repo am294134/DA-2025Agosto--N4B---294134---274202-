@@ -41,7 +41,7 @@ public class ControladorEmularTransito {
 
         // Guardamos el puesto en la sesión del administrador
         sesion.setAttribute("puestoSeleccionado", puestoId);
-        
+
         Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaHora);
         return Respuesta.lista(new Respuesta("emularResultado", "Tránsito registrado correctamente"));
         }
@@ -59,15 +59,6 @@ public class ControladorEmularTransito {
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
         String categoria = (v.getCategoria() != null) ? v.getCategoria().getNombre() : "";
 
-        if(prop.getEstado() != null) {
-            String estadoNombre = prop.getEstado().getNombre();
-            if (estadoNombre != null && (
-                    estadoNombre.equalsIgnoreCase("Deshabilitado") ||
-                    estadoNombre.equalsIgnoreCase("Suspendido")
-                )) {
-                throw new PeajeException("Usuario " + estadoNombre + ", no puede realizar tránsito");
-            }
-        }
         // Buscar si el propietario tiene alguna asignación (bonificación) para el puesto (si se proporcionó)
         Puesto puesto = null;
         if (puestoId != null && !"".equals(puestoId)) {
