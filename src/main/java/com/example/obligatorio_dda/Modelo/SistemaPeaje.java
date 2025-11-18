@@ -103,30 +103,21 @@ public class SistemaPeaje {
         if (matricula == null || matricula.trim().isEmpty()) {
             throw new PeajeException("Matrícula inválida");
         }
-        Vehiculo vehiculo = null;
-        for (Vehiculo v : this.vehiculos) {
-            if (v != null && v.getMatricula() != null && v.getMatricula().equals(matricula)) {
-                vehiculo = v;
-                break;
-            }
-        }
+        Vehiculo vehiculo = buscarVehiculoPorMatricula(matricula);
+        
         if (vehiculo == null) {
             throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
         }
 
+        Puesto puesto = buscarPuestoPorNombrePuesto(puestoId);
+
         if (puestoId == null || puestoId.trim().isEmpty()) {
             throw new PeajeException("Puesto inválido");
         }
-        Puesto puesto = buscarPuestoPorNombrePuesto(puestoId);
 
-        // buscar la tarifa para la categoría del vehículo
-        Tarifa tarifa = null;
-        for (Tarifa t : puesto.getTarifas()) {
-            if (t.getCategoria() != null && vehiculo.getCategoria() != null && t.getCategoria().getNombre().equals(vehiculo.getCategoria().getNombre())) {
-                tarifa = t;
-                break;
-            }
-        }
+        //buscar tarifa para la categoria del vehiculo
+        Tarifa tarifa = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
+        
         if (tarifa == null) {
             throw new PeajeException("No hay tarifa definida para la categoría del vehículo en este puesto");
         }
@@ -136,17 +127,6 @@ public class SistemaPeaje {
         // calculamos consultando al prop
         Bonificacion bon = (propietario != null) ? propietario.getBonificacionEnPuesto(puesto) : null;
 
-        // parsear la fecha/hora proporcionada (se espera formato yyyy-MM-dd'T'HH:mm)
-        java.time.LocalDateTime fecha = null;
-        if (fechaHora != null && !fechaHora.trim().isEmpty()) {
-            try {
-                java.time.format.DateTimeFormatter fmt = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-                fecha = java.time.LocalDateTime.parse(fechaHora, fmt);
-            } catch (Exception ex) {
-                // si falla el parseo, dejamos la fecha null y el constructor del transito usará now
-                fecha = null;
-            }
-        }
 
         // Si el propietario está suspendido, no permitimos registrar el tránsito
         if (propietario != null && propietario.getEstado() != null
@@ -155,7 +135,7 @@ public class SistemaPeaje {
         }
 
         // crea el transito con la tarifa encontrada y la fecha/hora indicada; Transito crea y guarda los valores aplicados
-        Transito transito = Transito.crearConValoresAplicados(puesto, vehiculo, propietario, tarifa, bon, fecha);
+        Transito transito = Transito.crearConValoresAplicados(puesto, vehiculo, propietario, tarifa, bon, fechaHora);
 
         // registrar en colecciones
         this.transitos.add(transito);
