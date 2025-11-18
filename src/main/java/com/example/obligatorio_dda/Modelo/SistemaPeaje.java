@@ -151,6 +151,12 @@ public class SistemaPeaje {
             }
         }
 
+        // Si el propietario está suspendido, no permitimos registrar el tránsito
+        if (propietario != null && propietario.getEstado() != null
+                && "Suspendido".equals(propietario.getEstado().getNombre())) {
+            throw new PeajeException("El propietario está suspendido,no puede realizar tránsitos");
+        }
+
         // crea el transito con la tarifa encontrada y la fecha/hora indicada; Transito crea y guarda los valores aplicados
         Transito transito = Transito.crearConValoresAplicados(puesto, vehiculo, propietario, tarifa, bon, fecha);
 
@@ -158,8 +164,10 @@ public class SistemaPeaje {
         this.transitos.add(transito);
         puesto.getTransitos().add(transito);
         vehiculo.agregarTransito(transito);
+
         if (propietario != null) {
             double montoAPagar = transito.getMontoPagado();
+            
             // delegar al propietario la actualización de su estado (saldo, notificaciones, lista de tránsitos)
             propietario.registrarTransitoYAplicarPago(transito, montoAPagar);
         }
