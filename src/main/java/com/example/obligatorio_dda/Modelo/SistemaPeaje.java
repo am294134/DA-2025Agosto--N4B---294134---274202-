@@ -182,7 +182,8 @@ public class SistemaPeaje {
         puestos.add(puesto);
     }
     
-    public void agregarCategoria(Categoria categoria) {
+    public void agregarCategoria(String nombre) {
+        Categoria categoria = new Categoria(nombre);
         categorias.add(categoria);
     }
     

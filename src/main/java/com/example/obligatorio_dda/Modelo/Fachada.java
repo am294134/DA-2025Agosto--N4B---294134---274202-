@@ -55,7 +55,7 @@ public class Fachada extends Observable {
     }
 
     public void agregarCategoria(String nombre) {
-        sistemaPeaje.agregarCategoria(new Categoria(nombre));
+        sistemaPeaje.agregarCategoria(Sring nombre);
     }
 
     public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
