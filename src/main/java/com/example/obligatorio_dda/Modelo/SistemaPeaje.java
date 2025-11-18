@@ -164,7 +164,7 @@ public class SistemaPeaje {
         categorias.add(categoria);
     }
     
-    public void agregarPropietario(Strin nombre, String apellido, String cedula, String contrasenia,
+    public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
     double saldoActual, double saldoMinimo, Estado estado) {
         Propietario propietario = new Propietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
         if (propietario != null) {

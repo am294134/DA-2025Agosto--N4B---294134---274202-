@@ -47,7 +47,17 @@ public class Fachada extends Observable {
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
             double saldoActual, double saldoMinimo, Estado estado) {
         sistemaPeaje.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
-        avisar(new Object[] { Eventos.propietarioAgregado, p });
+        // Obtener referencia del propietario recién agregado para notificar
+
+        //Esto no deberia estar, pero lo dejo para no romper la notificacion VER DONDE CAMBIARLO
+        Propietario propietario = null;
+        for (Propietario pr : sistemaAcceso.getPropietarios()) {
+            if (pr.getCedula().equals(cedula)) {
+                propietario = pr;
+                break;
+            }
+        }
+        avisar(new Object[] { Eventos.propietarioAgregado, propietario });
     }
 
     public void agregarPuesto(String nombre, String ubicacion) {
@@ -55,7 +65,7 @@ public class Fachada extends Observable {
     }
 
     public void agregarCategoria(String nombre) {
-        sistemaPeaje.agregarCategoria(Sring nombre);
+        sistemaPeaje.agregarCategoria(nombre);
     }
 
     public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
