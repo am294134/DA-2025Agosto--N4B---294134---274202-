@@ -52,23 +52,12 @@ public class SistemaPeaje {
     }
 
     
-    public void agregarVehiculo(String matricula, String color, String modelo, Categoria categoria,
-    Propietario propietario) {
-
-        Vehiculo vehiculo = new Vehiculo(matricula, color, modelo, categoria, propietario);
-        
-        vehiculos.add(vehiculo);
-        // agrega el vehiculo a la lista del propietario (relación bidireccional)
-        propietario.agregarVehiculo(vehiculo);
-    }
-    
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
     String cedulaPropietario) throws PeajeException {
         Categoria categoria = null;
         for (Categoria c : this.categorias) {
             if (c.getNombre().equals(nombreCategoria)) {
                 categoria = c;
-                break;
             }
         }
         if (categoria == null) {
@@ -79,14 +68,23 @@ public class SistemaPeaje {
         for (Propietario p : this.propietarios) {
             if (p.getCedula().equals(cedulaPropietario)) {
                 propietario = p;
-                break;
             }
         }
         if (propietario == null) {
             throw new PeajeException("No existe el propietario con cédula: " + cedulaPropietario);
         }
+
+        if (categoria == null) {
+            throw new PeajeException("No existe la categoría: " + nombreCategoria);
+        }
+
+        Vehiculo vehiculo = new Vehiculo(matricula, color, modelo, categoria, propietario);
         
         agregarVehiculo(matricula, color, modelo, categoria, propietario);
+
+        vehiculos.add(vehiculo);
+
+        propietario.agregarVehiculo(vehiculo);
     }
 
     
