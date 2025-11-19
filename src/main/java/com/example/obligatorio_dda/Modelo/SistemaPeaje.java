@@ -111,7 +111,7 @@ public class SistemaPeaje {
         agregarTransito(puestoId, matricula, fecha);
     }
 
-    // Sobrecarga que acepta LocalDateTime directamente
+   
     public void agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
         // Normalizar y validar matrícula
         if (matricula == null || matricula.trim().isEmpty()) {

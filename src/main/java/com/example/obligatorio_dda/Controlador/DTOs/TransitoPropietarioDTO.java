@@ -1,8 +1,5 @@
 package com.example.obligatorio_dda.Controlador.DTOs;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 public class TransitoPropietarioDTO {
     private String puesto;
     private String matricula;
@@ -14,16 +11,14 @@ public class TransitoPropietarioDTO {
 
     public TransitoPropietarioDTO() {}
 
-    public TransitoPropietarioDTO(String puesto, String matricula, Double montoBase, String bonificacion, Double descuento, Double montoPagado, LocalDateTime fechaHora) {
+    public TransitoPropietarioDTO(String puesto, String matricula, Double montoBase, String bonificacion, Double descuento, Double montoPagado, String fechaHora) {
         this.puesto = puesto;
         this.matricula = matricula;
         this.montoBase = montoBase;
         this.bonificacion = bonificacion;
         this.descuento = descuento;
         this.montoPagado = montoPagado;
-     
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm");
-        this.fechaHora = (fechaHora == null) ? null : fechaHora.format(fmt);
+        this.fechaHora = fechaHora;
     }
 
 
