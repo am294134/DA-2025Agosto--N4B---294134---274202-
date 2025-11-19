@@ -136,6 +136,10 @@ public class Fachada extends Observable {
         return sistemaAcceso.buscarPropietarioPorCedula(cedula);
     }
 
+    public String buscarBonificacionNombreEnPuesto(Propietario prop, Puesto puesto) throws PeajeException {
+        return sistemaPeaje.buscarBonificacionNombreEnPuesto(prop, puesto);
+    }
+
     public void cambiarEstado(String cedula, String estadoNombre) throws PeajeException {
         sistemaAcceso.cambiarEstado(cedula, estadoNombre);
     }

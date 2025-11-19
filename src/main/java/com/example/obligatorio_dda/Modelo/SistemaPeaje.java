@@ -221,6 +221,18 @@ public class SistemaPeaje {
         }
         throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
     }
+
+    public String buscarBonificacionNombreEnPuesto(Propietario prop, Puesto puesto) throws PeajeException {
+        if (prop == null || puesto == null) {
+            return null;
+        }
+        Bonificacion bonificacion = prop.getBonificacionEnPuesto(puesto);
+        if (bonificacion != null) {
+            return bonificacion.getNombre();
+        } else {
+            return null;
+        }
+    }
     //#endregion
     
     public ArrayList<Puesto> getPuestos() {

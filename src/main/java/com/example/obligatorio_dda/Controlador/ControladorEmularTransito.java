@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.TransitoInfoDTO;
 import com.example.obligatorio_dda.Modelo.Tarifa;
+import com.example.obligatorio_dda.Modelo.Bonificacion;
+import com.example.obligatorio_dda.Modelo.Asignacion;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Administrador;
@@ -72,26 +74,21 @@ public class ControladorEmularTransito {
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
         String categoria = (vehiculo.getCategoria() != null) ? vehiculo.getCategoria().getNombre() : "";
 
-        // Buscar si el propietario tiene alguna asignación (bonificación) para el puesto (si se proporcionó)
         Puesto puesto = null;
-        if (puestoId != null && !"".equals(puestoId)) {
+        if (puestoId != null && !puestoId.isEmpty()) {
             try {
                 puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
             } catch (PeajeException ex) {
                 puesto = null;
             }
         }
-        String bonificacionNombre = null;
-        if (prop != null) {
-            com.example.obligatorio_dda.Modelo.Bonificacion b = prop.getBonificacionEnPuesto(puesto);
-            if (b != null) bonificacionNombre = b.getNombre();
-        }
+
+        String bonificacionNombre = Fachada.getInstancia().buscarBonificacionNombreEnPuesto(prop, puesto);
         if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
         // Si se proporcionó un puesto intentamos calcular el costo y saldo luego del tránsito
         if (puesto != null) {
-            try {
                 double montoBase = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
                 double montoAPagar = (prop != null) ? prop.calcularMontoAPagarParaPuesto(puesto, montoBase) : montoBase;
                 Double saldoLuego = null;
@@ -104,9 +101,7 @@ public class ControladorEmularTransito {
                 }
                 dto.setMonto(montoAPagar);
                 dto.setSaldoLuegoDelTransito(saldoLuego);
-            } catch (PeajeException ex) {
-                // no hay tarifa definida para la categoría en ese puesto; dejamos monto/saldo en null
-            }
+            
         }
         return Respuesta.lista(new Respuesta("infoMatricula", dto));
     }
