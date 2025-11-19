@@ -18,7 +18,7 @@ import com.example.obligatorio_dda.Modelo.Transito;
 public class ControladorTransitos {
 
     @PostMapping("/misTransitos")
-    public java.util.List<Respuesta> listarMisTransitos(HttpSession sesion) throws Exception {
+    public List<Respuesta> listarMisTransitos(HttpSession sesion) throws Exception {
         Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
