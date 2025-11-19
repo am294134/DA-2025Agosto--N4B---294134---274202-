@@ -158,6 +158,12 @@ public class SistemaPeaje {
         }
 
         Propietario propietario = vehiculo.getPropietario();
+         if (propietario.getEstado() != null && "Deshabilitado".equalsIgnoreCase(propietario.getEstado().getNombre())) {
+            throw new PeajeException("Usuario deshabilitado, no puede agregar transito");
+        }
+        if (propietario.getEstado() != null && "Suspendido".equalsIgnoreCase(propietario.getEstado().getNombre())) {
+            throw new PeajeException("Usuario suspendido, no puede agregar transito");
+        }
 
         // calculamos consultando al prop
         Bonificacion bon = (propietario != null) ? propietario.getBonificacionEnPuesto(puesto) : null;
