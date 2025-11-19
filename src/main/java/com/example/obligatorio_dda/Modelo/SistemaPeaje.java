@@ -265,5 +265,15 @@ public class SistemaPeaje {
         }
         return lista;
     }
+
+    public ArrayList<Vehiculo> obtenerVehiculosPropietario(Propietario propietario) {
+        ArrayList<Vehiculo> lista = new ArrayList<>();
+        for (Vehiculo v : this.vehiculos) {
+            if (v.getPropietario() != null && v.getPropietario().getCedula().equals(propietario.getCedula())) {
+                lista.add(v);
+            }
+        }
+        return lista;
+    }
     
 }

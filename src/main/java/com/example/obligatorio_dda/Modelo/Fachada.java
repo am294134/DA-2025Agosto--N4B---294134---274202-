@@ -153,4 +153,8 @@ public class Fachada extends Observable {
     public void agregarEstado(String nombreEstado) {
         sistemaAcceso.agregarEstado(nombreEstado);
     }
+
+    public ArrayList<Vehiculo> obtenerVehiculosPropietario(Propietario propietario) {
+        return sistemaPeaje.obtenerVehiculosPropietario(propietario);
+    }   
 }

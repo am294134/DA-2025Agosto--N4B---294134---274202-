@@ -7,6 +7,7 @@ import com.example.obligatorio_dda.Controlador.DTOs.VehiculoDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.VehiculosPropDTO;
 import com.example.obligatorio_dda.Modelo.Propietario;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
+import com.example.obligatorio_dda.Modelo.Fachada;
 
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class ControladorVehiculos {
 
         // Convertimos los vehículos a DTO para enviar solo la información necesaria
         List<VehiculoDTO> vehiculosDTO = new ArrayList<>();
-        for (Vehiculo v : propietario.getVehiculos()) {
+        for (Vehiculo v : Fachada.getInstancia().obtenerVehiculosPropietario(propietario)) {
             vehiculosDTO.add(new VehiculoDTO(
                 v.getMatricula(),
                 v.getModelo(),
