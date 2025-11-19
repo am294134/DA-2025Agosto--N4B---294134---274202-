@@ -17,7 +17,6 @@ public class ControladorPuestos {
     public List<Respuesta> listarPuestos() {
         List<String> valores = new ArrayList<>();
         for (Puesto p : Fachada.getInstancia().getPuestos()) {
-            // devolvemos el identificador peajeString (nombre +direccion)
             valores.add(p.getPeajeString());
         }
         return Respuesta.lista(new Respuesta("puestosLista", valores));

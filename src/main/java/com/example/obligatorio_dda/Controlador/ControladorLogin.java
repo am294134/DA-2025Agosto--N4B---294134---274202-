@@ -24,10 +24,8 @@ public class ControladorLogin {
     @PostMapping("/loginPropietario")
     public List<Respuesta> loginPropietario(@RequestParam String cedula,
         @RequestParam String contrasenia) throws PeajeException {
-        // login al modelo
         Propietario propietario = Fachada.getInstancia().loginPropietario(cedula, contrasenia);
 
-        // si el propietario esta deshabilitado, no puede ingresar
         if (propietario.getEstado() != null && "Deshabilitado".equalsIgnoreCase(propietario.getEstado().getNombre())) {
             throw new PeajeException("Usuario deshabilitado, no puede ingresar al sistema");
         }

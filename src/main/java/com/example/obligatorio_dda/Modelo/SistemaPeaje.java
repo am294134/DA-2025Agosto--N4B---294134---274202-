@@ -108,7 +108,6 @@ public class SistemaPeaje {
     }
     
     public Transito agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-        // parsear cadena y delegar a la versión que acepta LocalDateTime
         LocalDateTime fecha = null;
         if (fechaHora == null || fechaHora.trim().isEmpty()) {
             fecha = LocalDateTime.now();
