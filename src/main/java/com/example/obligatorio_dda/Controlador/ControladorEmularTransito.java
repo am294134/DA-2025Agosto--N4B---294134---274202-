@@ -51,21 +51,42 @@ public class ControladorEmularTransito {
     public List<Respuesta> infoMatricula(HttpSession sesion,
             @RequestParam(name = "puestoId", required = false) String puestoId,
             @RequestParam("matricula") String matricula) throws PeajeException {
+        // buscar vehículo en la fachada (comparación tolerante: quitar no-alfa-numéricos y comparar uppercase)
+        Vehiculo vehiculo = null;
+        String buscada = matricula == null ? "" : matricula.replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
+        for (Vehiculo v : Fachada.getInstancia().getVehiculos()) {
+            if (v == null || v.getMatricula() == null) continue;
+            String actual = v.getMatricula().replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
+            if (actual.equals(buscada)) {
+                vehiculo = v;
+                break;
+            }
+        }
 
-        Vehiculo v = sistemaPeaje.buscarVehiculoPorMatricula(matricula);
-    
+        if (vehiculo == null) {
+            // sin info
+            return Respuesta.lista(new Respuesta("infoMatricula", null));
+        }
+
         Propietario prop = vehiculo.getPropietario();
-        
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
-        String categoria = (v.getCategoria() != null) ? v.getCategoria().getNombre() : "";
+        String categoria = (vehiculo.getCategoria() != null) ? vehiculo.getCategoria().getNombre() : "";
 
         // Buscar si el propietario tiene alguna asignación (bonificación) para el puesto (si se proporcionó)
-        Puesto puesto = sistemaPeaje.buscarPuestoPorId(puestoId);
-        Bonificacion bonificacionPorPropietario = propietario.getBonificacionEnPuesto(puesto);
-
-        String bonificacionNombre = bonificacionPorPropietario.getNombre();
+        Puesto puesto = null;
+        if (puestoId != null && !"".equals(puestoId)) {
+            try {
+                puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
+            } catch (PeajeException ex) {
+                puesto = null;
+            }
+        }
+        String bonificacionNombre = null;
+        if (prop != null) {
+            com.example.obligatorio_dda.Modelo.Bonificacion b = prop.getBonificacionEnPuesto(puesto);
+            if (b != null) bonificacionNombre = b.getNombre();
+        }
         if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
-        
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
         // Si se proporcionó un puesto intentamos calcular el costo y saldo luego del tránsito

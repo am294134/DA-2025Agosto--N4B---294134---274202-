@@ -1,6 +1,8 @@
 package com.example.obligatorio_dda.Modelo;
 
 import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import com.example.obligatorio_dda.Observador.Observable;
 
@@ -85,6 +87,10 @@ public class Fachada extends Observable {
     }
 
     public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
+        sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+    }
+
+    public void agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
         sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
     }
 
