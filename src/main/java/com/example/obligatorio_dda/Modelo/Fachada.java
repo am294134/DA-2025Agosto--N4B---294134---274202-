@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import com.example.obligatorio_dda.Observador.Observable;
+import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 
 public class Fachada extends Observable {
     // singleton eager (como en el ejemplo del profesor)
