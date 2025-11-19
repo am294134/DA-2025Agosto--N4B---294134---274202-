@@ -273,5 +273,14 @@ public class SistemaPeaje {
         }
         return lista;
     }
+
+    public ArrayList<Asignacion> obtenerAsignacionesPropietario(Propietario propietario) {
+        ArrayList<Asignacion> lista = new ArrayList<>();
+        for (Bonificacion b : this.bonificaciones) {
+            for (Asignacion a : b.getAsignaciones()) {
+                if (a.getPropietario() != null && a.getPropietario().getCedula().equals(propietario.getCedula())) {
+                    lista.add(a);
+                }
+            }
     
 }
