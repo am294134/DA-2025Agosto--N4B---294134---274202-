@@ -36,7 +36,22 @@ public class SistemaPeaje {
     }
 
     public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
-        Puesto puesto = buscarPuestoPorId(nombrePuesto);
+        Puesto puesto = null;
+        // intentar encontrar por peajeString (id usado en selects)
+        try {
+            puesto = buscarPuestoPorId(nombrePuesto);
+        } catch (PeajeException e) {
+            // si no existe, intentar buscar por nombre simple (compatibilidad con Datos.cargar)
+            for (Puesto p : this.puestos) {
+                if (p.getNombre() != null && p.getNombre().equals(nombrePuesto)) {
+                    puesto = p;
+                    break;
+                }
+            }
+            if (puesto == null) {
+                throw new PeajeException("No existe el puesto: " + nombrePuesto);
+            }
+        }
         Categoria categoria = buscarCategoria(nombreCategoria);
 
         // creamos y agregamos tarifa
