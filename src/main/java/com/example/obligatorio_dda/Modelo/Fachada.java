@@ -155,15 +155,6 @@ public class Fachada extends Observable {
         return sistemaPeaje.obtenerTarifasPorPuesto(puestoId);
     }
 
-
-    public void cambiarEstado(String cedula, String estadoNombre) throws PeajeException {
-        sistemaAcceso.cambiarEstado(cedula, estadoNombre);
-    }
-    
-    public void agregarEstado(String nombreEstado) {
-        sistemaAcceso.agregarEstado(nombreEstado);
-    }
-
     public ArrayList<Vehiculo> obtenerVehiculosPropietario(Propietario propietario) {
         return sistemaPeaje.obtenerVehiculosPropietario(propietario);
     }   
