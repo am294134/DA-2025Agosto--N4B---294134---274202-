@@ -10,17 +10,23 @@ import com.example.obligatorio_dda.Modelo.Vehiculo;
 import com.example.obligatorio_dda.Modelo.Fachada;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Scope("session")
 @RequestMapping("/vehiculos")
 public class ControladorVehiculos {
 
+    @Autowired
+    private HttpSession sesion;
+
     @PostMapping("/listarVehiculos")
-    public java.util.List<Respuesta> listarVehiculos(HttpSession sesion) throws Exception {
+    public java.util.List<Respuesta> listarVehiculos() throws Exception {
         // obtenemos session
-        Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }

@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,12 +16,16 @@ import com.example.obligatorio_dda.Modelo.Propietario;
 import com.example.obligatorio_dda.Modelo.Transito;
 
 @RestController
+@Scope("session")
 @RequestMapping("/transitos")
 public class ControladorTransitos {
 
+    @Autowired
+    private HttpSession sesion;
+
     @PostMapping("/misTransitos")
-    public List<Respuesta> listarMisTransitos(HttpSession sesion) throws Exception {
-        Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
+    public List<Respuesta> listarMisTransitos() throws Exception {
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }

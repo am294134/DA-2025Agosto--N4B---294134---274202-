@@ -8,15 +8,21 @@ import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Propietario;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @RestController
+@Scope("session")
 @RequestMapping("/acceso")
 public class ControladorLogin {
 
+    @Autowired
+    private HttpSession sesionHttp;
+
     @PostMapping("/loginPropietario")
-    public List<Respuesta> loginPropietario(HttpSession sesionHttp, @RequestParam String cedula,
+    public List<Respuesta> loginPropietario(@RequestParam String cedula,
         @RequestParam String contrasenia) throws PeajeException {
         // login al modelo
         Propietario propietario = Fachada.getInstancia().loginPropietario(cedula, contrasenia);
@@ -26,7 +32,7 @@ public class ControladorLogin {
             throw new PeajeException("Usuario deshabilitado, no puede ingresar al sistema");
         }
 
-        sesionHttp.setAttribute("usuarioPropietario", propietario);
+        this.sesionHttp.setAttribute("usuarioPropietario", propietario);
         
         String nombreCompleto = propietario.getNombre() + " " + propietario.getApellido();
         return Respuesta.lista(
@@ -35,13 +41,13 @@ public class ControladorLogin {
         );
     }
 
-    @PostMapping("/loginAdministrador")
-    public List<Respuesta> loginAdministrador(HttpSession sesionHttp, @RequestParam String cedula,
+        @PostMapping("/loginAdministrador")
+        public List<Respuesta> loginAdministrador(@RequestParam String cedula,
             @RequestParam String contrasenia) throws PeajeException {
 
         Administrador admin = Fachada.getInstancia().loginAdministrador(cedula, contrasenia);
         
-        sesionHttp.setAttribute("usuarioAdministrador", admin);
+        this.sesionHttp.setAttribute("usuarioAdministrador", admin);
 
         return Respuesta.lista(new Respuesta("loginExitoso", "menu-admin.html"));
     }
