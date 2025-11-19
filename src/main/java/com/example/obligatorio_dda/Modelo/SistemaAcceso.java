@@ -87,11 +87,6 @@ public class SistemaAcceso {
         Estado estado = buscarEstadoPorNombre(nombreEstado);
         propietario.cambiarEstado(estado);
         
-        // Registrar notificación
-        String mensaje = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) 
-                + " Se ha cambiado tu estado en el sistema. Tu estado actual es " + nombreEstado;
-        Notificacion notificacion = new Notificacion(mensaje, propietario);
-        propietario.getNotificaciones().add(notificacion);
     }
 
     public Estado buscarEstadoPorNombre(String nombreEstado) throws PeajeException {

@@ -111,7 +111,7 @@ public class SistemaPeaje {
         throw new PeajeException("No existe el puesto con id: " + puestoId);
     }
     
-    public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
+    public Transito agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
         // parsear cadena y delegar a la versión que acepta LocalDateTime
         LocalDateTime fecha = null;
         if (fechaHora == null || fechaHora.trim().isEmpty()) {
@@ -124,11 +124,11 @@ public class SistemaPeaje {
                 throw new PeajeException("Formato de fecha inválido: " + fechaHora);
             }
         }
-        agregarTransito(puestoId, matricula, fecha);
+        return agregarTransito(puestoId, matricula, fecha);
     }
 
    
-    public void agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
+    public Transito agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
         // Normalizar y validar matrícula
         if (matricula == null || matricula.trim().isEmpty()) {
             throw new PeajeException("Matrícula inválida");
@@ -177,8 +177,10 @@ public class SistemaPeaje {
         puesto.getTransitos().add(transito);
         vehiculo.agregarTransito(transito);
 
-            double montoAPagar = transito.getMontoPagado();
-            propietario.registrarTransitoYAplicarPago(transito, montoAPagar);
+        double montoAPagar = transito.getMontoPagado();
+        propietario.registrarTransitoYAplicarPago(transito, montoAPagar);
+
+        return transito;
     }
     
     public ArrayList<Transito> getTransitos() {

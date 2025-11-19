@@ -144,13 +144,6 @@ public class Propietario extends Usuario {
         // registrar tránsito en la lista del propietario
         agregarTransito(transito);
         descontarSaldo(montoAPagar);
-
-        // creamos noti
-        String nombrePuesto = (transito.getPuesto() != null) ? transito.getPuesto().getNombre() : "";
-        String matri = (transito.getVehiculo() != null) ? transito.getVehiculo().getMatricula() : "";
-        String mensaje = "Pasaste por el puesto \"" + nombrePuesto + "\" con el vehículo " + matri;
-        Notificacion not = new Notificacion(mensaje, this);
-        this.notificaciones.add(not);
     }
 
     public java.util.List<Transito> getTransitos() {
