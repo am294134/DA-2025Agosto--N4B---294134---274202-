@@ -117,12 +117,12 @@ public class ControladorBonificaciones {
     public List<Respuesta> asignarBonificacion(HttpSession sesion,
             @RequestParam(name = "cedula") String cedula,
             @RequestParam(name = "puesto") String puestoId,
-            @RequestParam(name = "tipo") String tipoBonificacion) {
+            @RequestParam(name = "tipo") String tipoBonificacion) throws PeajeException {
 
         // validar inputs básicos
         Propietario prop = null;
         for (Propietario p : Fachada.getInstancia().getPropietarios()) {
-            if (p != null && p.getCedula() != null && p.getCedula().equals(cedula.trim())) {
+            if (p != null && p.getCedula() != null && p.getCedula().equals(cedula != null ? cedula.trim() : null)) {
                 prop = p;
             }
         }
@@ -133,7 +133,7 @@ public class ControladorBonificaciones {
         if (tipoBonificacion == null || tipoBonificacion.trim().isEmpty()) {
             throw new PeajeException("Seleccione un tipo de bonificación");
         }
-        
+
         // buscar propietario
         if (prop == null) {
             throw new PeajeException("No se encontró propietario con esa cédula");
@@ -150,9 +150,9 @@ public class ControladorBonificaciones {
         if (bon == null) {
             throw new PeajeException("Tipo de bonificación no encontrado");
         }
+
         // buscar puesto (se pasa el peajeString como value en selects)
         Puesto puesto = null;
-        
         try {
             puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
         } catch (PeajeException ex) {
@@ -176,6 +176,7 @@ public class ControladorBonificaciones {
                 }
             }
         }
+
         // crear asignacion
         Asignacion a = new Asignacion(new java.sql.Date(System.currentTimeMillis()), bon, prop, puesto);
         // registrar en listas correspondientes
@@ -202,9 +203,10 @@ public class ControladorBonificaciones {
             nroTexto = " #" + numeroPuesto;
         }
 
-        // Armamos el mensaje
+        // Armamos el mensaje (evitar NPE si no hay puesto)
+        String puestoNombre = (puesto != null && puesto.getNombre() != null) ? puesto.getNombre() : "sin puesto";
         String mensaje = "Se te asignó la bonificación \"" + bon.getNombre() +
-                "\" en el puesto \"" + puesto.getNombre() + "\"" + nroTexto;
+                "\" en el puesto \"" + puestoNombre + "\"" + nroTexto;
 
         // Creamos y guardamos la notificación
         Notificacion notificacion = new Notificacion(mensaje, prop);
