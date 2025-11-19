@@ -36,7 +36,7 @@ public class SistemaPeaje {
     }
 
     public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
-        Puesto puesto = buscarPuesto(nombrePuesto);
+        Puesto puesto = buscarPuestoPorId(nombrePuesto);
         Categoria categoria = buscarCategoria(nombreCategoria);
 
         // creamos y agregamos tarifa
