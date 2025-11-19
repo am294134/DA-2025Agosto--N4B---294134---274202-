@@ -48,17 +48,12 @@ public class Fachada extends Observable {
 
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
             double saldoActual, double saldoMinimo, Estado estado) {
-        sistemaPeaje.agregarPropietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
-        // Obtener referencia del propietario recién agregado para notificar
-
-        //Esto no deberia estar, pero lo dejo para no romper la notificacion VER DONDE CAMBIARLO
-        Propietario propietario = null;
-        for (Propietario pr : sistemaAcceso.getPropietarios()) {
-            if (pr.getCedula().equals(cedula)) {
-                propietario = pr;
-                break;
-            }
-        }
+        // Crear el propietario en el sistema de acceso y reutilizar la misma instancia
+        Propietario propietario = sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia,
+                saldoActual, saldoMinimo, estado);
+        // también registrar referencia en sistemaPeaje para operaciones relacionadas al peaje
+        this.sistemaPeaje.getPropietarios().add(propietario);
+        // notificar observadores que hay un nuevo propietario
         avisar(new Object[] { Eventos.propietarioAgregado, propietario });
     }
 
