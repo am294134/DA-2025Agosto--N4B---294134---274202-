@@ -41,7 +41,6 @@ public class ControladorEmularTransito {
             throw new PeajeException("No hay un administrador logueado");
         }
 
-        // Guardamos el puesto en la sesión del administrador
         sesion.setAttribute("puestoSeleccionado", puestoId);
 
         Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaHora);
@@ -53,57 +52,25 @@ public class ControladorEmularTransito {
     public List<Respuesta> infoMatricula(HttpSession sesion,
             @RequestParam(name = "puestoId", required = false) String puestoId,
             @RequestParam("matricula") String matricula) throws PeajeException {
-        // buscar vehículo en la fachada (comparación tolerante: quitar no-alfa-numéricos y comparar uppercase)
-        Vehiculo vehiculo = null;
-        String buscada = matricula == null ? "" : matricula.replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
-        for (Vehiculo v : Fachada.getInstancia().getVehiculos()) {
-            if (v == null || v.getMatricula() == null) continue;
-            String actual = v.getMatricula().replaceAll("[^A-Za-z0-9]", "").toUpperCase(java.util.Locale.ROOT);
-            if (actual.equals(buscada)) {
-                vehiculo = v;
-                break;
-            }
-        }
-
-        if (vehiculo == null) {
-            // sin info
-            return Respuesta.lista(new Respuesta("infoMatricula", null));
-        }
-
+        
+        
+        
+        Vehiculo vehiculo = Fachada.getInstancia().buscarVehiculoPorMatricula(matricula);
         Propietario prop = vehiculo.getPropietario();
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
-        String categoria = (vehiculo.getCategoria() != null) ? vehiculo.getCategoria().getNombre() : "";
-
-        Puesto puesto = null;
-        if (puestoId != null && !puestoId.isEmpty()) {
-            try {
-                puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
-            } catch (PeajeException ex) {
-                puesto = null;
-            }
-        }
-
+        String categoria = vehiculo.getCategoria().getNombre();
+        Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);;
         String bonificacionNombre = Fachada.getInstancia().buscarBonificacionNombreEnPuesto(prop, puesto);
         if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
-        // Si se proporcionó un puesto intentamos calcular el costo y saldo luego del tránsito
-        if (puesto != null) {
+        
                 double montoBase = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
                 double montoAPagar = (prop != null) ? prop.calcularMontoAPagarParaPuesto(puesto, montoBase) : montoBase;
-                Double saldoLuego = null;
-                if (prop != null) {
-                    try {
-                        saldoLuego = prop.calcularSaldoLuegoDePago(montoAPagar);
-                    } catch (Exception ex) {
-                        saldoLuego = null;
-                    }
-                }
+                Double saldoLuego = prop.calcularSaldoLuegoDePago(montoAPagar);
                 dto.setMonto(montoAPagar);
                 dto.setSaldoLuegoDelTransito(saldoLuego);
-            
-        }
-        return Respuesta.lista(new Respuesta("infoMatricula", dto));
+            return Respuesta.lista(new Respuesta("infoMatricula", dto));
     }
 
     @PostMapping("/tarifasPorPuesto")
@@ -128,4 +95,6 @@ public class ControladorEmularTransito {
 
         return Respuesta.lista(new Respuesta("tarifasLista", lista));
     }
+
 }
+

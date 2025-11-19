@@ -25,8 +25,6 @@ public class ControladorNotificaciones {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
 
-        // PAGINADO
-        // default pagination values
         int p = (page == null || page < 1) ? 1 : page;
         int ps = (pageSize == null || pageSize < 1) ? Integer.MAX_VALUE : pageSize;
 

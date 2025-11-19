@@ -26,10 +26,8 @@ public class ControladorLogin {
             throw new PeajeException("Usuario deshabilitado, no puede ingresar al sistema");
         }
 
-        // se guarda el propietario en la sesionHttp
         sesionHttp.setAttribute("usuarioPropietario", propietario);
         
-        // devolvemos el los datos del usuario
         String nombreCompleto = propietario.getNombre() + " " + propietario.getApellido();
         return Respuesta.lista(
             new Respuesta("datosUsuario", nombreCompleto),
@@ -42,7 +40,7 @@ public class ControladorLogin {
             @RequestParam String contrasenia) throws PeajeException {
 
         Administrador admin = Fachada.getInstancia().loginAdministrador(cedula, contrasenia);
-        //guardamos sesion (consistente con el resto del proyecto)
+        
         sesionHttp.setAttribute("usuarioAdministrador", admin);
 
         return Respuesta.lista(new Respuesta("loginExitoso", "menu-admin.html"));
