@@ -127,22 +127,16 @@ public class ControladorBonificaciones {
             }
         }
 
-        // if (prop.getEstado() != null &&
-        // "Deshabilitado".equalsIgnoreCase(prop.getEstado().getNombre())) {
-        // throw new PeajeException("Usuario deshabilitado, no puede ingresar al
-        // sistema");
-        // }
-
         if (cedula == null || cedula.trim().isEmpty()) {
-            return Respuesta.lista(new Respuesta("asignacionResultado", "Cédula inválida"));
+            throw new PeajeException("Cédula inválida");
         }
         if (tipoBonificacion == null || tipoBonificacion.trim().isEmpty()) {
-            return Respuesta.lista(new Respuesta("asignacionResultado", "Seleccione un tipo de bonificación"));
+            throw new PeajeException("Seleccione un tipo de bonificación");
         }
+        
         // buscar propietario
-
         if (prop == null) {
-            return Respuesta.lista(new Respuesta("asignacionResultado", "No se encontró propietario con esa cédula"));
+            throw new PeajeException("No se encontró propietario con esa cédula");
         }
 
         // buscar bonificacion por nombre
@@ -154,7 +148,7 @@ public class ControladorBonificaciones {
             }
         }
         if (bon == null) {
-            return Respuesta.lista(new Respuesta("asignacionResultado", "Tipo de bonificación no encontrado"));
+            throw new PeajeException("Tipo de bonificación no encontrado");
         }
         // buscar puesto (se pasa el peajeString como value en selects)
         Puesto puesto = null;
@@ -170,8 +164,7 @@ public class ControladorBonificaciones {
             for (Asignacion existente : prop.getAsignaciones()) {
                 Puesto puestoExistente = existente.getPuesto();
                 if (puesto == null && puestoExistente == null) {
-                    return Respuesta.lista(new Respuesta("asignacionResultado",
-                            "Ya hay una bonificación para este propietario en este puesto"));
+                    throw new PeajeException("Ya hay una bonificación para este propietario en este puesto");
                 }
                 if (puesto != null && puestoExistente != null) {
                     String p1 = puesto.getPeajeString();
