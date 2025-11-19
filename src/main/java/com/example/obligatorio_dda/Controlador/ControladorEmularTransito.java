@@ -60,21 +60,12 @@ public class ControladorEmularTransito {
         String categoria = (v.getCategoria() != null) ? v.getCategoria().getNombre() : "";
 
         // Buscar si el propietario tiene alguna asignación (bonificación) para el puesto (si se proporcionó)
-        Puesto puesto = null;
-        if (puestoId != null && !"".equals(puestoId)) {
-            try {
-                puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
-            } catch (PeajeException ex) {
-                puesto = null;
-            }
-        }
+        Puesto puesto = sistemaPeaje.buscarPuestoPorId(puestoId);
+        Bonificacion bonificacionPorPropietario = propietario.getBonificacionEnPuesto(puesto);
 
-        String bonificacionNombre = null;
-        if (prop != null) {
-            com.example.obligatorio_dda.Modelo.Bonificacion b = prop.getBonificacionEnPuesto(puesto);
-            if (b != null) bonificacionNombre = b.getNombre();
-        }
+        String bonificacionNombre = bonificacionPorPropietario.getNombre();
         if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
+        
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
         // Si se proporcionó un puesto intentamos calcular el costo y saldo luego del tránsito
