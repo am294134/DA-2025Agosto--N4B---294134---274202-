@@ -2,13 +2,11 @@ package com.example.obligatorio_dda.Modelo;
 
 import java.util.ArrayList;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import com.example.obligatorio_dda.Observador.Observable;
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 
 public class Fachada extends Observable {
-    // singleton eager (como en el ejemplo del profesor)
+    // singleton(como en el ejemplo del profesor)
     private static Fachada instancia = new Fachada();
     private SistemaAcceso sistemaAcceso;
     private SistemaPeaje sistemaPeaje;
@@ -16,7 +14,8 @@ public class Fachada extends Observable {
     // eventos para avisar cambios relevantes
     public enum Eventos {
         propietarioAgregado,
-        vehiculoAgregado
+        vehiculoAgregado, transitoRegistrado,
+        estadoCambiado
     }
 
     private Fachada() {
@@ -49,12 +48,10 @@ public class Fachada extends Observable {
 
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
             double saldoActual, double saldoMinimo, Estado estado) {
-        // Crear el propietario en el sistema de acceso y reutilizar la misma instancia
         Propietario propietario = sistemaAcceso.agregarPropietario(nombre, apellido, cedula, contrasenia,
                 saldoActual, saldoMinimo, estado);
-        // también registrar referencia en sistemaPeaje para operaciones relacionadas al peaje
         this.sistemaPeaje.getPropietarios().add(propietario);
-        // notificar observadores que hay un nuevo propietario
+        // notifica observadores que hay un nuevo propietario
         avisar(new Object[] { Eventos.propietarioAgregado, propietario });
     }
 
@@ -83,11 +80,24 @@ public class Fachada extends Observable {
     }
 
     public void agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
-        sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+        // obtenemos transito creado y notificamso
+        Transito t = sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+        avisar(new Object[] { Eventos.transitoRegistrado, t });
     }
 
     public void agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
-        sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+        Transito t = sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+        avisar(new Object[] { Eventos.transitoRegistrado, t });
+    }
+
+    public void agregarEstado(String nombreEstado) {
+        sistemaAcceso.agregarEstado(nombreEstado);
+    }
+
+    public void cambiarEstado(String cedula, String estadoNombre) throws PeajeException {
+        sistemaAcceso.cambiarEstado(cedula, estadoNombre);
+        Propietario p = sistemaAcceso.buscarPropietarioPorCedula(cedula);
+        avisar(new Object[] { Eventos.estadoCambiado, p });
     }
 
     // #endregion

@@ -9,15 +9,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
-
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.TransitoInfoDTO;
 import com.example.obligatorio_dda.Modelo.Tarifa;
-import com.example.obligatorio_dda.Modelo.Bonificacion;
-import com.example.obligatorio_dda.Modelo.Asignacion;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Administrador;
@@ -52,25 +48,44 @@ public class ControladorEmularTransito {
     public List<Respuesta> infoMatricula(HttpSession sesion,
             @RequestParam(name = "puestoId", required = false) String puestoId,
             @RequestParam("matricula") String matricula) throws PeajeException {
-        
-        
-        
-        Vehiculo vehiculo = Fachada.getInstancia().buscarVehiculoPorMatricula(matricula);
+
+        Vehiculo vehiculo = null;
+        try {
+            vehiculo = Fachada.getInstancia().buscarVehiculoPorMatricula(matricula);
+        } catch (PeajeException ex) {
+            return Respuesta.lista(new Respuesta("infoMatricula", null));
+        }
+
         Propietario prop = vehiculo.getPropietario();
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
         String categoria = vehiculo.getCategoria().getNombre();
-        Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);;
-        String bonificacionNombre = Fachada.getInstancia().buscarBonificacionNombreEnPuesto(prop, puesto);
+        Puesto puesto = null;
+        if (puestoId != null && !puestoId.trim().isEmpty()) {
+            try {
+                puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
+            } catch (PeajeException ex) {
+                puesto = null;
+            }
+        }
+
+        String bonificacionNombre = null;
+        try {
+            bonificacionNombre = Fachada.getInstancia().buscarBonificacionNombreEnPuesto(prop, puesto);
+        } catch (Exception ex) {
+            bonificacionNombre = null;
+        }
         if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
-        
+        if (puesto != null) {
                 double montoBase = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
                 double montoAPagar = (prop != null) ? prop.calcularMontoAPagarParaPuesto(puesto, montoBase) : montoBase;
                 Double saldoLuego = prop.calcularSaldoLuegoDePago(montoAPagar);
                 dto.setMonto(montoAPagar);
                 dto.setSaldoLuegoDelTransito(saldoLuego);
-            return Respuesta.lista(new Respuesta("infoMatricula", dto));
+        }
+
+        return Respuesta.lista(new Respuesta("infoMatricula", dto));
     }
 
     @PostMapping("/tarifasPorPuesto")
