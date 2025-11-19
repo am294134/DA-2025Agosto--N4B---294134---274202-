@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ArrayList;
@@ -22,30 +24,34 @@ import com.example.obligatorio_dda.Modelo.Vehiculo;
 import com.example.obligatorio_dda.Modelo.Propietario;
 
 @RestController
+@Scope("session")
 @RequestMapping("/emularTransito")
 public class ControladorEmularTransito {
 
+    @Autowired
+    private HttpSession sesion;
+
     @PostMapping("/agregar")
-    public List<Respuesta> agregarTransito(HttpSession sesion,
+    public List<Respuesta> agregarTransito(
             @RequestParam("puestoId") String puestoId,
             @RequestParam("matricula") String matricula,
             @RequestParam("fechaHora") @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm") LocalDateTime fechaHora)
             throws PeajeException {
 
-        Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
+        Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
 
-        sesion.setAttribute("puestoSeleccionado", puestoId);
+        this.sesion.setAttribute("puestoSeleccionado", puestoId);
 
         Fachada.getInstancia().agregarTransito(puestoId, matricula, fechaHora);
         return Respuesta.lista(new Respuesta("emularResultado", "Tránsito registrado correctamente"));
         }
 
 
-    @PostMapping("/infoMatricula")
-    public List<Respuesta> infoMatricula(HttpSession sesion,
+        @PostMapping("/infoMatricula")
+        public List<Respuesta> infoMatricula(
             @RequestParam(name = "puestoId", required = false) String puestoId,
             @RequestParam("matricula") String matricula) throws PeajeException {
 
@@ -89,12 +95,11 @@ public class ControladorEmularTransito {
     }
 
     @PostMapping("/tarifasPorPuesto")
-    public List<Respuesta> tarifasPorPuestoSesion(HttpSession sesion,
+    public List<Respuesta> tarifasPorPuestoSesion(
             @RequestParam(name = "puestoId", required = false) String puestoId) throws PeajeException {
-        
         // permitir que el cliente especifique el puesto por parámetro
         if (puestoId == null || puestoId.isEmpty()) {
-            puestoId = (String) sesion.getAttribute("puestoSeleccionado");
+            puestoId = (String) this.sesion.getAttribute("puestoSeleccionado");
         }
         if (puestoId == null) {
             throw new PeajeException("No hay puesto seleccionado");

@@ -15,17 +15,23 @@ import com.example.obligatorio_dda.Modelo.Notificacion;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Scope("session")
 @RequestMapping("/bonificaciones")
 public class ControladorBonificaciones {
 
-    @PostMapping("/porPropietario")
-    public List<Respuesta> listarPorPropietario(HttpSession sesion) throws Exception {
+    @Autowired
+    private HttpSession sesion;
 
-        Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
+    @PostMapping("/porPropietario")
+    public List<Respuesta> listarPorPropietario() throws Exception {
+
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
@@ -71,7 +77,7 @@ public class ControladorBonificaciones {
     }
 
     @PostMapping("/infoPorCedula")
-    public List<Respuesta> infoPorCedula(HttpSession sesion,
+        public List<Respuesta> infoPorCedula(
             @RequestParam(name = "cedula", required = false) String cedula) {
 
         if (cedula == null || cedula.trim().isEmpty()) {
@@ -114,7 +120,7 @@ public class ControladorBonificaciones {
     }
 
     @PostMapping("/asignar")
-    public List<Respuesta> asignarBonificacion(HttpSession sesion,
+        public List<Respuesta> asignarBonificacion(
             @RequestParam(name = "cedula") String cedula,
             @RequestParam(name = "puesto") String puestoId,
             @RequestParam(name = "tipo") String tipoBonificacion) throws PeajeException {

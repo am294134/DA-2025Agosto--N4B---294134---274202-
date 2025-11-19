@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 import com.example.obligatorio_dda.Controlador.DTOs.PropietarioEstadoDTO;
@@ -15,15 +17,19 @@ import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 
 @RestController
+@Scope("session")
 @RequestMapping("/cambiarEstado")
 public class ControladorCambiarEstado {
 
+    @Autowired
+    private HttpSession sesion;
+
     @PostMapping("/buscar")
-    public List<Respuesta> buscarPropietario(HttpSession sesion,
+    public List<Respuesta> buscarPropietario(
             @RequestParam("cedula") String cedula) throws PeajeException {
 
         // Verificar que hay un administrador logueado
-        Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
+        Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
@@ -49,12 +55,12 @@ public class ControladorCambiarEstado {
     }
 
     @PostMapping("/cambiar")
-    public List<Respuesta> cambiarEstado(HttpSession sesion,
+    public List<Respuesta> cambiarEstado(
             @RequestParam("cedula") String cedula,
             @RequestParam("estado") String estado) throws PeajeException {
 
         // Verificar que hay un administrador logueado
-        Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
+        Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }

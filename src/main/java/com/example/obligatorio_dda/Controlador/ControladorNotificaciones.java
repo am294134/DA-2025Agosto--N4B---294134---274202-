@@ -9,18 +9,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
+import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Scope("session")
 @RequestMapping("/notificaciones")
 public class ControladorNotificaciones {
 
+    @Autowired
+    private HttpSession sesion;
+
     @PostMapping("/listar")
-    public List<Respuesta> listarNotificaciones(HttpSession sesion,
+    public List<Respuesta> listarNotificaciones(
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "pageSize", required = false) Integer pageSize) throws Exception {
-        Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
@@ -60,8 +66,8 @@ public class ControladorNotificaciones {
     }
 
     @PostMapping("/marcarLeidas")
-    public List<Respuesta> marcarNotificacionesComoLeidas(HttpSession sesion) throws Exception {
-        Propietario propietario = (Propietario) sesion.getAttribute("usuarioPropietario");
+    public List<Respuesta> marcarNotificacionesComoLeidas() throws Exception {
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
