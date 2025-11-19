@@ -9,15 +9,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ArrayList;
-
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.TransitoInfoDTO;
 import com.example.obligatorio_dda.Modelo.Tarifa;
-import com.example.obligatorio_dda.Modelo.Bonificacion;
-import com.example.obligatorio_dda.Modelo.Asignacion;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Administrador;

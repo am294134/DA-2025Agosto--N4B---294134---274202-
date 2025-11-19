@@ -1,7 +1,6 @@
 package com.example.obligatorio_dda.Modelo;
 
 import java.util.ArrayList;
-import com.example.obligatorio_dda.Modelo.PeajeException;
 
 public class SistemaAcceso {
     private ArrayList<Propietario> propietarios;

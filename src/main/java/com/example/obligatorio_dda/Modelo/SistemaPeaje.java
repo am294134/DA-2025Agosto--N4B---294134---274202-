@@ -92,10 +92,6 @@ public class SistemaPeaje {
             throw new PeajeException("No existe el propietario con cédula: " + cedulaPropietario);
         }
 
-        if (categoria == null) {
-            throw new PeajeException("No existe la categoría: " + nombreCategoria);
-        }
-
         Vehiculo vehiculo = new Vehiculo(matricula, color, modelo, categoria, propietario);
         vehiculos.add(vehiculo);
         propietario.agregarVehiculo(vehiculo);

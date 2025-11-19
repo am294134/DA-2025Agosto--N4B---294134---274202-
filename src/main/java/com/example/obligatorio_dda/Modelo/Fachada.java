@@ -2,8 +2,6 @@ package com.example.obligatorio_dda.Modelo;
 
 import java.util.ArrayList;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
 import com.example.obligatorio_dda.Observador.Observable;
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 
