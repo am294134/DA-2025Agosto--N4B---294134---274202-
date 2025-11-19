@@ -28,27 +28,20 @@ public class ControladorCambiarEstado {
     public List<Respuesta> buscarPropietario(
             @RequestParam("cedula") String cedula) throws PeajeException {
 
+<<<<<<< HEAD
         // Verificar que hay un administrador logueado
         Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
+=======
+        Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
+>>>>>>> ec346bb8616c5d3dad1fc890ea034fb61906f0b7
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
 
         Propietario propietario = Fachada.getInstancia().buscarPropietarioPorCedula(cedula);
 
-        if (propietario == null) {
-            return Respuesta.lista(
-                    new Respuesta("propietarioEncontrado", null),
-                    new Respuesta("mensaje", "No existe un propietario con esa cédula."));
-        }
-
         String nombre = propietario.getNombre() + " " + propietario.getApellido();
-        String estado;
-        if (propietario.getEstado() == null) {
-            estado = "Sin estado";
-        } else {
-            estado = propietario.getEstado().getNombre();
-        }
+        String estado = propietario.getEstado().getNombre();
 
         PropietarioEstadoDTO dto = new PropietarioEstadoDTO(nombre, estado);
         return Respuesta.lista(new Respuesta("propietarioEncontrado", dto));
@@ -59,8 +52,12 @@ public class ControladorCambiarEstado {
             @RequestParam("cedula") String cedula,
             @RequestParam("estado") String estado) throws PeajeException {
 
+<<<<<<< HEAD
         // Verificar que hay un administrador logueado
         Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
+=======
+        Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
+>>>>>>> ec346bb8616c5d3dad1fc890ea034fb61906f0b7
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
