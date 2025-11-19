@@ -140,6 +140,11 @@ public class Fachada extends Observable {
         return sistemaPeaje.buscarBonificacionNombreEnPuesto(prop, puesto);
     }
 
+    public ArrayList<TarifaDTO> obtenerTarifasPorPuesto(String puestoId) throws PeajeException {
+        return sistemaPeaje.obtenerTarifasPorPuesto(puestoId);
+    }
+
+
     public void cambiarEstado(String cedula, String estadoNombre) throws PeajeException {
         sistemaAcceso.cambiarEstado(cedula, estadoNombre);
     }

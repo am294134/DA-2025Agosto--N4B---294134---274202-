@@ -254,5 +254,15 @@ public class SistemaPeaje {
     public ArrayList<Propietario> getPropietarios() {
         return propietarios;
     }
+
+    public ArrayList<TarifaDTO> obtenerTarifasPorPuesto(String puestoId) throws PeajeException {
+        Puesto puesto = buscarPuestoPorId(puestoId);
+        ArrayList<TarifaDTO> lista = new ArrayList<>();
+        for (Tarifa t : puesto.getTarifas()) {
+            String nombreCategoria = t.getCategoria().getNombre();
+            lista.add(new TarifaDTO(t.getMonto(), nombreCategoria));
+        }
+        return lista;
+    }
     
 }
