@@ -86,7 +86,7 @@ public class Fachada extends Observable {
     }
 
     public void agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
-        Transito t = sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
+        Transito t = sistemaPeaje.agregarTransito2(puestoId, matricula, fechaHora);
         avisar(new Object[] { Eventos.transitoRegistrado, t });
     }
 
@@ -154,8 +154,4 @@ public class Fachada extends Observable {
     public ArrayList<TarifaDTO> obtenerTarifasPorPuesto(String puestoId) throws PeajeException {
         return sistemaPeaje.obtenerTarifasPorPuesto(puestoId);
     }
-
-    public ArrayList<Vehiculo> obtenerVehiculosPropietario(Propietario propietario) {
-        return sistemaPeaje.obtenerVehiculosPropietario(propietario);
-    }   
 }

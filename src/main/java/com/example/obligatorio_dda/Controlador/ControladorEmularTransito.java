@@ -12,14 +12,17 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.ArrayList;
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.TransitoInfoDTO;
+<<<<<<< HEAD
 import com.example.obligatorio_dda.Modelo.Tarifa;
 import com.example.obligatorio_dda.Modelo.Bonificacion;
+=======
+>>>>>>> 95e27e6b4ef75484181720a78cf672ba30d0284b
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Administrador;
+import com.example.obligatorio_dda.Modelo.Bonificacion;
 import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
 import com.example.obligatorio_dda.Modelo.Propietario;
@@ -81,7 +84,7 @@ public class ControladorEmularTransito {
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
         if (puesto != null) {
-                double montoBase = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
+                double montoBase = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria()).getMonto();
                 double montoAPagar = (prop != null) ? prop.calcularMontoAPagarParaPuesto(puesto, montoBase) : montoBase;
                 Double saldoLuego = prop.calcularSaldoLuegoDePago(montoAPagar);
                 dto.setMonto(montoAPagar);
@@ -100,13 +103,8 @@ public class ControladorEmularTransito {
         if (puestoId == null) {
             throw new PeajeException("No hay puesto seleccionado");
         }
-        Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
-
-        List<TarifaDTO> lista = new ArrayList<>();
-        for (Tarifa t : puesto.getTarifas()) {
-            String nombreCategoria = t.getCategoria().getNombre();
-            lista.add(new TarifaDTO(t.getMonto(), nombreCategoria));
-        }
+        
+        List<TarifaDTO> lista = Fachada.getInstancia().obtenerTarifasPorPuesto(puestoId);
 
         return Respuesta.lista(new Respuesta("tarifasLista", lista));
     }

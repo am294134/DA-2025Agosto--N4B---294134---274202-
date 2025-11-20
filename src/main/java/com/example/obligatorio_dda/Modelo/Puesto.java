@@ -1,4 +1,5 @@
 package com.example.obligatorio_dda.Modelo;
+
 import java.util.ArrayList;
 
 public class Puesto {
@@ -26,7 +27,7 @@ public class Puesto {
 
     public String getPeajeString() {
         return nombre + "-" + direccion;
-    }   
+    }
 
     public ArrayList<Transito> getTransitos() {
         return transitos;
@@ -42,16 +43,16 @@ public class Puesto {
 
     public void agregarTransito(Transito transito) {
         transitos.add(transito);
-    }   
+    }
 
-    public double obtenerTarifaParaCategoria(Categoria categoria) throws PeajeException {
+    public Tarifa obtenerTarifaParaCategoria(Categoria categoria) throws PeajeException {
         for (Tarifa t : tarifas) {
             if (t.getCategoria().getNombre().equals(categoria.getNombre())) {
-                return t.getMonto();
+                return t;
             }
         }
-        throw new PeajeException("No hay tarifa definida para la categoría: " + categoria.getNombre() + " en el puesto: " + nombre);
+        throw new PeajeException(
+                "No hay tarifa definida para la categoría: " + categoria.getNombre() + " en el puesto: " + nombre);
     }
-    
 
 }

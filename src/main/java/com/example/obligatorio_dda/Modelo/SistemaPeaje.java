@@ -105,8 +105,16 @@ public class SistemaPeaje {
             throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
         }
         Puesto puesto = buscarPuestoPorId(puestoId);
+<<<<<<< HEAD
         Tarifa tarifa = buscarTarifaEnPuesto(puesto, vehiculo.getCategoria());
+=======
+        // Tarifa tarifa = obtenerTarifasPorPuesto(puestoId);
+
+>>>>>>> 95e27e6b4ef75484181720a78cf672ba30d0284b
         Propietario propietario = vehiculo.getPropietario();
+        
+        //obtener la tarifa correspondiente a la categoría del veh en el puesto
+        Tarifa tarifa = puesto.obtenerTarifaParaCategoria(vehiculo.getCategoria());
 
         if (propietario.getEstado() != null && "Deshabilitado".equalsIgnoreCase(propietario.getEstado().getNombre())) {
             throw new PeajeException("Usuario deshabilitado, no puede agregar transito");
