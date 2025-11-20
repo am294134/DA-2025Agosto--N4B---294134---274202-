@@ -64,6 +64,30 @@
                     </table>
                 </div>
             </div>
+            <!-- Sección de notificaciones en tabla -->
+            <div class="notificaciones-section" style="margin-top:16px;">
+                <h2>Notificaciones</h2>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <div style="font-size:0.95rem;color:#444;">Tus notificaciones recientes</div>
+                    <div>
+                        <button id="btn-borrar-notificaciones" class="action-btn" style="background:#e53935;color:#fff;border:none;padding:6px 10px;border-radius:4px;">Borrar Notificaciones</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th>Mensaje</th>
+                                <th>Fecha</th>
+                                <th>Leída</th>
+                            </tr>
+                        </thead>
+                        <tbody id="notificationsTableBody">
+                            <!-- Filas de notificaciones -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -321,6 +345,14 @@
             setInterval(cargarNotificaciones, 30000);
         });
 
+        // Conectar botón "Borrar todas" si está presente
+        const btnBorrarAll = document.getElementById('btn-borrar-notificaciones');
+        if (btnBorrarAll) {
+            btnBorrarAll.addEventListener('click', function(e){
+                e.preventDefault();
+                borrarTodasNotificaciones();
+            });
+        }
         // Nota: el nombre se obtiene ahora desde la respuesta de /vehiculos/listarVehiculos
 
         // Función para mostrar datos del usuario
@@ -441,6 +473,29 @@
             }
             actualizarContadorNotificaciones();
             actualizarDropdownNotificaciones();
+            // Render table view of notifications (si existe la sección)
+            renderNotificationsTable();
+        }
+
+        // Renderiza la tabla de notificaciones en la sección del panel
+        function renderNotificationsTable() {
+            const tbody = document.getElementById('notificationsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (!Array.isArray(notifications) || notifications.length === 0) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td colspan="3">No hay notificaciones</td>';
+                tbody.appendChild(tr);
+                return;
+            }
+            notifications.forEach(n => {
+                const tr = document.createElement('tr');
+                const mensaje = n.mensaje || '';
+                const fecha = n.fechaHora || '';
+                const leida = (n.leida) ? 'Sí' : 'No';
+                tr.innerHTML = `<td>${mensaje}</td><td>${fecha}</td><td>${leida}</td>`;
+                tbody.appendChild(tr);
+            });
         }
 
         function mostrar_vehiculosProp(data) {
@@ -481,6 +536,26 @@
                 `;
                 tbody.appendChild(tr);
             });
+        }
+
+        // Llamar al endpoint para borrar todas las notificaciones
+        function borrarTodasNotificaciones() {
+            // Usamos submit para mantener el comportamiento de la app
+            submit('/notificaciones/borrarTodas', '');
+        }
+
+        // Handler para la respuesta del borrado
+        function mostrar_borrarTodasResultado(param) {
+            const msg = (typeof param === 'string') ? param : (param && param.message) ? param.message : 'Resultado desconocido';
+            try {
+                if (typeof mostrarMensaje === 'function') {
+                    mostrarMensaje(msg);
+                } else {
+                    alert(msg);
+                }
+            } catch (e) { alert(msg); }
+            // recargar notificaciones y contador
+            cargarNotificaciones();
         }
 
         // Mostrar tránsitos en la tabla del propietario
@@ -527,8 +602,8 @@
     .left-col { flex:1; min-width:320px; }
     .right-col { width:480px; }
     .table-container { overflow:auto; max-width:100%; }
-    .vehiculos-section, .bonificaciones-section, .transitos-section { background:#fff; padding:12px; border:1px solid #eee; border-radius:8px; }
-    .vehiculos-section h2, .bonificaciones-section h2, .transitos-section h2 { margin-top:0; font-size:1.05rem; }
+    .vehiculos-section, .bonificaciones-section, .transitos-section, .notificaciones-section { background:#fff; padding:12px; border:1px solid #eee; border-radius:8px; }
+    .vehiculos-section h2, .bonificaciones-section h2, .transitos-section h2, .notificaciones-section h2 { margin-top:0; font-size:1.05rem; }
     /* center page container */
     .page-center { max-width:1300px; margin:22px auto; padding:12px; }
     /* table tweaks for transitos */

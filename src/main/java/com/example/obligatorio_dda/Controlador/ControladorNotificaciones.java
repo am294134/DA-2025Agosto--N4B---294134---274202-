@@ -102,10 +102,23 @@ public class ControladorNotificaciones implements Observador {
         }
     }
 
+    @PostMapping ("/borrarTodas")
+    public List<Respuesta> borrarTodasNotificaciones() throws Exception {
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
+        if (propietario == null) {
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
+        }
 
+        List<Notificacion> notificaciones = propietario.getNotificaciones();
+        if (notificaciones == null || notificaciones.isEmpty()) {
+            throw new Exception("No hay notificaciones para borrar");
+        }
+        notificaciones.clear();
+        return Respuesta.lista(new Respuesta("borrarTodasResultado", "OK"));
+    }
     @Override
     public void actualizar(Object evento, Observable origen) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'actualizar'");
+        // Notificaciones no requiere acciones especiales en este observador por ahora
+        // (se deja vacío para evitar lanzar excepciones al notificar)
     }
 }
