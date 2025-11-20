@@ -130,7 +130,7 @@ public class SistemaPeaje {
 
         return transito;
     }
-
+/* 
     public ArrayList<Vehiculo> obtenerVehiculosPropietario(Propietario propietario) {
         ArrayList<Vehiculo> lista = new ArrayList<>();
         if (propietario == null) return lista;
@@ -141,7 +141,7 @@ public class SistemaPeaje {
             }
         }
         return lista;
-    }
+    }*/
 
     public ArrayList<Transito> getTransitos() {
         return transitos;
@@ -167,22 +167,14 @@ public class SistemaPeaje {
     }
 
     // #region métodos auxiliares de búsqueda
-
-    private Categoria buscarCategoria(String nombreCategoria) throws PeajeException {
-        for (Categoria c : categorias) {
-            if (c.getNombre().equals(nombreCategoria)) {
-                return c;
-            }
-        }
-        throw new PeajeException("No existe la categoría: " + nombreCategoria);
-    }
+ 
+    
 
     public Vehiculo buscarVehiculoPorMatricula(String matricula) throws PeajeException {
     if (matricula == null) {
         throw new PeajeException("Matrícula inválida");
     }
 
-    // Normalizar entrada
     String buscada = matricula.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
 
     for (Vehiculo v : vehiculos) {
@@ -197,7 +189,7 @@ public class SistemaPeaje {
     throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
 }
 
-
+/* 
     public String buscarBonificacionNombreEnPuesto(Propietario prop, Puesto puesto) throws PeajeException {
         if (prop == null || puesto == null) {
             return null;
@@ -208,7 +200,7 @@ public class SistemaPeaje {
         } else {
             return null;
         }
-    }
+    }*/
 
     public Propietario buscarPropietarioPorCedula(String cedula) throws PeajeException {
         for (Propietario propietario : propietarios) {
@@ -217,7 +209,16 @@ public class SistemaPeaje {
             }
         }
         throw new PeajeException("No se encontró el propietario con cédula: " + cedula);
-    }   
+    }  
+    
+    public Categoria buscarCategoria(String nombreCategoria) throws PeajeException {
+        for (Categoria c : categorias) {
+            if (c.getNombre().equals(nombreCategoria)) {
+                return c;
+            }
+        }
+        throw new PeajeException("No existe la categoría: " + nombreCategoria);
+    }
     // #endregion
 
     public ArrayList<Puesto> getPuestos() {
@@ -244,15 +245,5 @@ public class SistemaPeaje {
         return bonificaciones;
     }
 
-    /* 
-    public ArrayList<TarifaDTO> obtenerTarifasPorPuesto(String puestoId) throws PeajeException {
-        Puesto puesto = buscarPuestoPorId(puestoId);
-        ArrayList<TarifaDTO> lista = new ArrayList<>();
-        for (Tarifa t : puesto.getTarifas()) {
-            String nombreCategoria = t.getCategoria().getNombre();
-            lista.add(new TarifaDTO(t.getMonto(), nombreCategoria));
-        }
-        return lista;
-    }*/
-
+    
 }

@@ -146,10 +146,10 @@ public class Fachada extends Observable {
     public Propietario buscarPropietarioPorCedula(String cedula) throws PeajeException {
         return sistemaAcceso.buscarPropietarioPorCedula(cedula);
     }
-
+/* 
     public String buscarBonificacionNombreEnPuesto(Propietario prop, Puesto puesto) throws PeajeException {
         return sistemaPeaje.buscarBonificacionNombreEnPuesto(prop, puesto);
-    }
+    }*/
 /* 
     public ArrayList<TarifaDTO> obtenerTarifasPorPuesto(String puestoId) throws PeajeException {
         return sistemaPeaje.obtenerTarifasPorPuesto(puestoId);
