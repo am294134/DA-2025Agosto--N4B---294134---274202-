@@ -98,6 +98,8 @@ public class Propietario extends Usuario {
         return null;
     }
 
+    
+
     // calcula el monto a pagar en un puesto y si hay bon aploca descuento
     public double calcularMontoAPagarParaPuesto(Puesto puesto, double montoBase) {
         Bonificacion b = getBonificacionEnPuesto(puesto);

@@ -64,8 +64,8 @@ public class ControladorEmularTransito {
         String categoria = vehiculo.getCategoria().getNombre();
         Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
 
-        String bonificacionNombre = null;
-        bonificacionNombre = Fachada.getInstancia().buscarBonificacionNombreEnPuesto(prop, puesto);
+        Bonificacion bonificacion = prop.getBonificacionEnPuesto(puesto); //LLEGAR A LAS ASIGNACIONES DEL PROPIETARIO
+        String bonificacionNombre = bonificacion.getNombre();
         if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
@@ -90,7 +90,6 @@ public class ControladorEmularTransito {
         if (puestoId == null) {
             throw new PeajeException("No hay puesto seleccionado");
         }
-
         Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
 
         List<TarifaDTO> lista = new ArrayList<>();

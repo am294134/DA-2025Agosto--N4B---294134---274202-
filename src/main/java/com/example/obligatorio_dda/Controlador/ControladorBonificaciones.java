@@ -86,20 +86,16 @@ public class ControladorBonificaciones {
         }
 
         cedula = cedula.trim();
-        // buscar propietario en la fachada
         PropietarioInfoBonDTO dto = null;
 
         for (Propietario p : Fachada.getInstancia().getPropietarios()) {
             if (p != null && p.getCedula() != null && p.getCedula().equals(cedula)) {
-
                 String nombre = p.getNombre() + " " + p.getApellido();
                 String estado = p.getEstado().getNombre();
                 dto = new PropietarioInfoBonDTO(nombre.trim(), estado);
 
-                // recolectar las bonificaciones asignadas a este propietario
                 List<BonificacionAsignadaDTO> asignadas = new ArrayList<>();
 
-                // por cada bon buscamos en las asignaciones
                 for (Bonificacion b : Fachada.getInstancia().getBonificaciones()) {
                     for (Asignacion a : b.getAsignaciones()) {
                         if (a != null && a.getPropietario() != null && a.getPropietario().getCedula() != null
