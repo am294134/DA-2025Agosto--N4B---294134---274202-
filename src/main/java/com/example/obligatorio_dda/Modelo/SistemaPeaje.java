@@ -38,13 +38,8 @@ public class SistemaPeaje {
 
     public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
         Puesto puesto = buscarPuestoPorId(nombrePuesto);
-        if (puesto == null) {
-            throw new PeajeException("No existe el puesto: " + nombrePuesto);
-        }
-
         Categoria categoria = buscarCategoria(nombreCategoria);
 
-        // creamos y agregamos tarifa
         Tarifa tarifa = new Tarifa(monto, categoria);
         tarifas.add(tarifa);
         puesto.getTarifas().add(tarifa);
@@ -60,26 +55,9 @@ public class SistemaPeaje {
 
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
             String cedulaPropietario) throws PeajeException {
-        Categoria categoria = null;
-        for (Categoria c : this.categorias) {
-            if (c.getNombre().equals(nombreCategoria)) {
-                categoria = c;
-            }
-        }
-        if (categoria == null) {
-            throw new PeajeException("No existe la categoría: " + nombreCategoria);
-        }
-
-        Propietario propietario = null;
-        for (Propietario p : this.propietarios) {
-            if (p.getCedula().equals(cedulaPropietario)) {
-                propietario = p;
-            }
-        }
-        if (propietario == null) {
-            throw new PeajeException("No existe el propietario con cédula: " + cedulaPropietario);
-        }
-
+        
+        Categoria categoria = buscarCategoria(nombreCategoria); 
+        Propietario propietario = buscarPropietarioPorCedula(cedulaPropietario);
         Vehiculo vehiculo = new Vehiculo(matricula, color, modelo, categoria, propietario);
         vehiculos.add(vehiculo);
         propietario.agregarVehiculo(vehiculo);
@@ -219,6 +197,15 @@ public class SistemaPeaje {
             return null;
         }
     }
+
+    public Propietario buscarPropietarioPorCedula(String cedula) throws PeajeException {
+        for (Propietario propietario : propietarios) {
+            if (propietario.getCedula().equals(cedula)) {
+                return propietario;
+            }
+        }
+        throw new PeajeException("No se encontró el propietario con cédula: " + cedula);
+    }   
     // #endregion
 
     public ArrayList<Puesto> getPuestos() {
