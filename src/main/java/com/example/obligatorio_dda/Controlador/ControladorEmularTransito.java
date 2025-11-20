@@ -14,11 +14,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.TransitoInfoDTO;
-<<<<<<< HEAD
 import com.example.obligatorio_dda.Modelo.Tarifa;
 import com.example.obligatorio_dda.Modelo.Bonificacion;
-=======
->>>>>>> 95e27e6b4ef75484181720a78cf672ba30d0284b
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Administrador;

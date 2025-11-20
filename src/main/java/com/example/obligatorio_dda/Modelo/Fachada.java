@@ -86,7 +86,7 @@ public class Fachada extends Observable {
     }
 
     public void agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
-        Transito t = sistemaPeaje.agregarTransito2(puestoId, matricula, fechaHora);
+        Transito t = sistemaPeaje.agregarTransito(puestoId, matricula, fechaHora);
         avisar(new Object[] { Eventos.transitoRegistrado, t });
     }
 
