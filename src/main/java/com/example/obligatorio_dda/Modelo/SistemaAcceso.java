@@ -73,8 +73,13 @@ public class SistemaAcceso {
     }
 
     public Propietario buscarPropietarioPorCedula(String cedula) throws PeajeException {
+        if (cedula == null) {
+            throw new PeajeException("No se encontró el propietario con cédula: null");
+        }
+        String buscada = cedula.trim().replaceAll("\\D", "");
         for (Propietario propietario : propietarios) {
-            if (propietario.getCedula().equals(cedula)) {
+            String cedProp = propietario.getCedula() == null ? "" : propietario.getCedula().trim().replaceAll("\\D", "");
+            if (cedProp.equals(buscada)) {
                 return propietario;
             }
         }

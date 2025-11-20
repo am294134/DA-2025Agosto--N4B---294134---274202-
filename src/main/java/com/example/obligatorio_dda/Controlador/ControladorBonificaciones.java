@@ -84,7 +84,6 @@ public class ControladorBonificaciones {
         if (cedula == null || cedula.trim().isEmpty()) {
             return Respuesta.lista(new Respuesta("infoPropietario", null));
         }
-
         cedula = cedula.trim();
         PropietarioInfoBonDTO dto = null;
 

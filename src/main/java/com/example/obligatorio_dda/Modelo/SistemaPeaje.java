@@ -82,10 +82,10 @@ public class SistemaPeaje {
                 throw new PeajeException("Formato de fecha inválido: " + fechaHora);
             }
         }
-        return agregarTransito2(puestoId, matricula, fecha);
+        return agregarTransito(puestoId, matricula, fecha);
     }
 
-    public Transito agregarTransito2(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
+    public Transito agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
         // Normalizar y validar matrícula
         if (matricula == null || matricula.trim().isEmpty()) {
             throw new PeajeException("Matrícula inválida");
@@ -96,7 +96,7 @@ public class SistemaPeaje {
             throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
         }
         Puesto puesto = buscarPuestoPorId(puestoId);
-        Tarifa tarifa = obtenerTarifasPorPuesto(puestoId);
+        Tarifa tarifa = buscarTarifaEnPuesto(puesto, vehiculo.getCategoria());
         Propietario propietario = vehiculo.getPropietario();
 
         if (propietario.getEstado() != null && "Deshabilitado".equalsIgnoreCase(propietario.getEstado().getNombre())) {
@@ -119,6 +119,27 @@ public class SistemaPeaje {
         propietario.registrarTransitoYAplicarPago(transito, montoAPagar);
 
         return transito;
+    }
+
+    private Tarifa buscarTarifaEnPuesto(Puesto puesto, Categoria categoria) throws PeajeException {
+        for (Tarifa t : puesto.getTarifas()) {
+            if (t.getCategoria() != null && categoria != null && t.getCategoria().getNombre().equals(categoria.getNombre())) {
+                return t;
+            }
+        }
+        throw new PeajeException("No hay tarifa definida para la categoría: " + (categoria==null?"(nula)":categoria.getNombre()) + " en el puesto: " + (puesto==null?"(nulo)":puesto.getNombre()));
+    }
+
+    public ArrayList<Vehiculo> obtenerVehiculosPropietario(Propietario propietario) {
+        ArrayList<Vehiculo> lista = new ArrayList<>();
+        if (propietario == null) return lista;
+        for (Vehiculo v : vehiculos) {
+            if (v.getPropietario() != null && v.getPropietario().getCedula() != null
+                    && v.getPropietario().getCedula().equals(propietario.getCedula())) {
+                lista.add(v);
+            }
+        }
+        return lista;
     }
 
     public ArrayList<Transito> getTransitos() {
@@ -156,13 +177,25 @@ public class SistemaPeaje {
     }
 
     public Vehiculo buscarVehiculoPorMatricula(String matricula) throws PeajeException {
-        for (Vehiculo v : vehiculos) {
-            if (v.getMatricula().equals(matricula)) {
+    if (matricula == null) {
+        throw new PeajeException("Matrícula inválida");
+    }
+
+    // Normalizar entrada
+    String buscada = matricula.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
+
+    for (Vehiculo v : vehiculos) {
+        if (v.getMatricula() != null) {
+            String actual = v.getMatricula().replaceAll("[^A-Za-z0-9]", "").toUpperCase();
+            if (actual.equals(buscada)) {
                 return v;
             }
         }
-        throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
     }
+
+    throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
+}
+
 
     public String buscarBonificacionNombreEnPuesto(Propietario prop, Puesto puesto) throws PeajeException {
         if (prop == null || puesto == null) {

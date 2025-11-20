@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.TransitoInfoDTO;
 import com.example.obligatorio_dda.Modelo.Tarifa;
+import com.example.obligatorio_dda.Modelo.Bonificacion;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Administrador;
@@ -55,8 +56,7 @@ public class ControladorEmularTransito {
             @RequestParam(name = "puestoId", required = false) String puestoId,
             @RequestParam("matricula") String matricula) throws PeajeException {
 
-        Vehiculo vehiculo = null;
-        vehiculo = Fachada.getInstancia().buscarVehiculoPorMatricula(matricula);
+        Vehiculo vehiculo = Fachada.getInstancia().buscarVehiculoPorMatricula(matricula);
        
         Propietario prop = vehiculo.getPropietario();
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
