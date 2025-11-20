@@ -38,17 +38,18 @@ public class SistemaPeaje {
 
     public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
         Puesto puesto = buscarPuestoPorId(nombrePuesto);
-            // si no existe, intentar buscar por nombre simple (compatibilidad con Datos.cargar)
-            for (Puesto p : this.puestos) {
-                if (p.getNombre() != null && p.getNombre().equals(nombrePuesto)) {
-                    puesto = p;
-                    break;
-                }
-            }
-            if (puesto == null) {
-                throw new PeajeException("No existe el puesto: " + nombrePuesto);
+        // si no existe, intentar buscar por nombre simple (compatibilidad con
+        // Datos.cargar)
+        for (Puesto p : this.puestos) {
+            if (p.getNombre() != null && p.getNombre().equals(nombrePuesto)) {
+                puesto = p;
+                break;
             }
         }
+        if (puesto == null) {
+            throw new PeajeException("No existe el puesto: " + nombrePuesto);
+        }
+
         Categoria categoria = buscarCategoria(nombreCategoria);
 
         // creamos y agregamos tarifa
@@ -65,9 +66,8 @@ public class SistemaPeaje {
         return bonificaciones;
     }
 
-    
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
-    String cedulaPropietario) throws PeajeException {
+            String cedulaPropietario) throws PeajeException {
         Categoria categoria = null;
         for (Categoria c : this.categorias) {
             if (c.getNombre().equals(nombreCategoria)) {
@@ -93,7 +93,6 @@ public class SistemaPeaje {
         propietario.agregarVehiculo(vehiculo);
     }
 
-    
     public Puesto buscarPuestoPorId(String puestoId) throws PeajeException {
         for (Puesto p : puestos) {
             if (p.getPeajeString().equals(puestoId)) {
@@ -102,7 +101,7 @@ public class SistemaPeaje {
         }
         throw new PeajeException("No existe el puesto con id: " + puestoId);
     }
-    
+
     public Transito agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
         LocalDateTime fecha = null;
         if (fechaHora == null || fechaHora.trim().isEmpty()) {
@@ -118,7 +117,6 @@ public class SistemaPeaje {
         return agregarTransito(puestoId, matricula, fecha);
     }
 
-   
     public Transito agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
         // Normalizar y validar matrícula
         if (matricula == null || matricula.trim().isEmpty()) {
@@ -150,7 +148,7 @@ public class SistemaPeaje {
         }
 
         Propietario propietario = vehiculo.getPropietario();
-         if (propietario.getEstado() != null && "Deshabilitado".equalsIgnoreCase(propietario.getEstado().getNombre())) {
+        if (propietario.getEstado() != null && "Deshabilitado".equalsIgnoreCase(propietario.getEstado().getNombre())) {
             throw new PeajeException("Usuario deshabilitado, no puede agregar transito");
         }
         if (propietario.getEstado() != null && "Suspendido".equalsIgnoreCase(propietario.getEstado().getNombre())) {
@@ -160,7 +158,8 @@ public class SistemaPeaje {
         // calculamos consultando al prop
         Bonificacion bon = (propietario != null) ? propietario.getBonificacionEnPuesto(puesto) : null;
 
-        // crea el transito con la tarifa encontrada y la fecha/hora indicada; Transito crea y guarda los valores aplicados
+        // crea el transito con la tarifa encontrada y la fecha/hora indicada; Transito
+        // crea y guarda los valores aplicados
         Transito transito = Transito.crearConValoresAplicados(puesto, vehiculo, propietario, tarifa, bon, fechaHora);
 
         // registrar en colecciones
@@ -173,31 +172,32 @@ public class SistemaPeaje {
 
         return transito;
     }
-    
+
     public ArrayList<Transito> getTransitos() {
         return transitos;
     }
-    
+
     public void agregarPuesto(String nombre, String ubicacion) {
         Puesto puesto = new Puesto(nombre, ubicacion);
         puestos.add(puesto);
     }
-    
+
     public void agregarCategoria(String nombre) {
         Categoria categoria = new Categoria(nombre);
         categorias.add(categoria);
     }
-    
+
     public void agregarPropietario(String nombre, String apellido, String cedula, String contrasenia,
-    double saldoActual, double saldoMinimo, Estado estado) {
-        Propietario propietario = new Propietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo, estado);
+            double saldoActual, double saldoMinimo, Estado estado) {
+        Propietario propietario = new Propietario(nombre, apellido, cedula, contrasenia, saldoActual, saldoMinimo,
+                estado);
         if (propietario != null) {
             this.propietarios.add(propietario);
         }
     }
 
-    //#region métodos auxiliares de búsqueda
-    
+    // #region métodos auxiliares de búsqueda
+
     private Categoria buscarCategoria(String nombreCategoria) throws PeajeException {
         for (Categoria c : categorias) {
             if (c.getNombre().equals(nombreCategoria)) {
@@ -206,7 +206,7 @@ public class SistemaPeaje {
         }
         throw new PeajeException("No existe la categoría: " + nombreCategoria);
     }
-    
+
     public Vehiculo buscarVehiculoPorMatricula(String matricula) throws PeajeException {
         for (Vehiculo v : vehiculos) {
             if (v.getMatricula().equals(matricula)) {
@@ -227,24 +227,24 @@ public class SistemaPeaje {
             return null;
         }
     }
-    //#endregion
-    
+    // #endregion
+
     public ArrayList<Puesto> getPuestos() {
         return puestos;
     }
-    
+
     public ArrayList<Tarifa> getTarifas() {
         return tarifas;
     }
-    
+
     public ArrayList<Categoria> getCategorias() {
         return categorias;
     }
-    
+
     public ArrayList<Vehiculo> getVehiculos() {
         return vehiculos;
     }
-    
+
     public ArrayList<Propietario> getPropietarios() {
         return propietarios;
     }
@@ -268,16 +268,4 @@ public class SistemaPeaje {
         }
         return lista;
     }
-
-    public ArrayList<Asignacion> obtenerAsignacionesPropietario(Propietario propietario) {
-        ArrayList<Asignacion> lista = new ArrayList<>();
-        for (Bonificacion b : this.bonificaciones) {
-            for (Asignacion a : b.getAsignaciones()) {
-                if (a.getPropietario() != null && a.getPropietario().getCedula().equals(propietario.getCedula())) {
-                    lista.add(a);
-                }
-            }
-            return lista;
-
-        }
-    }
+}

@@ -39,24 +39,21 @@ public class ControladorBonificaciones {
         List<BonificacionAsignadaDTO> bonis = new ArrayList<>();
         List<Asignacion> asignacionesPropietario = propietario.getAsignaciones();
         for (Asignacion asigns : asignacionesPropietario) {
-              Bonificacion bonificaciones = asigns.getBonificacion();
-                    String nombreBon = bonificaciones.getNombre();
+            Bonificacion bonificaciones = asigns.getBonificacion();
+            String nombreBon = bonificaciones.getNombre();
 
-                    String nombrePuesto = "";
-                    if (asigns.getPuesto() != null) {
-                        nombrePuesto = asigns.getPuesto().getNombre();
-                    }
-
-                    String fecha = "";
-                    if (asigns.getFechaAsignacion() != null) {
-                        fecha = asigns.getFechaAsignacion().toString(); // pasamos date a string
-                    }
-
-                    bonis.add(new BonificacionAsignadaDTO(nombreBon, nombrePuesto, fecha));
-                }
+            String nombrePuesto = "";
+            if (asigns.getPuesto() != null) {
+                nombrePuesto = asigns.getPuesto().getNombre();
             }
-        }
 
+            String fecha = "";
+            if (asigns.getFechaAsignacion() != null) {
+                fecha = asigns.getFechaAsignacion().toString(); // pasamos date a string
+            }
+
+            bonis.add(new BonificacionAsignadaDTO(nombreBon, nombrePuesto, fecha));
+        }
         return Respuesta.lista(new Respuesta("bonificacionesAsignadas", bonis));
     }
 
@@ -81,7 +78,7 @@ public class ControladorBonificaciones {
     }
 
     @PostMapping("/infoPorCedula")
-        public List<Respuesta> infoPorCedula(
+    public List<Respuesta> infoPorCedula(
             @RequestParam(name = "cedula", required = false) String cedula) {
 
         if (cedula == null || cedula.trim().isEmpty()) {
@@ -124,7 +121,7 @@ public class ControladorBonificaciones {
     }
 
     @PostMapping("/asignar")
-        public List<Respuesta> asignarBonificacion(
+    public List<Respuesta> asignarBonificacion(
             @RequestParam(name = "cedula") String cedula,
             @RequestParam(name = "puesto") String puestoId,
             @RequestParam(name = "tipo") String tipoBonificacion) throws PeajeException {
