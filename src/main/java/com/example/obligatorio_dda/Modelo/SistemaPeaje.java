@@ -281,5 +281,7 @@ public class SistemaPeaje {
                     lista.add(a);
                 }
             }
-    
-}
+            return lista;
+
+        }
+    }
