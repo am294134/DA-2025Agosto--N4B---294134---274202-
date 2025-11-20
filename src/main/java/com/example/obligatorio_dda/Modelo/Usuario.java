@@ -8,7 +8,7 @@ public abstract class Usuario extends Observable {
     private String cedula;
     private String contrasenia;
     public enum Eventos {
-        datosUsuarioModificados, listaBon, listaTran
+        datosUsuarioModificados, listaBon, listaTran, listaNot
     }
 
     public Usuario(String nombre, String apellido, String cedula, String contrasenia) {

@@ -150,6 +150,7 @@ public class Propietario extends Usuario {
 
     public void registrarTransitoYAplicarPago(Transito transito, double montoAPagar) {
         // registrar tránsito en la lista del propietario
+        avisar(Usuario.Eventos.listaNot);
         agregarTransito(transito);
         descontarSaldo(montoAPagar);
     }
@@ -164,5 +165,10 @@ public class Propietario extends Usuario {
 
     public void agregarVehiculo(Vehiculo vehiculo) {
         this.vehiculos.add(vehiculo);
+    }
+
+    public void agregarNotificacion(Notificacion notificacion) {
+        this.notificaciones.add(notificacion);
+        avisar(Usuario.Eventos.listaNot);
     }
 }

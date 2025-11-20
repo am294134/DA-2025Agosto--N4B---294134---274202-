@@ -213,7 +213,7 @@ public class ControladorBonificaciones {
         // Creamos y guardamos la notificación sólo si el propietario no está penalizado
         if (prop.getEstado() == null || !"Penalizado".equalsIgnoreCase(prop.getEstado().getNombre())) {
             Notificacion notificacion = new Notificacion(mensaje, prop);
-            prop.getNotificaciones().add(notificacion);
+            prop.agregarNotificacion(notificacion);
         }
 
         return Respuesta.lista(new Respuesta("asignacionResultado", "Bonificación asignada correctamente"));

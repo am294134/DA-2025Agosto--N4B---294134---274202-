@@ -1,24 +1,28 @@
 package com.example.obligatorio_dda.Controlador;
 
+import com.example.obligatorio_dda.ConexionNavegador;
 import com.example.obligatorio_dda.Controlador.DTOs.NotificacionDTO;
 import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.Notificacion;
 import com.example.obligatorio_dda.Modelo.Propietario;
+import com.example.obligatorio_dda.Modelo.Usuario;
 import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Observador.Observable;
 import com.example.obligatorio_dda.Observador.Observador;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.MediaType;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @RestController
 @Scope("session")
@@ -27,11 +31,51 @@ public class ControladorNotificaciones implements Observador {
 
     @Autowired
     private HttpSession sesion;
+    private final ConexionNavegador conexionNavegador;
+
+    public ControladorNotificaciones(@Autowired ConexionNavegador conexionNavegador) {
+        this.conexionNavegador = conexionNavegador;
+    }
+
+    @GetMapping(value = "/registrarSSE", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter registrarSSE() {
+        conexionNavegador.conectarSSE();
+        Fachada.getInstancia().agregarObservador((Observador) this);
+        return conexionNavegador.getConexionSSE();
+    }
+
+    @PostMapping("/vistaConectada")
+    public List<Respuesta> vistaConectada() {
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
+        if (propietario == null) {
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
+        }
+        // Registrar este controlador como observador del Propietario (no solo de Fachada)
+        propietario.agregarObservador(this);
+        this.sesion.setAttribute("vistaConectada", "notificaciones");
+        return Respuesta.lista(new Respuesta("vistaConectada", "OK"));
+    }
+
+    @PostMapping("/vistaCerrada")
+    public void vistaCerrada() {
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
+        if (propietario != null) {
+            propietario.quitarObservador(this);
+        }
+    }
+
+    @Override
+    public void actualizar(Object evento, Observable origen) {
+        if (evento == Usuario.Eventos.listaNot) {
+            conexionNavegador.enviarJSON(listarNotificaciones(0, 0));
+            System.out.println("Notificaciones actualizadas enviadas via SSE");
+        }
+    }
 
     @PostMapping("/listar")
     public List<Respuesta> listarNotificaciones(
             @RequestParam(name = "page", required = false) Integer page,
-            @RequestParam(name = "pageSize", required = false) Integer pageSize) throws Exception {
+            @RequestParam(name = "pageSize", required = false) Integer pageSize) {
         Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
@@ -84,25 +128,7 @@ public class ControladorNotificaciones implements Observador {
         return Respuesta.lista(new Respuesta("notificacionesMarcadas", "OK"));
     }
 
-    @PostMapping("/vistaConectada")
-    public List<Respuesta> vistaConectada() {
-        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
-        Fachada.getInstancia().agregarObservador(this);
-        if (propietario == null) {
-            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
-        }
-        this.sesion.setAttribute("vistaConectada", "notificaciones");
-        return Respuesta.lista(new Respuesta("vistaConectada", "OK"));
-    }
-
-    @PostMapping("/vistaCerrada")
-    public void vistaCerrada() {
-        if(Fachada.getInstancia() != null) {
-            Fachada.getInstancia().quitarObservador(this);
-        }
-    }
-
-    @PostMapping ("/borrarTodas")
+    @PostMapping("/borrarTodas")
     public List<Respuesta> borrarTodasNotificaciones() throws Exception {
         Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
         if (propietario == null) {
@@ -116,9 +142,5 @@ public class ControladorNotificaciones implements Observador {
         notificaciones.clear();
         return Respuesta.lista(new Respuesta("borrarTodasResultado", "OK"));
     }
-    @Override
-    public void actualizar(Object evento, Observable origen) {
-        // Notificaciones no requiere acciones especiales en este observador por ahora
-        // (se deja vacío para evitar lanzar excepciones al notificar)
-    }
+
 }
