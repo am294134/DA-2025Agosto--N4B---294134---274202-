@@ -210,9 +210,11 @@ public class ControladorBonificaciones {
         String mensaje = "Se te asignó la bonificación \"" + bon.getNombre() +
                 "\" en el puesto \"" + puestoNombre + "\"" + nroTexto;
 
-        // Creamos y guardamos la notificación
-        Notificacion notificacion = new Notificacion(mensaje, prop);
-        prop.getNotificaciones().add(notificacion);
+        // Creamos y guardamos la notificación sólo si el propietario no está penalizado
+        if (prop.getEstado() == null || !"Penalizado".equalsIgnoreCase(prop.getEstado().getNombre())) {
+            Notificacion notificacion = new Notificacion(mensaje, prop);
+            prop.getNotificaciones().add(notificacion);
+        }
 
         return Respuesta.lista(new Respuesta("asignacionResultado", "Bonificación asignada correctamente"));
     }
