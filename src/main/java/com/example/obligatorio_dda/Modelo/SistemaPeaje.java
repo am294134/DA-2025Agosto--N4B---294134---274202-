@@ -49,9 +49,6 @@ public class SistemaPeaje {
         bonificaciones.add(bonificacion);
     }
 
-    public ArrayList<Bonificacion> getBonificaciones() {
-        return bonificaciones;
-    }
 
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
             String cedulaPropietario) throws PeajeException {
@@ -208,6 +205,10 @@ public class SistemaPeaje {
     public ArrayList<Propietario> getPropietarios() {
         return propietarios;
     }
+    
+    public ArrayList<Bonificacion> getBonificaciones() {
+        return bonificaciones;
+    }
 
     public ArrayList<TarifaDTO> obtenerTarifasPorPuesto(String puestoId) throws PeajeException {
         Puesto puesto = buscarPuestoPorId(puestoId);
@@ -219,13 +220,4 @@ public class SistemaPeaje {
         return lista;
     }
 
-    public ArrayList<Vehiculo> obtenerVehiculosPropietario(Propietario propietario) {
-        ArrayList<Vehiculo> lista = new ArrayList<>();
-        for (Vehiculo v : this.vehiculos) {
-            if (v.getPropietario() != null && v.getPropietario().getCedula().equals(propietario.getCedula())) {
-                lista.add(v);
-            }
-        }
-        return lista;
-    }
 }

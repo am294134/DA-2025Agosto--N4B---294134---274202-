@@ -75,11 +75,7 @@ public class ControladorEmularTransito {
         }
 
         String bonificacionNombre = null;
-        try {
-            bonificacionNombre = Fachada.getInstancia().buscarBonificacionNombreEnPuesto(prop, puesto);
-        } catch (Exception ex) {
-            bonificacionNombre = null;
-        }
+        bonificacionNombre = Fachada.getInstancia().buscarBonificacionNombreEnPuesto(prop, puesto);
         if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
