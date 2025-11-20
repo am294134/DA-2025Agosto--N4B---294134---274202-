@@ -83,7 +83,7 @@ public class SistemaAcceso {
                 return propietario;
             }
         }
-        throw new PeajeException("No se encontró el propietario con cédula: " + cedula);
+        throw new PeajeException("Acceso Denegado");
     }
 
     public void cambiarEstado(String cedula, String nombreEstado) throws PeajeException {
