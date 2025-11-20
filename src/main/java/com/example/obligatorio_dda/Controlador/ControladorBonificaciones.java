@@ -37,15 +37,18 @@ public class ControladorBonificaciones {
         }
 
         List<BonificacionAsignadaDTO> bonis = new ArrayList<>();
-
-        // recorremos las bonificaciones
+        List<Asignacion> asignacionesPropietario = Fachada.getInstancia().obtenerAsignacionesPropietario(propietario);
+        
+        
+        
+        /*// recorremos las bonificaciones
         for (Bonificacion bonificaciones : Fachada.getInstancia().getBonificaciones()) {
             // recorremos las asignaciones
             for (Asignacion asigns : bonificaciones.getAsignaciones()) {
                 // buscamos las que pertenecen al propietario logueado y lo mandamos para el DTO
                 if (asigns.getPropietario() != null
                         && asigns.getPropietario().getCedula().equals(propietario.getCedula())) {
-
+*/
                     String nombreBon = bonificaciones.getNombre();
 
                     String nombrePuesto = "";

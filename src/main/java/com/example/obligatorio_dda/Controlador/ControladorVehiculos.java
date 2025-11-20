@@ -33,7 +33,7 @@ public class ControladorVehiculos {
 
         // Convertimos los vehículos a DTO para enviar solo la información necesaria
         List<VehiculoDTO> vehiculosDTO = new ArrayList<>();
-        for (Vehiculo v : Fachada.getInstancia().obtenerVehiculosPropietario(propietario)) {
+        for (Vehiculo v : propietario.getVehiculos()) {
             vehiculosDTO.add(new VehiculoDTO(
                 v.getMatricula(),
                 v.getModelo(),
@@ -43,7 +43,6 @@ public class ControladorVehiculos {
         }
         
         String nombreCompleto = propietario.getNombre() + " " + propietario.getApellido();
-        // incluir estado y saldoActual en la respuesta para que la vista pueda mostrarlos en el menú
         VehiculosPropDTO vdto = new VehiculosPropDTO(nombreCompleto, vehiculosDTO, propietario.getEstado(), propietario.getSaldoActual());
         return Respuesta.lista(new Respuesta("vehiculosProp", vdto));
     }

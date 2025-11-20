@@ -78,7 +78,6 @@ public class ControladorNotificaciones implements Observador {
             return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
         }
 
-        // acá marcamos todas como leídas
         for (Notificacion notif : propietario.getNotificaciones()) {
             notif.marcarComoLeida();
         }
