@@ -56,16 +56,15 @@ public class ControladorEmularTransito {
             @RequestParam("matricula") String matricula) throws PeajeException {
 
         Vehiculo vehiculo = null;
-    
         vehiculo = Fachada.getInstancia().buscarVehiculoPorMatricula(matricula);
        
         Propietario prop = vehiculo.getPropietario();
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
         String categoria = vehiculo.getCategoria().getNombre();
         Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
-
-        Bonificacion bonificacion = prop.getBonificacionEnPuesto(puesto); //LLEGAR A LAS ASIGNACIONES DEL PROPIETARIO
+        Bonificacion bonificacion = prop.getBonificacionEnPuesto(puesto);
         String bonificacionNombre = bonificacion.getNombre();
+
         if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
@@ -76,7 +75,6 @@ public class ControladorEmularTransito {
                 dto.setMonto(montoAPagar);
                 dto.setSaldoLuegoDelTransito(saldoLuego);
         }
-
         return Respuesta.lista(new Respuesta("infoMatricula", dto));
     }
 
