@@ -86,8 +86,14 @@ public class Propietario extends Usuario {
 
     // devuelve la bon asignada al propietario para el puesto, sino null
     public Bonificacion getBonificacionEnPuesto(Puesto puesto) {
+        // Si el propietario está penalizado no aplica bonificaciones
+        if (this.estado != null && "Penalizado".equalsIgnoreCase(this.estado.getNombre())) {
+            return null;
+        }
+
         if (puesto == null || asignaciones == null)
             return null;
+
         for (Asignacion a : asignaciones) {
             if (a == null || a.getPuesto() == null)
                 continue;
@@ -95,6 +101,7 @@ public class Propietario extends Usuario {
                 return a.getBonificacion();
             }
         }
+
         return null;
     }
 
