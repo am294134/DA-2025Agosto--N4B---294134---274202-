@@ -105,7 +105,6 @@ public class Propietario extends Usuario {
         return null;
     }
 
-    
 
     // calcula el monto a pagar en un puesto y si hay bon aploca descuento
     public double calcularMontoAPagarParaPuesto(Puesto puesto, double montoBase) {
@@ -160,8 +159,9 @@ public class Propietario extends Usuario {
     }
 
     public void cambiarEstado(Estado nuevoEstado) {
-        this.estado = nuevoEstado;
+        this.estado = estado;
     }
+
     public void agregarVehiculo(Vehiculo vehiculo) {
         this.vehiculos.add(vehiculo);
     }
