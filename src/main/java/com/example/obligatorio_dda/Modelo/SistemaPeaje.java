@@ -73,6 +73,7 @@ public class SistemaPeaje {
     }
 
     public Transito agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
+       //CAMBIO DE TIPO DE FECHA 
         LocalDateTime fecha = null;
         if (fechaHora == null || fechaHora.trim().isEmpty()) {
             fecha = LocalDateTime.now();
@@ -84,10 +85,10 @@ public class SistemaPeaje {
                 throw new PeajeException("Formato de fecha inválido: " + fechaHora);
             }
         }
-        return agregarTransito(puestoId, matricula, fecha);
+        return agregarTransito2(puestoId, matricula, fecha);
     }
 
-    public Transito agregarTransito(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
+    public Transito agregarTransito2(String puestoId, String matricula, LocalDateTime fechaHora) throws PeajeException {
         // Normalizar y validar matrícula
         if (matricula == null || matricula.trim().isEmpty()) {
             throw new PeajeException("Matrícula inválida");
@@ -97,27 +98,10 @@ public class SistemaPeaje {
         if (vehiculo == null) {
             throw new PeajeException("No existe el vehículo con matrícula: " + matricula);
         }
-
-        if (puestoId == null || puestoId.trim().isEmpty()) {
-            throw new PeajeException("Puesto inválido");
-        }
-
         Puesto puesto = buscarPuestoPorId(puestoId);
-
-        // buscar objeto Tarifa para la categoría del vehículo
-        Tarifa tarifa = null;
-        for (Tarifa t : puesto.getTarifas()) {
-            if (t != null && t.getCategoria() != null && vehiculo.getCategoria() != null
-                    && t.getCategoria().getNombre().equals(vehiculo.getCategoria().getNombre())) {
-                tarifa = t;
-                break;
-            }
-        }
-        if (tarifa == null) {
-            throw new PeajeException("No hay tarifa definida para la categoría del vehículo en este puesto");
-        }
-
+        Tarifa tarifa = obtenerTarifasPorPuesto(puestoId);
         Propietario propietario = vehiculo.getPropietario();
+
         if (propietario.getEstado() != null && "Deshabilitado".equalsIgnoreCase(propietario.getEstado().getNombre())) {
             throw new PeajeException("Usuario deshabilitado, no puede agregar transito");
         }
@@ -125,14 +109,11 @@ public class SistemaPeaje {
             throw new PeajeException("Usuario suspendido, no puede agregar transito");
         }
 
-        // calculamos consultando al prop
-        Bonificacion bon = (propietario != null) ? propietario.getBonificacionEnPuesto(puesto) : null;
+        Bonificacion bon = propietario.getBonificacionEnPuesto(puesto);
 
         // crea el transito con la tarifa encontrada y la fecha/hora indicada; Transito
-        // crea y guarda los valores aplicados
         Transito transito = Transito.crearConValoresAplicados(puesto, vehiculo, propietario, tarifa, bon, fechaHora);
 
-        // registrar en colecciones
         this.transitos.add(transito);
         puesto.getTransitos().add(transito);
         vehiculo.agregarTransito(transito);
