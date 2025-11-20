@@ -60,12 +60,24 @@ public class ControladorEmularTransito {
        
         Propietario prop = vehiculo.getPropietario();
         String propietarioNombre = (prop != null) ? prop.getNombre() + " " + prop.getApellido() : "";
-        String categoria = vehiculo.getCategoria().getNombre();
-        Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
-        Bonificacion bonificacion = prop.getBonificacionEnPuesto(puesto);
-        String bonificacionNombre = bonificacion.getNombre();
-
-        if (bonificacionNombre == null) bonificacionNombre = "(ninguna)";
+        String categoria = (vehiculo.getCategoria() != null) ? vehiculo.getCategoria().getNombre() : "";
+        Puesto puesto = null;
+        String bonificacionNombre = "(ninguna)";
+        try {
+            if (puestoId != null && !puestoId.trim().isEmpty()) {
+                puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
+            }
+        } catch (Exception e) {
+            // si no se encuentra el puesto, lo dejamos en null y seguimos (no es crítico para mostrar info)
+            puesto = null;
+        }
+        Bonificacion bonificacion = null;
+        if (prop != null && puesto != null) {
+            bonificacion = prop.getBonificacionEnPuesto(puesto);
+        }
+        if (bonificacion != null && bonificacion.getNombre() != null) {
+            bonificacionNombre = bonificacion.getNombre();
+        }
 
         TransitoInfoDTO dto = new TransitoInfoDTO(propietarioNombre, categoria, bonificacionNombre);
         if (puesto != null) {

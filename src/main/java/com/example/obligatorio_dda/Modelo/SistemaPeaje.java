@@ -61,11 +61,20 @@ public class SistemaPeaje {
     }
 
     public Puesto buscarPuestoPorId(String puestoId) throws PeajeException {
+        if (puestoId == null) {
+            throw new PeajeException("No existe el puesto con id: null");
+        }
+        String buscada = puestoId.trim();
+        // Primera pasada: igualdad exacta con peajeString o con nombre (ignorando mayúsculas)
         for (Puesto p : puestos) {
-            if (p.getPeajeString().equals(puestoId)) {
+            if (p == null) continue;
+            String peajeStr = p.getPeajeString() == null ? "" : p.getPeajeString().trim();
+            String nombre = p.getNombre() == null ? "" : p.getNombre().trim();
+            if (peajeStr.equalsIgnoreCase(buscada) || nombre.equalsIgnoreCase(buscada)) {
                 return p;
             }
         }
+       
         throw new PeajeException("No existe el puesto con id: " + puestoId);
     }
 
