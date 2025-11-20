@@ -28,12 +28,8 @@ public class ControladorCambiarEstado {
     public List<Respuesta> buscarPropietario(
             @RequestParam("cedula") String cedula) throws PeajeException {
 
-<<<<<<< HEAD
         // Verificar que hay un administrador logueado
         Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
-=======
-        Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
->>>>>>> ec346bb8616c5d3dad1fc890ea034fb61906f0b7
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
@@ -52,12 +48,8 @@ public class ControladorCambiarEstado {
             @RequestParam("cedula") String cedula,
             @RequestParam("estado") String estado) throws PeajeException {
 
-<<<<<<< HEAD
         // Verificar que hay un administrador logueado
         Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
-=======
-        Administrador admin = (Administrador) sesion.getAttribute("usuarioAdministrador");
->>>>>>> ec346bb8616c5d3dad1fc890ea034fb61906f0b7
         if (admin == null) {
             throw new PeajeException("No hay un administrador logueado");
         }
@@ -65,5 +57,15 @@ public class ControladorCambiarEstado {
         Fachada.getInstancia().cambiarEstado(cedula, estado);
         
          return Respuesta.lista(new Respuesta("cambioEstadoResultado","Estado cambiado correctamente a: " + estado));
+    }
+
+    @PostMapping("/vistaConectada")
+    public List<Respuesta> vistaConectada() throws PeajeException {
+        Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
+        if (admin == null) {
+            throw new PeajeException("No hay un administrador logueado");
+        }
+        this.sesion.setAttribute("vistaConectada", "cambiarEstado");
+        return Respuesta.lista(new Respuesta("vistaConectada", "OK"));
     }
 }

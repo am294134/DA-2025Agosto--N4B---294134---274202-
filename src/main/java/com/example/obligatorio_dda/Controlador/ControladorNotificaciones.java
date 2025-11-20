@@ -1,8 +1,12 @@
 package com.example.obligatorio_dda.Controlador;
 
 import com.example.obligatorio_dda.Controlador.DTOs.NotificacionDTO;
+import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.Notificacion;
 import com.example.obligatorio_dda.Modelo.Propietario;
+import com.example.obligatorio_dda.Observador.Observable;
+import com.example.obligatorio_dda.Observador.Observador;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +17,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @Scope("session")
 @RequestMapping("/notificaciones")
-public class ControladorNotificaciones {
+public class ControladorNotificaciones implements Observador {
 
     @Autowired
     private HttpSession sesion;
@@ -76,5 +82,30 @@ public class ControladorNotificaciones {
             notif.marcarComoLeida();
         }
         return Respuesta.lista(new Respuesta("notificacionesMarcadas", "OK"));
+    }
+
+    @PostMapping("/vistaConectada")
+    public List<Respuesta> vistaConectada() {
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
+        Fachada.getInstancia().agregarObservador(this);
+        if (propietario == null) {
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
+        }
+        this.sesion.setAttribute("vistaConectada", "notificaciones");
+        return Respuesta.lista(new Respuesta("vistaConectada", "OK"));
+    }
+
+    @PostMapping("/vistaCerrada")
+    public void vistaCerrada() {
+        if(Fachada.getInstancia() != null) {
+            Fachada.getInstancia().quitarObservador(this);
+        }
+    }
+    
+
+    @Override
+    public void actualizar(Object evento, Observable origen) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'actualizar'");
     }
 }

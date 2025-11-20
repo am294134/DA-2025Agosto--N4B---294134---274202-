@@ -47,4 +47,14 @@ public class ControladorTransitos {
 
         return Respuesta.lista(new Respuesta("misTransitos", lista));
     }
+
+    @PostMapping("/vistaConectada")
+    public List<Respuesta> vistaConectada() {
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
+        if (propietario == null) {
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
+        }
+        this.sesion.setAttribute("vistaConectada", "transitos");
+        return Respuesta.lista(new Respuesta("vistaConectada", "OK"));
+    }
 }
