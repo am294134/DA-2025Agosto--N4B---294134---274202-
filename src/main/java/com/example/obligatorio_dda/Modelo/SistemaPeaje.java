@@ -244,6 +244,7 @@ public class SistemaPeaje {
         return bonificaciones;
     }
 
+    /* 
     public ArrayList<TarifaDTO> obtenerTarifasPorPuesto(String puestoId) throws PeajeException {
         Puesto puesto = buscarPuestoPorId(puestoId);
         ArrayList<TarifaDTO> lista = new ArrayList<>();
@@ -252,6 +253,6 @@ public class SistemaPeaje {
             lista.add(new TarifaDTO(t.getMonto(), nombreCategoria));
         }
         return lista;
-    }
+    }*/
 
 }

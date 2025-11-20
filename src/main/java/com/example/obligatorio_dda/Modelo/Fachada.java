@@ -150,8 +150,9 @@ public class Fachada extends Observable {
     public String buscarBonificacionNombreEnPuesto(Propietario prop, Puesto puesto) throws PeajeException {
         return sistemaPeaje.buscarBonificacionNombreEnPuesto(prop, puesto);
     }
-
+/* 
     public ArrayList<TarifaDTO> obtenerTarifasPorPuesto(String puestoId) throws PeajeException {
         return sistemaPeaje.obtenerTarifasPorPuesto(puestoId);
     }
+        */
 }

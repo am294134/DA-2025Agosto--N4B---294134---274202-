@@ -1,6 +1,9 @@
 package com.example.obligatorio_dda.Modelo;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+
+import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 
 public class Puesto {
     private String nombre;
@@ -55,4 +58,12 @@ public class Puesto {
                 "No hay tarifa definida para la categoría: " + categoria.getNombre() + " en el puesto: " + nombre);
     }
 
+    public ArrayList<TarifaDTO> obtenerTarifasPorPuesto(){
+         ArrayList<TarifaDTO> lista = new ArrayList<>();
+         for (Tarifa t : tarifas) {
+             String nombreCategoria = t.getCategoria().getNombre();
+             lista.add(new TarifaDTO(t.getMonto(), nombreCategoria));
+         }
+        return lista;
+    }
 }

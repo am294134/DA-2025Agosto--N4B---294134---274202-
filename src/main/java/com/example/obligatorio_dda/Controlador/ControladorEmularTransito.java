@@ -100,8 +100,8 @@ public class ControladorEmularTransito {
         if (puestoId == null) {
             throw new PeajeException("No hay puesto seleccionado");
         }
-        
-        List<TarifaDTO> lista = Fachada.getInstancia().obtenerTarifasPorPuesto(puestoId);
+        Puesto puesto = Fachada.getInstancia().buscarPuestoPorId(puestoId);
+        List<TarifaDTO> lista = puesto.obtenerTarifasPorPuesto();
 
         return Respuesta.lista(new Respuesta("tarifasLista", lista));
     }
