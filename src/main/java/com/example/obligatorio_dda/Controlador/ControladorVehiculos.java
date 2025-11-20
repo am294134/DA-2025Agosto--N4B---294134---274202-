@@ -7,7 +7,6 @@ import com.example.obligatorio_dda.Controlador.DTOs.VehiculoDTO;
 import com.example.obligatorio_dda.Controlador.DTOs.VehiculosPropDTO;
 import com.example.obligatorio_dda.Modelo.Propietario;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
-import com.example.obligatorio_dda.Modelo.Fachada;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.context.annotation.Scope;
