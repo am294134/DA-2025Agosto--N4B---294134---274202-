@@ -25,18 +25,16 @@ import com.example.obligatorio_dda.Modelo.Puesto;
 import com.example.obligatorio_dda.Modelo.Administrador;
 import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.Vehiculo;
-import com.example.obligatorio_dda.Observador.Observable;
 import com.example.obligatorio_dda.Observador.Observador;
 import com.example.obligatorio_dda.Modelo.Propietario;
 
 @RestController
 @Scope("session")
 @RequestMapping("/emularTransito")
-public class ControladorEmularTransito extends Observable {
+public class ControladorEmularTransito {
 
     @Autowired
     private HttpSession sesion;
-
     private final ConexionNavegador conexionNavegador;
 
     public ControladorEmularTransito(@Autowired ConexionNavegador conexionNavegador) {

@@ -1,10 +1,15 @@
 package com.example.obligatorio_dda.Modelo;
 
-public abstract class Usuario {
+import com.example.obligatorio_dda.Observador.Observable;
+
+public abstract class Usuario extends Observable {
     private String nombre;
     private String apellido;
     private String cedula;
     private String contrasenia;
+    public enum Eventos {
+        datosUsuarioModificados, listaBon, listaTran
+    }
 
     public Usuario(String nombre, String apellido, String cedula, String contrasenia) {
         this.nombre = nombre;
