@@ -47,4 +47,14 @@ public class ControladorVehiculos {
         VehiculosPropDTO vdto = new VehiculosPropDTO(nombreCompleto, vehiculosDTO, propietario.getEstado(), propietario.getSaldoActual());
         return Respuesta.lista(new Respuesta("vehiculosProp", vdto));
     }
+
+    @PostMapping("/vistaConectada")
+    public List<Respuesta> vistaConectada() {
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
+        if (propietario == null) {
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
+        }
+        this.sesion.setAttribute("vistaConectada", "vehiculos");
+        return Respuesta.lista(new Respuesta("vistaConectada", "OK"));
+    }
 }

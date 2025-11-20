@@ -66,6 +66,16 @@ public class ControladorBonificaciones {
         return Respuesta.lista(new Respuesta("bonificacionesAsignadas", bonis));
     }
 
+    @PostMapping("/vistaConectada")
+    public List<Respuesta> vistaConectada() {
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
+        if (propietario == null) {
+            return Respuesta.lista(new Respuesta("redirLoginPropietario", "login-propietario.html"));
+        }
+        this.sesion.setAttribute("vistaConectada", "bonificaciones");
+        return Respuesta.lista(new Respuesta("vistaConectada", "OK"));
+    }
+
     @PostMapping("/listarTipos")
     public List<Respuesta> listarTipos() {
 

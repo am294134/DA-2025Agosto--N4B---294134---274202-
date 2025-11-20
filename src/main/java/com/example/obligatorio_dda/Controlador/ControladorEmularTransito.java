@@ -116,5 +116,15 @@ public class ControladorEmularTransito {
         return Respuesta.lista(new Respuesta("tarifasLista", lista));
     }
 
+    @PostMapping("/vistaConectada")
+    public List<Respuesta> vistaConectada() throws PeajeException {
+        Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
+        if (admin == null) {
+            throw new PeajeException("No hay un administrador logueado");
+        }
+        this.sesion.setAttribute("vistaConectada", "emularTransito");
+        return Respuesta.lista(new Respuesta("vistaConectada", "OK"));
+    }
+
 }
 
