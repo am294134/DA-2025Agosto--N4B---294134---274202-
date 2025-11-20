@@ -101,7 +101,7 @@ public class ControladorNotificaciones implements Observador {
             Fachada.getInstancia().quitarObservador(this);
         }
     }
-    
+
 
     @Override
     public void actualizar(Object evento, Observable origen) {
