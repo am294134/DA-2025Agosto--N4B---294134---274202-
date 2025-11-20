@@ -34,7 +34,7 @@ public class SistemaAcceso {
     public Propietario loginPropietario(String name, String pass) throws PeajeException {
         Propietario prop = (Propietario) this.login(name, pass, this.propietarios);
         if (prop == null) {
-            throw new PeajeException("Usuario o contraseña incorrectos");
+            throw new PeajeException("Acceso Denegado");
         }
         if (prop.getEstado() != null && "Deshabilitado".equalsIgnoreCase(prop.getEstado().getNombre())) {
             throw new PeajeException("Usuario deshabilitado, no puede ingresar al sistema");
@@ -45,7 +45,7 @@ public class SistemaAcceso {
     public Administrador loginAdministrador(String name, String pass) throws PeajeException {
         Administrador admin = (Administrador) this.login(name, pass, this.administradores);
         if (admin == null) {
-            throw new PeajeException("Usuario o contraseña incorrectos");
+            throw new PeajeException("Acceso Denegado");
         } else {
             return admin;
         }
@@ -83,7 +83,7 @@ public class SistemaAcceso {
                 return propietario;
             }
         }
-        throw new PeajeException("Acceso Denegado");
+        throw new PeajeException("No se encontró el propietario con cédula: " + cedula);
     }
 
     public void cambiarEstado(String cedula, String nombreEstado) throws PeajeException {
