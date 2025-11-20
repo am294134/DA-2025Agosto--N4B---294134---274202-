@@ -3,7 +3,6 @@ package com.example.obligatorio_dda.Modelo;
 import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import com.example.obligatorio_dda.Controlador.DTOs.TarifaDTO;
 
 public class SistemaPeaje {
     private ArrayList<Puesto> puestos;
@@ -36,6 +35,7 @@ public class SistemaPeaje {
         this.transitos = new ArrayList<>();
     }
 
+
     public void agregarTarifa(String nombrePuesto, String nombreCategoria, double monto) throws PeajeException {
         Puesto puesto = buscarPuestoPorId(nombrePuesto);
         Categoria categoria = buscarCategoria(nombreCategoria);
@@ -49,7 +49,6 @@ public class SistemaPeaje {
         bonificaciones.add(bonificacion);
     }
 
-
     public void agregarVehiculo(String matricula, String color, String modelo, String nombreCategoria,
             String cedulaPropietario) throws PeajeException {
         
@@ -60,23 +59,6 @@ public class SistemaPeaje {
         propietario.agregarVehiculo(vehiculo);
     }
 
-    public Puesto buscarPuestoPorId(String puestoId) throws PeajeException {
-        if (puestoId == null) {
-            throw new PeajeException("No existe el puesto con id: null");
-        }
-        String buscada = puestoId.trim();
-        // Primera pasada: igualdad exacta con peajeString o con nombre (ignorando mayúsculas)
-        for (Puesto p : puestos) {
-            if (p == null) continue;
-            String peajeStr = p.getPeajeString() == null ? "" : p.getPeajeString().trim();
-            String nombre = p.getNombre() == null ? "" : p.getNombre().trim();
-            if (peajeStr.equalsIgnoreCase(buscada) || nombre.equalsIgnoreCase(buscada)) {
-                return p;
-            }
-        }
-       
-        throw new PeajeException("No existe el puesto con id: " + puestoId);
-    }
 
     public Transito agregarTransito(String puestoId, String matricula, String fechaHora) throws PeajeException {
        //CAMBIO DE TIPO DE FECHA 
@@ -130,18 +112,7 @@ public class SistemaPeaje {
 
         return transito;
     }
-/* 
-    public ArrayList<Vehiculo> obtenerVehiculosPropietario(Propietario propietario) {
-        ArrayList<Vehiculo> lista = new ArrayList<>();
-        if (propietario == null) return lista;
-        for (Vehiculo v : vehiculos) {
-            if (v.getPropietario() != null && v.getPropietario().getCedula() != null
-                    && v.getPropietario().getCedula().equals(propietario.getCedula())) {
-                lista.add(v);
-            }
-        }
-        return lista;
-    }*/
+
 
     public ArrayList<Transito> getTransitos() {
         return transitos;
@@ -245,5 +216,22 @@ public class SistemaPeaje {
         return bonificaciones;
     }
 
-    
+        public Puesto buscarPuestoPorId(String puestoId) throws PeajeException {
+        if (puestoId == null) {
+            throw new PeajeException("No existe el puesto con id: null");
+        }
+        String buscada = puestoId.trim();
+        // Primera pasada: igualdad exacta con peajeString o con nombre (ignorando mayúsculas)
+        for (Puesto p : puestos) {
+            if (p == null) continue;
+            String peajeStr = p.getPeajeString() == null ? "" : p.getPeajeString().trim();
+            String nombre = p.getNombre() == null ? "" : p.getNombre().trim();
+            if (peajeStr.equalsIgnoreCase(buscada) || nombre.equalsIgnoreCase(buscada)) {
+                return p;
+            }
+        }
+       
+        throw new PeajeException("No existe el puesto con id: " + puestoId);
+    }
+
 }
