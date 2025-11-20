@@ -4,6 +4,7 @@ import com.example.obligatorio_dda.Controlador.DTOs.NotificacionDTO;
 import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.Notificacion;
 import com.example.obligatorio_dda.Modelo.Propietario;
+import com.example.obligatorio_dda.Modelo.PeajeException;
 import com.example.obligatorio_dda.Observador.Observable;
 import com.example.obligatorio_dda.Observador.Observador;
 
@@ -110,7 +111,7 @@ public class ControladorNotificaciones implements Observador {
 
         List<Notificacion> notificaciones = propietario.getNotificaciones();
         if (notificaciones == null || notificaciones.isEmpty()) {
-            throw new Exception("No hay notificaciones para borrar");
+            throw new PeajeException("No hay notificaciones para borrar");
         }
         notificaciones.clear();
         return Respuesta.lista(new Respuesta("borrarTodasResultado", "OK"));
