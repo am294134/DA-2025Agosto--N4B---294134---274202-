@@ -49,4 +49,11 @@ public class ControladorLogin {
 
         return Respuesta.lista(new Respuesta("loginExitoso", "menu-admin.html"));
     }
+
+        @PostMapping("/logoutAdministrador")
+        public List<Respuesta> logoutAdministrador() {
+            // Logout específico para administradores: invalida la sesión y devuelve la pantalla de login de admin
+            this.sesionHttp.invalidate();
+            return Respuesta.lista(new Respuesta("logoutExitoso", "login-admin.html"));
+        }
 }

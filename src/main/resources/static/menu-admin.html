@@ -12,6 +12,7 @@
     <div class="header">
       <h1>Panel de Administrador</h1>
       <div class="user-info">Bienvenido, <span id="nombreUsuario"></span></div>
+      <button id="btn-logout" class="logout-btn" style="margin-left:12px;">Salir</button>
     </div>
     <!-- Pestañas modernas: un solo contenedor con 3 pestañas -->
     <div class="admin-sections tabs-container">
@@ -156,6 +157,13 @@
         cargarPuestos();
         cargarBonificacionesTipos();
         initTabs();
+        const btnLogout = document.getElementById('btn-logout');
+        if (btnLogout) {
+          btnLogout.addEventListener('click', function(e){
+            e.preventDefault();
+            submit('/acceso/logoutAdministrador','');
+          });
+        }
       });
 
       // Inicializa el comportamiento de las pestañas
@@ -254,7 +262,6 @@
           .forEach((p) => p.classList.remove("active"));
         const panel = document.getElementById(tabId);
         if (panel) panel.classList.add("active");
-
         // lazy load puestos when switching to emular
         if (tabId === "tab-emular") {
           const sel = document.getElementById("peajeSelect");
@@ -756,6 +763,21 @@
           }
         } catch (e) {
           alert(texto);
+        }
+      }
+
+      // Handler para la respuesta de logout
+      function mostrar_logoutExitoso(param) {
+        // El backend devuelve la URL de destino en el campo 'parametro' o como string
+        let url = '/login-admin.html';
+        if (typeof param === 'string') url = param;
+        else if (param && param.parametro) url = param.parametro;
+        else if (param && param.param) url = param.param;
+        try {
+          window.location.href = url;
+        } catch (e) {
+          // fallback
+          window.location.href = '/login-admin.html';
         }
       }
 
