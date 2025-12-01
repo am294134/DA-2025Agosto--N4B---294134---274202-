@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.example.obligatorio_dda.ConexionNavegador;
-import com.example.obligatorio_dda.Modelo.Administrador;
 import com.example.obligatorio_dda.Modelo.Fachada;
 import com.example.obligatorio_dda.Modelo.PeajeException;
+import com.example.obligatorio_dda.Modelo.Propietario;
 import com.example.obligatorio_dda.Modelo.Usuario;
 import com.example.obligatorio_dda.Observador.Observable;
 import com.example.obligatorio_dda.Observador.Observador;
@@ -37,18 +37,18 @@ public class ControladorPropietario {
 
     @PostMapping("/vistaConectada")
     public List<Respuesta> vistaConectada() throws PeajeException {
-        Administrador admin = (Administrador) this.sesion.getAttribute("usuarioAdministrador");
-        if (admin == null) {
-            throw new PeajeException("No hay un administrador logueado");
+        Propietario propietario = (Propietario) this.sesion.getAttribute("usuarioPropietario");
+        if (propietario == null) {
+            throw new PeajeException("No hay un propietario logueado");
         }
-        this.sesion.setAttribute("vistaConectada", "cambiarEstado");
+        // this.sesion.setAttribute("vistaConectada", "cambiarEstado");
         return Respuesta.lista(new Respuesta("vistaConectada", "OK"));
     }
 
     @PostMapping("/vistaCerrada")
     public void salir(HttpSession sesionHttp) {
         Fachada.getInstancia().quitarObservador((Observador) this);
-        sesionHttp.removeAttribute("usuarioAdministrador");
+        sesionHttp.removeAttribute("usuarioPropietario");
     }
 
     public void actualizar(Object evento, Observable origen) {
