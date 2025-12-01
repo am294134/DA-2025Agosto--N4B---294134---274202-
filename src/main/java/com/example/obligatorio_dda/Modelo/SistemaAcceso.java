@@ -103,7 +103,23 @@ public class SistemaAcceso {
     }
 
     public void agregarEstado(String nombre) {
-        Estado estado = new Estado(nombre);
+        Estado estado;
+        switch (nombre) {
+            case "Habilitado":
+                estado = new Habilitado(nombre);
+                break;
+            case "Deshabilitado":
+                estado = new Deshabilitado(nombre);
+                break;
+            case "Suspendido":
+                estado = new Suspendido(nombre);
+                break;
+            case "Penalizado":
+                estado = new Penalizado(nombre);
+                break;
+            default:
+                throw new IllegalArgumentException("Estado desconocido: " + nombre);
+        }
         this.estados.add(estado);
     }
  } 

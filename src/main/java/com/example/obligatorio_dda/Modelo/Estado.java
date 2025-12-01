@@ -1,6 +1,6 @@
 package com.example.obligatorio_dda.Modelo;
 
-public class Estado {
+public abstract class Estado {
     private String nombre;
 
     public Estado(String nombre) {
