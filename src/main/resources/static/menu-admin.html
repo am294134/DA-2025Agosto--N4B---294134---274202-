@@ -33,50 +33,13 @@
           <div class="section-header"><h3>Emular tránsito</h3></div>
           <div class="section-body">
             <p>Simula el paso de un vehículo por un peaje.</p>
-
-            <!-- Two-column layout: left = form, right = tarifas -->
             <div class="emular-layout">
-              <div class="emular-form">
-                <form id="form-emular" onsubmit="event.preventDefault();">
-                  <label for="peajeSelect">Peaje</label>
-                  <select id="peajeSelect">
-                    <!-- carga dinamica -->
-                  </select>
-
-                  <label for="matricula">Matrícula</label>
-                  <input id="matricula" type="text" placeholder="ABC1234" />
-
-                  <label for="fechaHora">Fecha y hora</label>
-                  <input id="fechaHora" type="datetime-local" />
-
-                  <div class="action-row">
-                    <button class="action-btn" id="btn-emular">Emular</button>
-                  </div>
-                </form>
-              </div>
-
+              <div class="emular-form" id="emular-form-container"></div>
               <aside class="tarifas-column" aria-labelledby="tarifasHeading">
-                <div id="tarifasBox" class="tarifas-box" aria-live="polite">
-                  <h4 id="tarifasHeading">Tarifas</h4>
-                  <div id="tarifasContent">
-                    Seleccione un puesto para ver las tarifas
-                  </div>
-                </div>
-
-                <!-- Nuevo bloque separado para información del propietario -->
-                <div
-                  id="propietarioBox"
-                  class="propietario-box"
-                  aria-live="polite"
-                >
-                  <h4>Propietario</h4>
-                  <div id="propietarioContent">
-                    Ingrese una matrícula para ver los datos del propietario
-                  </div>
-                </div>
+                <div id="tarifas-container"></div>
+                <div id="propietario-transito-container"></div>
               </aside>
             </div>
-            <!-- /emular-layout -->
           </div>
         </div>
 
@@ -85,27 +48,8 @@
           <div class="section-body">
             <p>Asignar bonificaciones a un propietario</p>
             <div style="display:flex;gap:20px;align-items:flex-start;">
-              <form id="form-bonificaciones" onsubmit="event.preventDefault();" style="flex:1;min-width:220px;">
-                <label for="bon-propietario">Propietario (cédula)</label>
-                <input id="bon-propietario" type="text" placeholder="12345678" />
-
-                <label for="bon-puesto">Puesto</label>
-                <select id="bon-puesto">
-                  <!-- carga dinamica de puestos -->
-                </select>
-
-                <label for="bon-tipo">Tipo de bonificación</label>
-                <select id="bon-tipo"></select>
-                <label id="data-bon">Exonerados: No pagan / Frecuentes: 50% de descuento / Trabajadores: 80% de descuento</label>
-                <div class="action-row">
-                  <button class="action-btn" id="btn-asignar">Asignar</button>
-                </div>
-              </form>
-
-              <aside id="propietarioBoxBon" class="propietario-box" style="width:360px;">
-                <h4>Propietario</h4>
-                  <div id="bon-propietario-info" class="propietario-quickinfo" aria-live="polite" style="margin-top:8px;font-size:0.95em;color:#222;">Ingrese una cédula para ver los datos del propietario</div>
-              </aside>
+              <div id="bonificaciones-form-container"></div>
+              <div id="propietario-bonificacion-container"></div>
             </div>
           </div>
         </div>
@@ -117,30 +61,8 @@
           <div class="section-body">
             <p>Modificar el estado actual</p>
             <div style="display:flex;gap:20px;align-items:flex-start;">
-              <form id="form-cambiar-estado" onsubmit="event.preventDefault();" style="flex:1;min-width:220px;">
-                <label for="estado-propietario">Propietario (cédula)</label>
-                <input id="estado-propietario" type="text" placeholder="1" />
-
-                <label for="estado-select">Estado</label>
-                <select id="estado-select">
-                  <option value="">Seleccionar estado</option>
-                  <option>Habilitado</option>
-                  <option>Penalizado</option>
-                  <option>Suspendido</option>
-                  <option>Deshabilitado</option>
-                </select>
-
-                <div class="action-row">
-                  <button class="action-btn" id="btn-cambiar-estado">
-                    Cambiar estado
-                  </button>
-                </div>
-              </form>
-
-              <aside id="propietarioBoxEstado" class="propietario-box" style="width:360px;">
-                <h4>Propietario</h4>
-                <div id="estado-propietario-info" class="propietario-quickinfo" aria-live="polite" style="margin-top:8px;font-size:0.95em;color:#222;">Ingrese una cédula para ver los datos del propietario</div>
-              </aside>
+              <div id="estado-form-container"></div>
+              <div id="propietario-estado-container"></div>
             </div>
           </div>
         </div>
@@ -149,14 +71,18 @@
 
     <script src="/utilesVista.js"></script>
     <script src="/vistaWeb.js"></script>
+    <script src="/js/menu-admin.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
+      document.addEventListener("DOMContentLoaded", async function () {
         urlIniciarVista = "/acceso/iniciarAdministrador";
         urlCierreVista = "/acceso/cerrarSesion";
 
+        await loadFragments();
+        
         cargarPuestos();
         cargarBonificacionesTipos();
         initTabs();
+
         const btnLogout = document.getElementById('btn-logout');
         if (btnLogout) {
           btnLogout.addEventListener('click', function(e){
@@ -164,23 +90,187 @@
             submit('/acceso/logoutAdministrador','');
           });
         }
+
+        // Event listener global para cambio de peaje
+        document.addEventListener("change", function (e) {
+          if (e.target && e.target.id === "peajeSelect") {
+            const puesto = e.target.value;
+            if (!puesto) {
+              if (typeof mostrar_tarifasLista === 'function') mostrar_tarifasLista([]);
+              const input = document.getElementById('matricula');
+              if (input && input.value && input.value.trim() !== '') {
+                const matricula = input.value.trim();
+                submit('/emularTransito/infoMatricula', 'matricula=' + encodeURIComponent(matricula));
+              }
+              return;
+            }
+            submit('/emularTransito/tarifasPorPuesto', 'puestoId=' + encodeURIComponent(puesto));
+            const input = document.getElementById('matricula');
+            if (input && input.value && input.value.trim() !== '') {
+              const matricula = input.value.trim();
+              submit('/emularTransito/infoMatricula', 'puestoId=' + encodeURIComponent(puesto) + '&matricula=' + encodeURIComponent(matricula));
+            }
+          }
+        });
+
+        // Event listener global para input de matrícula
+        let matriculaTimer = null;
+        document.addEventListener("input", function (e) {
+          if (e.target && e.target.id === "matricula") {
+            clearTimeout(matriculaTimer);
+            matriculaTimer = setTimeout(function () {
+              const matricula = e.target.value.trim();
+              const puesto = document.getElementById("peajeSelect")?.value || null;
+              const infoDiv = document.getElementById("propietarioContent");
+              if (!matricula) {
+                if (infoDiv) infoDiv.innerHTML = "Ingrese una matrícula para ver los datos del propietario";
+                return;
+              }
+              let data = "matricula=" + encodeURIComponent(matricula);
+              if (puesto) data = "puestoId=" + encodeURIComponent(puesto) + "&" + data;
+              submit("/emularTransito/infoMatricula", data);
+            }, 500);
+          }
+        });
+
+        // Event listener global para input de cédula en bonificaciones
+        let bonPropietarioTimer = null;
+        document.addEventListener("input", function (e) {
+          if (e.target && e.target.id === "bon-propietario") {
+            clearTimeout(bonPropietarioTimer);
+            bonPropietarioTimer = setTimeout(function () {
+              const ced = e.target.value.trim();
+              const infoDiv = document.getElementById('bon-propietario-info');
+              if (!ced) {
+                if (infoDiv) infoDiv.innerHTML = 'Ingrese una cédula para ver los datos del propietario';
+                window._lastPropietarioInfo = null;
+                return;
+              }
+              const data = 'cedula=' + encodeURIComponent(ced);
+              submit('/bonificaciones/infoPorCedula', data);
+            }, 500);
+          }
+        });
+
+        // Event listener global para input de cédula en cambiar estado
+        let estadoPropietarioTimer = null;
+        document.addEventListener("input", function (e) {
+          if (e.target && e.target.id === "estado-propietario") {
+            clearTimeout(estadoPropietarioTimer);
+            estadoPropietarioTimer = setTimeout(function () {
+              const ced = e.target.value.trim();
+              const infoDiv = document.getElementById('estado-propietario-info');
+              if (!ced) {
+                if (infoDiv) infoDiv.innerHTML = 'Ingrese una cédula para ver los datos del propietario';
+                window._lastPropietarioEstado = null;
+                return;
+              }
+              const data = 'cedula=' + encodeURIComponent(ced);
+              window._estadoPropietarioRequest = true;
+              submit('/bonificaciones/infoPorCedula', data);
+            }, 500);
+          }
+        });
       });
 
-      // Inicializa el comportamiento de las pestañas
-      function initTabs() {
-        const tabButtons = document.querySelectorAll(".tab-btn");
-        tabButtons.forEach((btn) => {
-          btn.addEventListener("click", () => switchTab(btn.dataset.tab));
-          btn.addEventListener("keydown", (e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-              switchTab(btn.dataset.tab);
-            }
-          });
+      // ===== FUNCIONES GLOBALES DE HANDLERS =====
+      
+      function mostrar_tarifasLista(lista) {
+        const container = document.getElementById("tarifasContent");
+        if (!container) return;
+        if (!Array.isArray(lista) || lista.length === 0) {
+          container.innerHTML = "<em>No hay tarifas para este puesto</em>";
+          return;
+        }
+        let html = '<table class="tarifas-table"><thead><tr><th>Categoría</th><th>Monto</th></tr></thead><tbody>';
+        lista.forEach((t) => {
+          const categoria = t.categoria || "";
+          const monto = typeof t.monto === "number" ? t.monto.toFixed(2) : t.monto;
+          html += "<tr><td>" + categoria + "</td><td>" + monto + "</td></tr>";
         });
+        html += "</tbody></table>";
+        container.innerHTML = html;
       }
 
-      // Handler para la respuesta del endpoint /emularTransito/agregar
+      function mostrar_infoMatricula(dto) {
+        const div = document.getElementById("propietarioContent");
+        if (!div) return;
+        if (!dto) {
+          div.innerHTML = '<div class="propietario-info notfound">No se encontró vehículo con esa matrícula.</div>';
+          return;
+        }
+        let html = '<table class="propietario-table">';
+        html += "<tr><th>Propietario</th><td>" + (dto.propietarioNombre || "") + "</td></tr>";
+        html += "<tr><th>Categoría</th><td>" + (dto.categoria || "") + "</td></tr>";
+        html += "<tr><th>Bonificación</th><td>" + (dto.bonificacion || "(ninguna)") + "</td></tr>";
+        if (typeof dto.monto !== 'undefined' && dto.monto !== null) {
+          const monto = (typeof dto.monto === 'number') ? dto.monto.toFixed(2) : dto.monto;
+          html += '<tr><th>Costo del tránsito</th><td>$' + monto + '</td></tr>';
+        } else {
+          html += '<tr><th>Costo del tránsito</th><td><em>Seleccione un puesto para ver el costo</em></td></tr>';
+        }
+        if (typeof dto.saldoLuegoDelTransito !== 'undefined' && dto.saldoLuegoDelTransito !== null) {
+          const saldo = (typeof dto.saldoLuegoDelTransito === 'number') ? dto.saldoLuegoDelTransito.toFixed(2) : dto.saldoLuegoDelTransito;
+          html += '<tr><th>Saldo luego del tránsito</th><td>$' + saldo + '</td></tr>';
+        } else {
+          html += '<tr><th>Saldo luego del tránsito</th><td><em>No disponible</em></td></tr>';
+        }
+        html += "</table>";
+        div.innerHTML = html;
+      }
+
+      function mostrar_infoPropietario(dto) {
+        if (window._estadoPropietarioRequest) {
+          window._estadoPropietarioRequest = false;
+          const div = document.getElementById('estado-propietario-info');
+          const estadoSelect = document.getElementById('estado-select');
+          if (!div) return;
+          if (!dto) {
+            div.innerHTML = '<div class="propietario-info notfound">No se encontró propietario con esa cédula.</div>';
+            return;
+          }
+          window._lastPropietarioEstado = dto;
+          let html = '<div><strong>' + (dto.nombreCompleto || '') + '</strong>';
+          if (dto.estado) {
+            html += '<div>Estado actual: <strong>' + dto.estado + '</strong></div>';
+            if (estadoSelect) {
+              estadoSelect.value = dto.estado;
+            }
+          }
+          html += '</div>';
+          div.innerHTML = html;
+          return;
+        }
+
+        const div = document.getElementById('bon-propietario-info');
+        if (!div) return;
+        if (!dto) {
+          div.innerHTML = '<div class="propietario-info notfound">No se encontró propietario con esa cédula.</div>';
+          return;
+        }
+        window._lastPropietarioInfo = dto;
+        let html = '<div><strong>' + (dto.nombreCompleto || '') + '</strong>';
+        if (dto.estado) html += '<div>Estado: ' + dto.estado + '</div>';
+        html += '</div>';
+        if (Array.isArray(dto.asignadas) && dto.asignadas.length > 0) {
+          html += '<div style="margin-top:8px;"><strong>Bonificaciones asignadas:</strong>';
+          html += '<table style="width:100%;margin-top:6px;border-collapse:collapse;">';
+          html += '<thead><tr><th style="text-align:left;padding:4px;border-bottom:1px solid #ddd;">Bonificación</th><th style="text-align:left;padding:4px;border-bottom:1px solid #ddd;">Puesto</th><th style="text-align:left;padding:4px;border-bottom:1px solid #ddd;">Fecha</th></tr></thead>';
+          html += '<tbody>';
+          dto.asignadas.forEach(a => {
+            html += '<tr>';
+            html += '<td style="padding:4px;border-bottom:1px solid #f2f2f2;">' + (a.nombreBonificacion || a.nombre || '') + '</td>';
+            html += '<td style="padding:4px;border-bottom:1px solid #f2f2f2;">' + (a.puesto || '') + '</td>';
+            html += '<td style="padding:4px;border-bottom:1px solid #f2f2f2;">' + (a.fechaAsignada || '') + '</td>';
+            html += '</tr>';
+          });
+          html += '</tbody></table></div>';
+        } else {
+          html += '<div style="margin-top:8px;font-style:italic;color:#666;">No tiene bonificaciones asignadas</div>';
+        }
+        div.innerHTML = html;
+      }
+
       function mostrar_emularResultado(param) {
         const msg = (typeof param === 'string') ? param : (param && param.message) ? param.message : 'Resultado desconocido';
         try {
@@ -193,7 +283,6 @@
           alert(msg);
         }
         if (msg && msg.toLowerCase().includes('correctamente')) {
-          // recargar info de matrícula para actualizar saldo mostrado
           const matricula = document.getElementById('matricula')?.value?.trim();
           const puesto = document.getElementById('peajeSelect')?.value || '';
           if (matricula) {
@@ -204,9 +293,46 @@
         }
       }
 
-      // Mostrar modal de confirmación para emular tránsito
+      function mostrar_asignacionResultado(param) {
+        const msg = (typeof param === 'string') ? param : (param && param.message) ? param.message : 'Resultado desconocido';
+        try {
+          if (typeof mostrarMensaje === 'function') {
+            mostrarMensaje(msg);
+          } else {
+            alert(msg);
+          }
+        } catch (e) {
+          alert(msg);
+        }
+        if (msg && msg.toLowerCase().includes('correctamente')) {
+          const ced = window._lastRequestedCedula || document.getElementById('bon-propietario')?.value?.trim();
+          if (ced) {
+            submit('/bonificaciones/infoPorCedula', 'cedula=' + encodeURIComponent(ced));
+          }
+        }
+      }
+
+      function mostrar_cambioEstadoResultado(param) {
+        const msg = (typeof param === 'string') ? param : (param && param.message) ? param.message : 'Resultado desconocido';
+        try {
+          if (typeof mostrarMensaje === 'function') {
+            mostrarMensaje(msg);
+          } else {
+            alert(msg);
+          }
+        } catch (e) {
+          alert(msg);
+        }
+        if (msg && msg.toLowerCase().includes('correctamente')) {
+          const cedula = document.getElementById("estado-propietario")?.value?.trim();
+          if (cedula) {
+            window._estadoPropietarioRequest = true;
+            submit('/bonificaciones/infoPorCedula', 'cedula=' + encodeURIComponent(cedula));
+          }
+        }
+      }
+
       function showEmularModal(ctx) {
-        // crear/obtener elementos del modal
         let modal = document.getElementById('emularModal');
         const body = document.getElementById('emularModalBody');
         const title = document.getElementById('emularModalTitle');
@@ -221,7 +347,6 @@
         body.innerHTML = html;
         modal.style.display = 'flex';
 
-        // guardar contexto para posible uso posterior
         window._lastEmularCtx = ctx;
 
         const cancel = document.getElementById('emularCancelBtn');
@@ -246,542 +371,6 @@
         window.addEventListener('keydown', onKey, {once:true});
       }
 
-      function switchTab(tabId) {
-        // buttons
-        document
-          .querySelectorAll(".tab-btn")
-          .forEach((b) => b.classList.remove("active"));
-        const activeBtn = document.querySelector(
-          `.tab-btn[data-tab="${tabId}"]`
-        );
-        if (activeBtn) activeBtn.classList.add("active");
-
-        // panels
-        document
-          .querySelectorAll(".tab-panel")
-          .forEach((p) => p.classList.remove("active"));
-        const panel = document.getElementById(tabId);
-        if (panel) panel.classList.add("active");
-        // lazy load puestos when switching to emular
-        if (tabId === "tab-emular") {
-          const sel = document.getElementById("peajeSelect");
-          if (sel && sel.options.length === 0) cargarPuestos();
-          // no hay select de categorías: usamos fecha y hora
-          document.getElementById("matricula").focus();
-        }
-
-        // lazy load tipos de bonificaciones al cambiar a la pestaña correspondiente
-        if (tabId === "tab-bonificaciones") {
-          const selBon = document.getElementById("bon-tipo");
-          if (selBon && selBon.options.length === 0)
-            cargarBonificacionesTipos();
-          const selPuesto = document.getElementById("bon-puesto");
-          if (selPuesto && selPuesto.options.length === 0)
-            cargarPuestosEn("bon-puesto");
-        }
-      }
-
-      // Cargar puestos desde el backend
-      // Usa submit de vistaweb para obtener la lista de puestos y procesarla
-      function cargarPuestos() {
-        // indicamos destino por defecto
-        window._selectTargetForPuestos = "peajeSelect";
-        submit("/puestos/listar", "");
-      }
-
-      // Cuando se selecciona un puesto en Emular tránsito, pedir sus tarifas
-      document.addEventListener("change", function (e) {
-        if (e.target && e.target.id === "peajeSelect") {
-          const puesto = e.target.value;
-          // si no hay selección limpia el recuadro y actualiza la info del propietario
-          if (!puesto) {
-            mostrar_tarifasLista([]);
-            // si ya hay una matrícula en el formulario solicitar la info sin puesto
-            const input = document.getElementById('matricula');
-            if (input && input.value && input.value.trim() !== '') {
-              const matricula = input.value.trim();
-              // pedir info sin puestoId para que el servidor no devuelva el monto
-              submit('/emularTransito/infoMatricula', 'matricula=' + encodeURIComponent(matricula));
-            }
-            return;
-          }
-          // petición al backend pasando puestoId en body urlencoded
-          submit('/emularTransito/tarifasPorPuesto', 'puestoId=' + encodeURIComponent(puesto));
-          // Si ya hay una matrícula ingresada, pedir también la info del propietario
-          const input = document.getElementById('matricula');
-          if (input && input.value && input.value.trim() !== '') {
-            const matricula = input.value.trim();
-            // solicitar info con el puesto seleccionado para recalcular costo
-            submit('/emularTransito/infoMatricula', 'puestoId=' + encodeURIComponent(puesto) + '&matricula=' + encodeURIComponent(matricula));
-          }
-        }
-      });
-
-      // Cuando el usuario ingresa una matrícula pedir la info del propietario y el costo
-      (function () {
-        let timer = null;
-        const input = document.getElementById("matricula");
-        if (!input) return;
-        input.addEventListener("input", function () {
-          clearTimeout(timer);
-          timer = setTimeout(function () {
-            const matricula = input.value.trim();
-            const puesto = document.getElementById("peajeSelect")
-              ? document.getElementById("peajeSelect").value
-              : null;
-            const infoDiv = document.getElementById("propietarioContent");
-            if (!matricula) {
-              if (infoDiv) infoDiv.innerHTML = "";
-              return;
-            }
-            // solicitar info al servidor; incluir puestoId solo si fue seleccionado
-            let data = "matricula=" + encodeURIComponent(matricula);
-            if (puesto)
-              data = "puestoId=" + encodeURIComponent(puesto) + "&" + data;
-            submit("/emularTransito/infoMatricula", data);
-          }, 500);
-        });
-      })();
-
-      // Cargar puestos en un select cualquiera por id (reutilizable)
-      function cargarPuestosEn(selectId) {
-        window._selectTargetForPuestos = selectId;
-        submit("/puestos/listar", "");
-      }
-
-      // Cargar tipos de bonificaciones desde el backend y poblar el select
-      function cargarBonificacionesTipos() {
-        submit("/bonificaciones/listarTipos", "");
-      }
-
-      // Pedir info del propietario por cédula (usado en la pestaña Asignar bonificaciones)
-      (function(){
-        let timer = null;
-        const input = document.getElementById('bon-propietario');
-        const infoDiv = document.getElementById('bon-propietario-info');
-        if (!input) return;
-        input.addEventListener('input', function(){
-          clearTimeout(timer);
-          timer = setTimeout(function(){
-            const ced = input.value.trim();
-            if (!ced) {
-              // mostrar mensaje por defecto cuando no hay cédula ingresada
-              if (infoDiv) infoDiv.innerHTML = 'Ingrese una cédula para ver los datos del propietario';
-              window._lastPropietarioInfo = null;
-              return;
-            }
-            // consultar endpoint que devuelve nombre completo y estado
-            const data = 'cedula=' + encodeURIComponent(ced);
-            submit('/bonificaciones/infoPorCedula', data);
-          }, 500);
-        });
-      })();
-
-      // Pedir info del propietario por cédula para cambiar estado
-      (function(){
-        let timer = null;
-        const input = document.getElementById('estado-propietario');
-        const infoDiv = document.getElementById('estado-propietario-info');
-        const estadoSelect = document.getElementById('estado-select');
-        if (!input) return;
-        input.addEventListener('input', function(){
-          clearTimeout(timer);
-          timer = setTimeout(function(){
-            const ced = input.value.trim();
-            if (!ced) {
-              if (infoDiv) infoDiv.innerHTML = 'Ingrese una cédula para ver los datos del propietario';
-              window._lastPropietarioEstado = null;
-              return;
-            }
-            // consultar el mismo endpoint que bonificaciones
-            const data = 'cedula=' + encodeURIComponent(ced);
-            window._estadoPropietarioRequest = true;
-            submit('/bonificaciones/infoPorCedula', data);
-          }, 500);
-        });
-      })();
-
-      // Handlers llamados por vistaWeb.process cuando llega Respuesta con id correspondiente
-      function mostrar_puestosLista(lista) {
-        const selId = window._selectTargetForPuestos || "peajeSelect";
-        const sel = document.getElementById(selId);
-        if (!sel) return;
-        sel.innerHTML = '<option value="">Seleccionar puesto</option>';
-        if (!Array.isArray(lista)) return;
-        lista.forEach((valor) => {
-          const opt = document.createElement("option");
-          // el backend envía peajeString ("Nombre-Direccion"); usamos ese
-          // valor como value y lo mostramos tal cual para evitar ambigüedades.
-          opt.value = valor;
-          opt.textContent = valor;
-          sel.appendChild(opt);
-        });
-        // limpiar target
-        delete window._selectTargetForPuestos;
-      }
-
-      // categorias removed: no mostrar_categoriasLista handler needed
-
-      function mostrar_bonificacionesTipos(lista) {
-        const sel = document.getElementById("bon-tipo");
-        if (!sel) return;
-        sel.innerHTML = '<option value="">Seleccionar bonificación</option>';
-        if (!Array.isArray(lista)) return;
-        lista.forEach((nombre) => {
-          const opt = document.createElement("option");
-          opt.value = nombre;
-          opt.textContent = nombre;
-          sel.appendChild(opt);
-        });
-      }
-
-      function mostrar_tarifasLista(lista) {
-        const container = document.getElementById("tarifasContent");
-        if (!container) return;
-        if (!Array.isArray(lista) || lista.length === 0) {
-          container.innerHTML = "<em>No hay tarifas para este puesto</em>";
-          return;
-        }
-        // construir una tabla simple
-        let html =
-          '<table class="tarifas-table"><thead><tr><th>Categoría</th><th>Monto</th></tr></thead><tbody>';
-        lista.forEach((t) => {
-          const categoria = t.categoria || "";
-          const monto =
-            typeof t.monto === "number" ? t.monto.toFixed(2) : t.monto;
-          html += "<tr><td>" + categoria + "</td><td>" + monto + "</td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      }
-
-      function mostrar_infoMatricula(dto) {
-        const div = document.getElementById("propietarioContent");
-        if (!div) return;
-        if (!dto) {
-          div.innerHTML =
-            '<div class="propietario-info notfound">No se encontró vehículo con esa matrícula.</div>';
-          return;
-        }
-        // build a small info table
-        let html = '<table class="propietario-table">';
-        html +=
-          "<tr><th>Propietario</th><td>" +
-          (dto.propietarioNombre || "") +
-          "</td></tr>";
-        html +=
-          "<tr><th>Categoría</th><td>" + (dto.categoria || "") + "</td></tr>";
-          html +=
-            "<tr><th>Bonificación</th><td>" +
-            (dto.bonificacion || "(ninguna)") +
-            "</td></tr>";
-          // costo y saldo (si vinieron del servidor) 
-          if (typeof dto.monto !== 'undefined' && dto.monto !== null) {
-              const monto = (typeof dto.monto === 'number') ? dto.monto.toFixed(2) : dto.monto;
-              html += '<tr><th>Costo del tránsito</th><td>$' + monto + '</td></tr>';
-          } else {
-              html += '<tr><th>Costo del tránsito</th><td><em>Seleccione un puesto para ver el costo</em></td></tr>';
-          }
-          if (typeof dto.saldoLuegoDelTransito !== 'undefined' && dto.saldoLuegoDelTransito !== null) {
-              const saldo = (typeof dto.saldoLuegoDelTransito === 'number') ? dto.saldoLuegoDelTransito.toFixed(2) : dto.saldoLuegoDelTransito;
-              html += '<tr><th>Saldo luego del tránsito</th><td>$' + saldo + '</td></tr>';
-          } else {
-              html += '<tr><th>Saldo luego del tránsito</th><td><em>No disponible</em></td></tr>';
-          }
-        html += "</table>";
-        div.innerHTML = html;
-      }
-
-      // Mostrar info del propietario recibida desde /bonificaciones/infoPorCedula
-      function mostrar_infoPropietario(dto) {
-        // Verificar si la petición vino desde cambiar estado
-        if (window._estadoPropietarioRequest) {
-          window._estadoPropietarioRequest = false;
-          const div = document.getElementById('estado-propietario-info');
-          const estadoSelect = document.getElementById('estado-select');
-          if (!div) return;
-          if (!dto) {
-            div.innerHTML = '<div class="propietario-info notfound">No se encontró propietario con esa cédula.</div>';
-            return;
-          }
-          window._lastPropietarioEstado = dto;
-          let html = '<div><strong>' + (dto.nombreCompleto || '') + '</strong>';
-          if (dto.estado) {
-            html += '<div>Estado actual: <strong>' + dto.estado + '</strong></div>';
-            // Preseleccionar el estado actual en el select
-            if (estadoSelect) {
-              estadoSelect.value = dto.estado;
-            }
-          }
-          html += '</div>';
-          div.innerHTML = html;
-          return;
-        }
-
-        // Si no es de cambiar estado, es de bonificaciones
-        const div = document.getElementById('bon-propietario-info');
-        if (!div) return;
-        if (!dto) {
-          div.innerHTML = '<div class="propietario-info notfound">No se encontró propietario con esa cédula.</div>';
-          return;
-        }
-  // guardar última info para usarla en el modal de confirmación
-  window._lastPropietarioInfo = dto;
-        let html = '<div><strong>' + (dto.nombreCompleto || '') + '</strong>';
-        if (dto.estado) html += '<div>Estado: ' + dto.estado + '</div>';
-        html += '</div>';
-        // Mostrar lista de bonificaciones asignadas si existen
-        if (Array.isArray(dto.asignadas) && dto.asignadas.length > 0) {
-          html += '<div style="margin-top:8px;"><strong>Bonificaciones asignadas:</strong>';
-          html += '<table style="width:100%;margin-top:6px;border-collapse:collapse;">';
-          html += '<thead><tr><th style="text-align:left;padding:4px;border-bottom:1px solid #ddd;">Bonificación</th><th style="text-align:left;padding:4px;border-bottom:1px solid #ddd;">Puesto</th><th style="text-align:left;padding:4px;border-bottom:1px solid #ddd;">Fecha</th></tr></thead>';
-          html += '<tbody>';
-          dto.asignadas.forEach(a => {
-            html += '<tr>';
-            html += '<td style="padding:4px;border-bottom:1px solid #f2f2f2;">' + (a.nombreBonificacion || a.nombre || '') + '</td>';
-            html += '<td style="padding:4px;border-bottom:1px solid #f2f2f2;">' + (a.puesto || '') + '</td>';
-            html += '<td style="padding:4px;border-bottom:1px solid #f2f2f2;">' + (a.fechaAsignada || '') + '</td>';
-            html += '</tr>';
-          });
-          html += '</tbody></table></div>';
-        } else {
-          html += '<div style="margin-top:8px;font-style:italic;color:#666;">No tiene bonificaciones asignadas</div>';
-        }
-        div.innerHTML = html;
-      }
-
-      // ---- Validaciones para selects/inputs ----
-      function validarSelect(selectId, mensaje) {
-        const sel = document.getElementById(selectId);
-        if (!sel) return true; // si no existe, no validar
-        if (!sel.value || sel.value === "") {
-          try {
-            excepcionDeAplicacion(mensaje);
-          } catch (e) {
-            alert(mensaje);
-          }
-          sel.focus();
-          return false;
-        }
-        return true;
-      }
-
-      function validarNotEmpty(inputId, mensaje) {
-        const inp = document.getElementById(inputId);
-        if (!inp) return true;
-        if (inp.value.trim() === "") {
-          try {
-            excepcionDeAplicacion(mensaje);
-          } catch (e) {
-            alert(mensaje);
-          }
-          inp.focus();
-          return false;
-        }
-        return true;
-      }
-
-      // Conectar validaciones a los botones
-      const btnEmular = document.getElementById("btn-emular");
-      if (btnEmular) {
-        btnEmular.addEventListener("click", function (e) {
-          if (
-            !validarNotEmpty("matricula", "Ingrese la matrícula") ||
-            !validarSelect("peajeSelect", "Seleccione un puesto") ||
-            !validarNotEmpty("fechaHora", "Seleccione fecha y hora")
-          ) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-          else {
-            // si todo es válido, mostrar modal de confirmación antes de enviar
-            const puestoSel = document.getElementById('peajeSelect');
-            const puesto = puestoSel ? puestoSel.value : '';
-            const puestoText = (puestoSel && puestoSel.selectedIndex >= 0) ? puestoSel.options[puestoSel.selectedIndex].text : puesto;
-            const matricula = document.getElementById('matricula')?.value?.trim() || '';
-            const fechaHora = document.getElementById('fechaHora')?.value || '';
-            showEmularModal({ puesto, puestoText, matricula, fechaHora });
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        });
-      }
-
-      const btnAsignar = document.getElementById("btn-asignar");
-      if (btnAsignar) {
-        btnAsignar.addEventListener("click", function (e) {
-          if (
-            !validarNotEmpty(
-              "bon-propietario",
-              "Ingrese la cédula del propietario"
-            ) ||
-            !validarSelect("bon-puesto", "Seleccione un puesto") ||
-            !validarSelect("bon-tipo", "Seleccione un tipo de bonificación")
-          ) {
-            e.preventDefault();
-            e.stopPropagation();
-            return; // salimos si no es válido
-          }
-
-          // si llegó hasta acá, mostrar modal de confirmación con los datos
-          const cedula = document.getElementById('bon-propietario').value.trim();
-          const puestoSel = document.getElementById('bon-puesto');
-          const tipoSel = document.getElementById('bon-tipo');
-          const puesto = puestoSel ? puestoSel.value : '';
-          const puestoText = (puestoSel && puestoSel.selectedIndex >= 0) ? puestoSel.options[puestoSel.selectedIndex].text : puesto;
-          const tipo = tipoSel ? tipoSel.value : '';
-          const tipoText = (tipoSel && tipoSel.selectedIndex >= 0) ? tipoSel.options[tipoSel.selectedIndex].text : tipo;
-          showAssignModal({cedula, puesto, puestoText, tipo, tipoText, propietario: window._lastPropietarioInfo});
-          e.preventDefault();
-          e.stopPropagation();
-        });
-      }
-
-      // Handler para la respuesta del endpoint /bonificaciones/asignar
-      function mostrar_asignacionResultado(param) {
-        const msg = (typeof param === 'string') ? param : (param && param.message) ? param.message : 'Resultado desconocido';
-        try {
-          if (typeof mostrarMensaje === 'function') {
-            mostrarMensaje(msg);
-          } else {
-            alert(msg);
-          }
-        } catch (e) {
-          alert(msg);
-        }
-        // si la asignación fue exitosa, recargar la info del propietario para reflejar la nueva asignación
-        if (msg && msg.toLowerCase().includes('correctamente')) {
-          const ced = window._lastRequestedCedula || document.getElementById('bon-propietario')?.value?.trim();
-          if (ced) {
-            submit('/bonificaciones/infoPorCedula', 'cedula=' + encodeURIComponent(ced));
-          }
-        }
-      }
-
-      // Botón buscar propietario para cambiar estado
-      const btnBuscar = document.getElementById("btn-buscar-propietario");
-      if (btnBuscar) {
-        btnBuscar.addEventListener("click", function (e) {
-          if (!validarNotEmpty("estado-propietario", "Ingrese la cédula del propietario")) {
-            e.preventDefault();
-            e.stopPropagation();
-            return;
-          }
-          const cedula = document.getElementById("estado-propietario").value.trim();
-          const data = 'cedula=' + encodeURIComponent(cedula);
-          submit('/cambiarEstado/buscar', data);
-          e.preventDefault();
-          e.stopPropagation();
-        });
-      }
-
-      const btnCambiar = document.getElementById("btn-cambiar-estado");
-      if (btnCambiar) {
-        btnCambiar.addEventListener("click", function (e) {
-          if (
-            !validarNotEmpty(
-              "estado-propietario",
-              "Ingrese la cédula del propietario"
-            ) ||
-            !validarSelect("estado-select", "Seleccione un estado")
-          ) {
-            e.preventDefault();
-            e.stopPropagation();
-          } else {
-            // Enviar solicitud de cambio de estado
-            const cedula = document.getElementById("estado-propietario").value.trim();
-            const estado = document.getElementById("estado-select").value;
-            const data = 'cedula=' + encodeURIComponent(cedula) + '&estado=' + encodeURIComponent(estado);
-            submit('/cambiarEstado/cambiar', data);
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        });
-      }
-
-      // Handler para mostrar propietario encontrado
-      function mostrar_propietarioEncontrado(dto) {
-        const div = document.getElementById('estado-propietario-info');
-        const datosProp = document.getElementById('datos-propietario');
-        const estadoSelect = document.getElementById('estado-select');
-        
-        if (!dto) {
-          if (div) div.innerHTML = '<div class="propietario-info notfound">No se encontró propietario con esa cédula.</div>';
-          if (datosProp) datosProp.style.display = 'none';
-          return;
-        }
-
-        // Mostrar información del propietario
-        if (div) {
-          let html = '<div><strong>' + (dto.nombreCompleto || '') + '</strong>';
-          html += '<div>Estado actual: <strong>' + (dto.estadoActual || 'Sin estado') + '</strong></div>';
-          html += '</div>';
-          div.innerHTML = html;
-        }
-
-        // Mostrar el select de estados y preseleccionar el estado actual
-        if (datosProp) datosProp.style.display = 'block';
-        if (estadoSelect && dto.estadoActual) {
-          estadoSelect.value = dto.estadoActual;
-        }
-      }
-
-      // Handler para la respuesta del cambio de estado
-      function mostrar_cambioEstadoResultado(param) {
-        const msg = (typeof param === 'string') ? param : (param && param.message) ? param.message : 'Resultado desconocido';
-        try {
-          if (typeof mostrarMensaje === 'function') {
-            mostrarMensaje(msg);
-          } else {
-            alert(msg);
-          }
-        } catch (e) {
-          alert(msg);
-        }
-        // Si el cambio fue exitoso, buscar de nuevo para actualizar
-        if (msg && msg.toLowerCase().includes('correctamente')) {
-          const cedula = document.getElementById("estado-propietario")?.value?.trim();
-          if (cedula) {
-            submit('/cambiarEstado/buscar', 'cedula=' + encodeURIComponent(cedula));
-          }
-        }
-      }
-
-      // Función para mostrar datos del usuario
-      function mostrar_datosUsuario(datos) {
-        document.getElementById("nombreUsuario").textContent =
-          datos.nombre + " " + datos.apellido;
-      }
-
-      // Handler para mensajes de error generales
-      function mostrar_mensaje(texto) {
-        try {
-          if (typeof mostrarMensaje === 'function') {
-            mostrarMensaje(texto);
-          } else {
-            alert(texto);
-          }
-        } catch (e) {
-          alert(texto);
-        }
-      }
-
-      // Handler para la respuesta de logout
-      function mostrar_logoutExitoso(param) {
-        // El backend devuelve la URL de destino en el campo 'parametro' o como string
-        let url = '/login-admin.html';
-        if (typeof param === 'string') url = param;
-        else if (param && param.parametro) url = param.parametro;
-        else if (param && param.param) url = param.param;
-        try {
-          window.location.href = url;
-        } catch (e) {
-          // fallback
-          window.location.href = '/login-admin.html';
-        }
-      }
-
-      // Modal helpers
       function showAssignModal(ctx) {
         const modal = document.getElementById('assignModal');
         const body = document.getElementById('assignModalBody');
@@ -800,9 +389,7 @@
         title.textContent = 'Confirmar asignación';
         body.innerHTML = '<div>¿Desea asignar <strong>"' + nombreBon + '"</strong> en el puesto <strong>"' + nombrePuesto + '"</strong> al propietario:</div>' + propietarioHtml;
         modal.style.display = 'flex';
-  // guardar cedula solicitada para refresco posterior
-  window._lastRequestedCedula = ctx.cedula;
-  // attach handlers
+        window._lastRequestedCedula = ctx.cedula;
         const cancel = document.getElementById('assignCancelBtn');
         const confirm = document.getElementById('assignConfirmBtn');
         function doClose() {
@@ -813,11 +400,9 @@
         function onCancel(e) { e.preventDefault(); doClose(); }
         function onConfirm(e) {
           e.preventDefault();
-          // enviar asignación
           confirm.disabled = true;
           const data = 'cedula=' + encodeURIComponent(ctx.cedula || '') + '&puesto=' + encodeURIComponent(ctx.puesto || '') + '&tipo=' + encodeURIComponent(ctx.tipo || '');
           submit('/bonificaciones/asignar', data);
-          // close modal immediately; mensaje llegará por mostrar_asignacionResultado
           doClose();
           setTimeout(() => { confirm.disabled = false; }, 1500);
         }
@@ -825,6 +410,79 @@
         cancel.addEventListener('click', onCancel);
         confirm.addEventListener('click', onConfirm);
         window.addEventListener('keydown', onKey, {once:true});
+      }
+
+      async function loadFragments() {
+        try {
+          const emularForm = await fetch('/admin/emular-transito-form.html').then(r => r.text());
+          document.getElementById('emular-form-container').innerHTML = emularForm;
+          
+          const tarifas = await fetch('/admin/tarifas-info.html').then(r => r.text());
+          document.getElementById('tarifas-container').innerHTML = tarifas;
+
+          const propietarioTransito = await fetch('/admin/propietario-info-transito.html').then(r => r.text());
+          document.getElementById('propietario-transito-container').innerHTML = propietarioTransito;
+
+          const bonificacionesForm = await fetch('/admin/asignar-bonificaciones-form.html').then(r => r.text());
+          document.getElementById('bonificaciones-form-container').innerHTML = bonificacionesForm;
+
+          const propietarioBon = await fetch('/admin/propietario-info-bonificacion.html').then(r => r.text());
+          document.getElementById('propietario-bonificacion-container').innerHTML = propietarioBon;
+
+          const estadoForm = await fetch('/admin/cambiar-estado-form.html').then(r => r.text());
+          document.getElementById('estado-form-container').innerHTML = estadoForm;
+
+          const propietarioEstado = await fetch('/admin/propietario-info-estado.html').then(r => r.text());
+          document.getElementById('propietario-estado-container').innerHTML = propietarioEstado;
+
+          // Ejecutar scripts incrustados después de cargar todos los fragmentos
+          executeFragmentScripts();
+        } catch (error) {
+          console.error('Error cargando fragmentos:', error);
+        }
+      }
+
+      function executeFragmentScripts() {
+        // Re-ejecutar los scripts de los fragmentos ahora que el DOM está listo
+        const scripts = document.querySelectorAll('#emular-form-container script, #tarifas-container script, #propietario-transito-container script, #bonificaciones-form-container script, #propietario-bonificacion-container script, #estado-form-container script, #propietario-estado-container script');
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
+          } else {
+            newScript.textContent = oldScript.textContent;
+          }
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+      }
+
+      function mostrar_datosUsuario(datos) {
+        document.getElementById("nombreUsuario").textContent =
+          datos.nombre + " " + datos.apellido;
+      }
+
+      function mostrar_mensaje(texto) {
+        try {
+          if (typeof mostrarMensaje === 'function') {
+            mostrarMensaje(texto);
+          } else {
+            alert(texto);
+          }
+        } catch (e) {
+          alert(texto);
+        }
+      }
+
+      function mostrar_logoutExitoso(param) {
+        let url = '/login-admin.html';
+        if (typeof param === 'string') url = param;
+        else if (param && param.parametro) url = param.parametro;
+        else if (param && param.param) url = param.param;
+        try {
+          window.location.href = url;
+        } catch (e) {
+          window.location.href = '/login-admin.html';
+        }
       }
     </script>
     <!-- Modal de confirmación para asignar bonificación -->

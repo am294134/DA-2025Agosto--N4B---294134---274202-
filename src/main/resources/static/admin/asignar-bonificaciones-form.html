@@ -1,0 +1,42 @@
+<form id="form-bonificaciones" onsubmit="event.preventDefault();" style="flex:1;min-width:220px;">
+  <label for="bon-propietario">Propietario (cédula)</label>
+  <input id="bon-propietario" type="text" placeholder="12345678" />
+
+  <label for="bon-puesto">Puesto</label>
+  <select id="bon-puesto">
+    <!-- carga dinamica de puestos -->
+  </select>
+
+  <label for="bon-tipo">Tipo de bonificación</label>
+  <select id="bon-tipo"></select>
+  <label id="data-bon">Exonerados: No pagan / Frecuentes: 50% de descuento / Trabajadores: 80% de descuento</label>
+  <div class="action-row">
+    <button class="action-btn" id="btn-asignar">Asignar</button>
+  </div>
+</form>
+
+<script>
+const btnAsignar = document.getElementById("btn-asignar");
+if (btnAsignar) {
+  btnAsignar.addEventListener("click", function (e) {
+    if (!validarNotEmpty("bon-propietario", "Ingrese la cédula del propietario") ||
+        !validarSelect("bon-puesto", "Seleccione un puesto") ||
+        !validarSelect("bon-tipo", "Seleccione un tipo de bonificación")) {
+      e.preventDefault();
+      e.stopPropagation();
+      return;
+    }
+
+    const cedula = document.getElementById('bon-propietario').value.trim();
+    const puestoSel = document.getElementById('bon-puesto');
+    const tipoSel = document.getElementById('bon-tipo');
+    const puesto = puestoSel ? puestoSel.value : '';
+    const puestoText = (puestoSel && puestoSel.selectedIndex >= 0) ? puestoSel.options[puestoSel.selectedIndex].text : puesto;
+    const tipo = tipoSel ? tipoSel.value : '';
+    const tipoText = (tipoSel && tipoSel.selectedIndex >= 0) ? tipoSel.options[tipoSel.selectedIndex].text : tipo;
+    showAssignModal({cedula, puesto, puestoText, tipo, tipoText, propietario: window._lastPropietarioInfo});
+    e.preventDefault();
+    e.stopPropagation();
+  });
+}
+</script>

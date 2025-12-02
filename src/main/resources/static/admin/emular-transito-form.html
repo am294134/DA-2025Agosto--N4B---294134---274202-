@@ -1,0 +1,42 @@
+<div class="emular-form">
+  <form id="form-emular" onsubmit="event.preventDefault();">
+    <label for="peajeSelect">Peaje</label>
+    <select id="peajeSelect">
+      <!-- carga dinamica -->
+    </select>
+
+    <label for="matricula">Matrícula</label>
+    <input id="matricula" type="text" placeholder="ABC1234" />
+
+    <label for="fechaHora">Fecha y hora</label>
+    <input id="fechaHora" type="datetime-local" />
+
+    <div class="action-row">
+      <button class="action-btn" id="btn-emular">Emular</button>
+    </div>
+  </form>
+</div>
+
+<script>
+// Botón emular
+const btnEmular = document.getElementById("btn-emular");
+if (btnEmular) {
+  btnEmular.addEventListener("click", function (e) {
+    if (!validarNotEmpty("matricula", "Ingrese la matrícula") ||
+        !validarSelect("peajeSelect", "Seleccione un puesto") ||
+        !validarNotEmpty("fechaHora", "Seleccione fecha y hora")) {
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      const puestoSel = document.getElementById('peajeSelect');
+      const puesto = puestoSel ? puestoSel.value : '';
+      const puestoText = (puestoSel && puestoSel.selectedIndex >= 0) ? puestoSel.options[puestoSel.selectedIndex].text : puesto;
+      const matricula = document.getElementById('matricula')?.value?.trim() || '';
+      const fechaHora = document.getElementById('fechaHora')?.value || '';
+      showEmularModal({ puesto, puestoText, matricula, fechaHora });
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+}
+</script>

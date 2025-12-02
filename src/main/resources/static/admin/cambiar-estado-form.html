@@ -1,0 +1,39 @@
+<form id="form-cambiar-estado" onsubmit="event.preventDefault();" style="flex:1;min-width:220px;">
+  <label for="estado-propietario">Propietario (cédula)</label>
+  <input id="estado-propietario" type="text" placeholder="1" />
+
+  <label for="estado-select">Estado</label>
+  <select id="estado-select">
+    <option value="">Seleccionar estado</option>
+    <option>Habilitado</option>
+    <option>Penalizado</option>
+    <option>Suspendido</option>
+    <option>Deshabilitado</option>
+  </select>
+
+  <div class="action-row">
+    <button class="action-btn" id="btn-cambiar-estado">
+      Cambiar estado
+    </button>
+  </div>
+</form>
+
+<script>
+const btnCambiar = document.getElementById("btn-cambiar-estado");
+if (btnCambiar) {
+  btnCambiar.addEventListener("click", function (e) {
+    if (!validarNotEmpty("estado-propietario", "Ingrese la cédula del propietario") ||
+        !validarSelect("estado-select", "Seleccione un estado")) {
+      e.preventDefault();
+      e.stopPropagation();
+    } else {
+      const cedula = document.getElementById("estado-propietario").value.trim();
+      const estado = document.getElementById("estado-select").value;
+      const data = 'cedula=' + encodeURIComponent(cedula) + '&estado=' + encodeURIComponent(estado);
+      submit('/cambiarEstado/cambiar', data);
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+}
+</script>
