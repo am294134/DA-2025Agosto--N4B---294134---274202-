@@ -1,0 +1,53 @@
+<div class="vehiculos-section">
+  <h2>Mis vehículos</h2>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Matrícula</th>
+          <th>Modelo</th>
+          <th>Color</th>
+          <th>Categoría</th>
+        </tr>
+      </thead>
+      <tbody id="vehiculosTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function cargarVehiculos() {
+  submit("/vehiculos/listarVehiculos", "");
+}
+
+function mostrarVehiculos(vehiculos) {
+  const tbody = document.getElementById("vehiculosTableBody");
+  tbody.innerHTML = "";
+  vehiculos.forEach((vehiculo) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${vehiculo.matricula}</td>
+      <td>${vehiculo.modelo}</td>
+      <td>${vehiculo.color}</td>
+      <td>${vehiculo.categoria}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function mostrar_vehiculosProp(data) {
+  if (!data) return;
+  if (data.nombreCompleto) {
+    document.getElementById("nombreUsuario").textContent = data.nombreCompleto;
+  }
+  if (data.estado) {
+    const estadoText = data.estado.nombre ? data.estado.nombre : String(data.estado);
+    document.getElementById("estadoUsuario").textContent = estadoText;
+  }
+  if (typeof data.saldoActual !== "undefined") {
+    document.getElementById("saldoUsuario").textContent = Number(data.saldoActual).toFixed(2);
+  }
+  const vehiculos = Array.isArray(data.vehiculos) ? data.vehiculos : [];
+  mostrarVehiculos(vehiculos);
+}
+</script>

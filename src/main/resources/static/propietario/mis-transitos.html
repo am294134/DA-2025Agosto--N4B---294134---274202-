@@ -1,0 +1,128 @@
+<div class="transitos-section">
+  <h2>Mis tránsitos</h2>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Puesto</th>
+          <th>Matrícula</th>
+          <th>Monto Tarifa</th>
+          <th>Bonificación</th>
+          <th>Descuento</th>
+          <th>Monto Pagado</th>
+          <th>Fecha y Hora</th>
+        </tr>
+      </thead>
+      <tbody id="transitosTableBody">
+        <!-- Filas de tránsitos se insertarán aquí -->
+      </tbody>
+    </table>
+    <div id="transitosPager" style="margin-top: 8px; display: flex; justify-content: center"></div>
+  </div>
+</div>
+
+<script>
+window._allTransitos = window._allTransitos || [];
+window._transPage = window._transPage || 1;
+window._transPageSize = window._transPageSize || 5;
+
+function cargarTransitos() {
+  submit("/transitos/misTransitos", "");
+}
+
+function renderTransitosPage(page = 1) {
+  window._transPage = page;
+  const pageSize = window._transPageSize || 5;
+  const list = Array.isArray(window._allTransitos) ? window._allTransitos : [];
+  const total = list.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const start = (page - 1) * pageSize;
+  const pageItems = list.slice(start, start + pageSize);
+
+  const tbody = document.getElementById("transitosTableBody");
+  tbody.innerHTML = "";
+  if (pageItems.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="7">No hay tránsitos registrados</td>`;
+    tbody.appendChild(tr);
+  } else {
+    pageItems.forEach((t) => {
+      const tr = document.createElement("tr");
+      const puesto = t.puesto || "";
+      const matricula = t.matricula || "";
+      const montoBase = typeof t.montoBase !== "undefined" && t.montoBase !== null ? Number(t.montoBase).toFixed(2) : "";
+      const bon = t.bonificacion && String(t.bonificacion).trim().length > 0 ? t.bonificacion : "Ninguna";
+      const descuento = typeof t.descuento !== "undefined" && t.descuento !== null && Number(t.descuento) !== 0 ? "-" + Number(t.descuento).toFixed(2) : "Sin descuento";
+      const pagado = typeof t.montoPagado !== "undefined" && t.montoPagado !== null ? Number(t.montoPagado).toFixed(2) : "";
+      const fecha = t.fechaHora || "";
+
+      tr.innerHTML = `
+        <td>${puesto}</td>
+        <td>${matricula}</td>
+        <td>$${montoBase}</td>
+        <td>${bon}</td>
+        <td>${descuento}</td>
+        <td>$${pagado}</td>
+        <td>${fecha}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  const pager = document.getElementById("transitosPager");
+  pager.innerHTML = "";
+  if (totalPages > 1) {
+    const first = document.createElement("button");
+    first.textContent = "«";
+    first.disabled = page <= 1;
+    first.onclick = () => renderTransitosPage(1);
+    const prev = document.createElement("button");
+    prev.textContent = "‹";
+    prev.disabled = page <= 1;
+    prev.onclick = () => { if (page > 1) renderTransitosPage(page - 1); };
+    pager.appendChild(first);
+    pager.appendChild(prev);
+
+    const maxButtons = 7;
+    let startP = Math.max(1, page - Math.floor(maxButtons / 2));
+    let endP = Math.min(totalPages, startP + maxButtons - 1);
+    startP = Math.max(1, endP - maxButtons + 1);
+    for (let i = startP; i <= endP; i++) {
+      const b = document.createElement("button");
+      b.textContent = String(i);
+      b.className = i === page ? "page-btn active" : "page-btn";
+      b.disabled = i === page;
+      b.onclick = (function (p) { return function () { renderTransitosPage(p); }; })(i);
+      pager.appendChild(b);
+    }
+
+    const next = document.createElement("button");
+    next.textContent = "›";
+    next.disabled = page >= totalPages;
+    next.onclick = () => { if (page < totalPages) renderTransitosPage(page + 1); };
+    const last = document.createElement("button");
+    last.textContent = "»";
+    last.disabled = page >= totalPages;
+    last.onclick = () => renderTransitosPage(totalPages);
+    pager.appendChild(next);
+    pager.appendChild(last);
+  }
+}
+
+function mostrar_misTransitos(payload) {
+  let lista = [];
+  if (Array.isArray(payload)) {
+    lista = payload;
+  } else if (payload && typeof payload === "object") {
+    if (payload.items && Array.isArray(payload.items)) {
+      lista = payload.items;
+    } else if (Array.isArray(payload)) {
+      lista = payload;
+    } else {
+      try { lista = payload; } catch (e) { lista = []; }
+    }
+  }
+  window._allTransitos = lista || [];
+  renderTransitosPage(1);
+}
+</script>

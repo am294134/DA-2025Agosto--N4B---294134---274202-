@@ -31,677 +31,96 @@
     </div>
     <div class="page-center">
       <div class="top-row">
-        <div class="left-col">
-          <div class="vehiculos-section">
-            <h2>Mis vehículos</h2>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Matrícula</th>
-                    <th>Modelo</th>
-                    <th>Color</th>
-                    <th>Categoría</th>
-                  </tr>
-                </thead>
-                <tbody id="vehiculosTableBody"></tbody>
-              </table>
-            </div>
-          </div>
+        <div class="left-col" id="vehiculos-container">
+          <!-- Mis vehículos se cargará aquí -->
         </div>
         <div class="right-col">
-          <!-- Sección de bonificaciones asignadas -->
-          <div class="bonificaciones-section">
-            <h2>Mis bonificaciones asignadas</h2>
-            <div class="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Nombre Bonificación</th>
-                    <th>Puesto</th>
-                    <th>Fecha Asignada</th>
-                  </tr>
-                </thead>
-                <tbody id="bonificacionesTableBody">
-                  <!-- Filas de bonificaciones se insertarán aquí -->
-                </tbody>
-              </table>
-            </div>
+          <div id="bonificaciones-container">
+            <!-- Bonificaciones asignadas se cargará aquí -->
           </div>
-          <!-- Sección de notificaciones en tabla -->
-          <div class="notificaciones-section" style="margin-top: 16px">
-            <h2>Notificaciones</h2>
-            <div
-              style="
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 8px;
-              "
-            >
-              <div style="font-size: 0.95rem; color: #444">
-                Tus notificaciones recientes
-              </div>
-              <div>
-                <button
-                  id="btn-borrar-notificaciones"
-                  class="action-btn"
-                  style="
-                    background: #e53935;
-                    color: #fff;
-                    border: none;
-                    padding: 6px 10px;
-                    border-radius: 4px;
-                  "
-                >
-                  Borrar Notificaciones
-                </button>
-              </div>
-            </div>
-            <div class="table-container">
-              <table style="width: 100%; border-collapse: collapse">
-                <thead>
-                  <tr>
-                    <th>Mensaje</th>
-                    <th>Fecha</th>
-                    <th>Leída</th>
-                  </tr>
-                </thead>
-                <tbody id="notificationsTableBody">
-                  <!-- Filas de notificaciones -->
-                </tbody>
-              </table>
-            </div>
+          <div id="notificaciones-container">
+            <!-- Notificaciones se cargará aquí -->
           </div>
         </div>
       </div>
 
-      <script src="/utilesVista.js"></script>
-      <script src="/vistaWeb.js"></script>
-
-      <!-- Sección de tránsitos del propietario -->
-      <div class="transitos-section">
-        <h2>Mis tránsitos</h2>
-        <div class="table-container">
-          <table>
-            <thead>
-              <tr>
-                <th>Puesto</th>
-                <th>Matrícula</th>
-                <th>Monto Tarifa</th>
-                <th>Bonificación</th>
-                <th>Descuento</th>
-                <th>Monto Pagado</th>
-                <th>Fecha y Hora</th>
-              </tr>
-            </thead>
-            <tbody id="transitosTableBody">
-              <!-- Filas de tránsitos se insertarán aquí -->
-            </tbody>
-          </table>
-          <div
-            id="transitosPager"
-            style="margin-top: 8px; display: flex; justify-content: center"
-          ></div>
-        </div>
+      <div id="transitos-container">
+        <!-- Mis tránsitos se cargará aquí -->
       </div>
     </div>
+
+    <script src="/utilesVista.js"></script>
+    <script src="/vistaWeb.js"></script>
+    <script src="/js/menu-propietario.js"></script>
     <script>
-      let notifications = [];
+      document.addEventListener("DOMContentLoaded", async function () {
+        urlIniciarVista = "/acceso/iniciarPropietario";
+        urlCierreVista = "/acceso/cerrarSesion";
+        urlRegistroSSE = "/notificaciones/registroSSE";
 
-      // Función para cargar las notificaciones (paginadas: 5 por página)
-      function cargarNotificaciones(page = 1, pageSize = 5) {
-        // usar vistaWeb.submit para obtener notificaciones paginadas
-        submit(
-          "/notificaciones/listar",
-          "page=" +
-            encodeURIComponent(page) +
-            "&pageSize=" +
-            encodeURIComponent(pageSize)
-        );
-      }
+        // Cargar fragmentos
+        await loadFragments();
 
-      // Función para actualizar el contador de notificaciones
-      function actualizarContadorNotificaciones() {
-        const count = document.getElementById("notificationCount");
-        // Mostrar el número de notificaciones NO LEÍDAS si está disponible, sino el total
-        const unread =
-          typeof window._notifTotalUnread !== "undefined" &&
-          window._notifTotalUnread !== null
-            ? window._notifTotalUnread
-            : notifications
-            ? notifications.filter((n) => !n.leida).length
-            : 0;
-        const total = unread;
-        count.textContent = total;
-        count.style.display = total > 0 ? "block" : "none";
-      }
+        // Cargar datos iniciales
+        if (typeof cargarVehiculos === "function") cargarVehiculos();
+        if (typeof cargarNotificaciones === "function") cargarNotificaciones();
+        if (typeof cargarBonificaciones === "function") cargarBonificaciones();
+        if (typeof cargarTransitos === "function") cargarTransitos();
 
-      // Función para marcar todas las notificaciones como leídas
-      async function marcarComoLeidas() {
-        try {
-          const response = await fetch("/notificaciones/marcarLeidas", {
-            method: "POST",
-          });
-          if (!response.ok) {
-            throw new Error("Error al marcar las notificaciones como leídas");
+        // Configurar el refresco periódico de notificaciones (cada 30 segundos)
+        setInterval(() => {
+          if (typeof cargarNotificaciones === "function") cargarNotificaciones();
+        }, 30000);
+
+        // Cerrar el dropdown cuando se hace click fuera de él
+        document.addEventListener("click", function (event) {
+          const dropdown = document.getElementById("notificationDropdown");
+          const notificationIcon = document.querySelector(".notification-icon");
+          if (dropdown && notificationIcon && !notificationIcon.contains(event.target) && dropdown.classList.contains("show")) {
+            dropdown.classList.remove("show");
           }
-          // Recargar notificaciones para reflejar estado actualizado
-          await cargarNotificaciones();
-        } catch (error) {
-          console.error("Error:", error);
-        }
-      }
+        });
 
-      // Función para actualizar el contenido del dropdown de notificaciones (con paginación)
-      function actualizarDropdownNotificaciones() {
-        const dropdown = document.getElementById("notificationDropdown");
-        dropdown.innerHTML = "";
-
-        // Agregar el encabezado con el botón de marcar como leídas
-        const header = document.createElement("div");
-        header.className = "notification-header";
-
-        const title = document.createElement("h4");
-        title.textContent = "Notificaciones";
-
-        const markReadBtn = document.createElement("button");
-        markReadBtn.className = "mark-read-btn";
-        markReadBtn.textContent = "Marcar como leídas";
-        markReadBtn.onclick = marcarComoLeidas;
-
-        // selector de pageSize
-        header.appendChild(title);
-        // agregar botón de marcar como leídas a la derecha
-        const headerTools = document.createElement("div");
-        headerTools.style.display = "flex";
-        headerTools.style.gap = "8px";
-        headerTools.style.alignItems = "center";
-        // Prefer server-provided totalUnread when deciding whether to show the button
-        const anyUnread =
-          typeof window._notifTotalUnread !== "undefined" &&
-          window._notifTotalUnread !== null
-            ? window._notifTotalUnread > 0
-            : notifications.some((n) => !n.leida);
-        if (anyUnread) {
-          headerTools.appendChild(markReadBtn);
-        }
-        header.appendChild(headerTools);
-        dropdown.appendChild(header);
-
-        if (!Array.isArray(notifications) || notifications.length === 0) {
-          const noNotifs = document.createElement("div");
-          noNotifs.className = "notification-item";
-          noNotifs.textContent = "No hay notificaciones nuevas";
-          dropdown.appendChild(noNotifs);
-        } else {
-          // Mostrar solo las notificaciones en la página actual
-          notifications.forEach((notif) => {
-            const notifItem = document.createElement("div");
-            notifItem.className =
-              "notification-item " + (notif.leida ? "read" : "unread");
-
-            const mensaje = document.createElement("div");
-            mensaje.textContent = notif.mensaje;
-
-            const tiempo = document.createElement("div");
-            tiempo.className = "notification-time";
-            tiempo.textContent = notif.fechaHora;
-
-            notifItem.appendChild(mensaje);
-            notifItem.appendChild(tiempo);
-            dropdown.appendChild(notifItem);
-          });
-        }
-
-        // agregar controles de paginación si corresponde (diseño más agradable)
-        const totalPages = window._notifTotalPages || 1;
-        let currentPage = window._notifPage || 1;
-        if (totalPages > 1) {
-          const pager = document.createElement("div");
-          pager.className = "notification-pager";
-          pager.style.display = "flex";
-          pager.style.gap = "6px";
-          pager.style.alignItems = "center";
-          pager.style.justifyContent = "center";
-
-          const first = document.createElement("button");
-          first.textContent = "«";
-          first.title = "Primera página";
-          first.disabled = currentPage <= 1;
-          first.onclick = () => {
-            cargarNotificaciones(1, window._notifPageSize || 5);
-          };
-
-          const prev = document.createElement("button");
-          prev.textContent = "‹";
-          prev.title = "Anterior";
-          prev.disabled = currentPage <= 1;
-          prev.onclick = () => {
-            if (currentPage > 1)
-              cargarNotificaciones(currentPage - 1, window._notifPageSize || 5);
-          };
-
-          pager.appendChild(first);
-          pager.appendChild(prev);
-
-          // mostrar un conjunto de páginas centrado en la actual (máx 7 elementos)
-          const maxButtons = 7;
-          let start = Math.max(1, currentPage - Math.floor(maxButtons / 2));
-          let end = Math.min(totalPages, start + maxButtons - 1);
-          start = Math.max(1, end - maxButtons + 1);
-
-          for (let i = start; i <= end; i++) {
-            const pbtn = document.createElement("button");
-            pbtn.textContent = String(i);
-            pbtn.className = i === currentPage ? "page-btn active" : "page-btn";
-            pbtn.disabled = i === currentPage;
-            pbtn.onclick = (function (page) {
-              return function () {
-                cargarNotificaciones(page, window._notifPageSize || 5);
-              };
-            })(i);
-            pager.appendChild(pbtn);
-          }
-
-          const next = document.createElement("button");
-          next.textContent = "›";
-          next.title = "Siguiente";
-          next.disabled = currentPage >= totalPages;
-          next.onclick = () => {
-            if (currentPage < totalPages)
-              cargarNotificaciones(currentPage + 1, window._notifPageSize || 5);
-          };
-
-          const last = document.createElement("button");
-          last.textContent = "»";
-          last.title = "Última página";
-          last.disabled = currentPage >= totalPages;
-          last.onclick = () => {
-            cargarNotificaciones(totalPages, window._notifPageSize || 5);
-          };
-
-          pager.appendChild(next);
-          pager.appendChild(last);
-          dropdown.appendChild(pager);
-        }
-      }
-
-      // Función para mostrar/ocultar el dropdown de notificaciones
-      function toggleNotifications() {
-        const dropdown = document.getElementById("notificationDropdown");
-        dropdown.classList.toggle("show");
-      }
-
-      // Cerrar el dropdown cuando se hace click fuera de él
-      document.addEventListener("click", function (event) {
-        const dropdown = document.getElementById("notificationDropdown");
-        const notificationIcon = document.querySelector(".notification-icon");
-
-        if (
-          !notificationIcon.contains(event.target) &&
-          dropdown.classList.contains("show")
-        ) {
-          dropdown.classList.remove("show");
-        }
-      });
-
-      // Evitar que un click dentro del contenedor cierre el dropdown (mantener abierto)
-      (function () {
+        // Evitar que un click dentro del dropdown lo cierre
         const dropdown = document.getElementById("notificationDropdown");
         if (dropdown) {
           dropdown.addEventListener("click", function (e) {
             e.stopPropagation();
           });
         }
-      })();
-
-      // Función para cargar los vehículos (acepta ya sea un array o un objeto { nombreCompleto, vehiculos })
-      function cargarVehiculos() {
-        // Pedimos la información mediante submit; la respuesta llamará a mostrar_vehiculosProp
-        submit("/vehiculos/listarVehiculos", "");
-      }
-
-      // Función para mostrar los vehículos en la tabla
-      function mostrarVehiculos(vehiculos) {
-        const tbody = document.getElementById("vehiculosTableBody");
-        tbody.innerHTML = ""; // Limpiar la tabla
-
-        vehiculos.forEach((vehiculo) => {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `
-                    <td>${vehiculo.matricula}</td>
-                    <td>${vehiculo.modelo}</td>
-                    <td>${vehiculo.color}</td>
-                    <td>${vehiculo.categoria}</td>
-                `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      // Inicialización de la vista
-      document.addEventListener("DOMContentLoaded", function () {
-        // Configurar la URL para iniciar la vista
-        urlIniciarVista = "/acceso/iniciarPropietario";
-
-        // Manejar cierre de sesión cuando se cierra la ventana
-        urlCierreVista = "/acceso/cerrarSesion";
-
-        urlRegistroSSE = "/notificaciones/registroSSE";
-        // Cargar vehículos (la respuesta incluye nombreCompleto y se usa para setear el nombre)
-        cargarVehiculos();
-
-        // Cargar notificaciones iniciales
-        cargarNotificaciones();
-
-        // Cargar bonificaciones asignadas
-        cargarBonificaciones();
-
-        // Cargar tránsitos del propietario
-        cargarTransitos();
-
-        // Configurar el refresco periódico de notificaciones (cada 30 segundos)
-        setInterval(cargarNotificaciones, 30000);
       });
 
-      // Conectar botón "Borrar todas" si está presente
-      const btnBorrarAll = document.getElementById("btn-borrar-notificaciones");
-      if (btnBorrarAll) {
-        btnBorrarAll.addEventListener("click", function (e) {
-          e.preventDefault();
-          borrarTodasNotificaciones();
-        });
-      }
-      // Nota: el nombre se obtiene ahora desde la respuesta de /vehiculos/listarVehiculos
-
-      // Función para mostrar datos del usuario
-      function mostrar_datosUsuario(datos) {
-        document.getElementById("nombreUsuario").textContent =
-          datos.nombre + " " + datos.apellido;
-      }
-
-      // Handler para redirecciones solicitadas por el servidor cuando no hay sesión
-      function mostrar_redirLoginPropietario(url) {
-        if (typeof url === "string" && url.length > 0) {
-          window.location.href = url;
-        } else {
-          window.location.href = "/login-propietario.html";
-        }
-      }
-
-      // Función para cargar las bonificaciones asignadas al propietario
-      function cargarBonificaciones() {
-        submit("/bonificaciones/porPropietario", "");
-      }
-
-      // Función para cargar los tránsitos del propietario
-      function cargarTransitos() {
-        submit("/transitos/misTransitos", "");
-      }
-
-      // variables para paginación de tránsitos (cliente)
-      window._allTransitos = window._allTransitos || [];
-      window._transPage = window._transPage || 1;
-      window._transPageSize = window._transPageSize || 5;
-
-      function renderTransitosPage(page = 1) {
-        window._transPage = page;
-        const pageSize = window._transPageSize || 5;
-        const list = Array.isArray(window._allTransitos)
-          ? window._allTransitos
-          : [];
-        const total = list.length;
-        const totalPages = Math.max(1, Math.ceil(total / pageSize));
-        const start = (page - 1) * pageSize;
-        const pageItems = list.slice(start, start + pageSize);
-
-        const tbody = document.getElementById("transitosTableBody");
-        tbody.innerHTML = "";
-        if (pageItems.length === 0) {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td colspan="7">No hay tránsitos registrados</td>`;
-          tbody.appendChild(tr);
-        } else {
-          pageItems.forEach((t) => {
-            const tr = document.createElement("tr");
-            const puesto = t.puesto || "";
-            const matricula = t.matricula || "";
-            const montoBase =
-              typeof t.montoBase !== "undefined" && t.montoBase !== null
-                ? Number(t.montoBase).toFixed(2)
-                : "";
-            const bon =
-              t.bonificacion && String(t.bonificacion).trim().length > 0
-                ? t.bonificacion
-                : "Ninguna";
-            const descuento =
-              typeof t.descuento !== "undefined" &&
-              t.descuento !== null &&
-              Number(t.descuento) !== 0
-                ? "-" + Number(t.descuento).toFixed(2)
-                : "Sin descuento";
-            const pagado =
-              typeof t.montoPagado !== "undefined" && t.montoPagado !== null
-                ? Number(t.montoPagado).toFixed(2)
-                : "";
-            const fecha = t.fechaHora || "";
-
-            tr.innerHTML = `
-                        <td>${puesto}</td>
-                        <td>${matricula}</td>
-                        <td>$${montoBase}</td>
-                        <td>${bon}</td>
-                        <td>${descuento}</td>
-                        <td>$${pagado}</td>
-                        <td>${fecha}</td>
-                    `;
-            tbody.appendChild(tr);
-          });
-        }
-
-        // render pager if needed
-        const pager = document.getElementById("transitosPager");
-        pager.innerHTML = "";
-        if (totalPages > 1) {
-          const first = document.createElement("button");
-          first.textContent = "«";
-          first.disabled = page <= 1;
-          first.onclick = () => renderTransitosPage(1);
-          const prev = document.createElement("button");
-          prev.textContent = "‹";
-          prev.disabled = page <= 1;
-          prev.onclick = () => {
-            if (page > 1) renderTransitosPage(page - 1);
-          };
-          pager.appendChild(first);
-          pager.appendChild(prev);
-
-          // page buttons (limit to 7)
-          const maxButtons = 7;
-          let startP = Math.max(1, page - Math.floor(maxButtons / 2));
-          let endP = Math.min(totalPages, startP + maxButtons - 1);
-          startP = Math.max(1, endP - maxButtons + 1);
-          for (let i = startP; i <= endP; i++) {
-            const b = document.createElement("button");
-            b.textContent = String(i);
-            b.className = i === page ? "page-btn active" : "page-btn";
-            b.disabled = i === page;
-            b.onclick = (function (p) {
-              return function () {
-                renderTransitosPage(p);
-              };
-            })(i);
-            pager.appendChild(b);
-          }
-
-          const next = document.createElement("button");
-          next.textContent = "›";
-          next.disabled = page >= totalPages;
-          next.onclick = () => {
-            if (page < totalPages) renderTransitosPage(page + 1);
-          };
-          const last = document.createElement("button");
-          last.textContent = "»";
-          last.disabled = page >= totalPages;
-          last.onclick = () => renderTransitosPage(totalPages);
-          pager.appendChild(next);
-          pager.appendChild(last);
-        }
-      }
-
-      // Handlers para respuestas de submit
-      function mostrar_notificaciones(payload) {
-        // payload puede ser un array (compatibilidad antigua) o un objeto con items/page/meta
-        if (Array.isArray(payload)) {
-          notifications = payload;
-          window._notifPage = 1;
-          window._notifTotalPages = 1;
-          window._notifPageSize = notifications.length;
-          window._notifTotalItems = notifications.length;
-        } else if (payload && typeof payload === "object" && payload.items) {
-          notifications = Array.isArray(payload.items) ? payload.items : [];
-          window._notifPage = payload.page || 1;
-          window._notifTotalPages = payload.totalPages || 1;
-          window._notifPageSize = payload.pageSize || notifications.length || 5;
-          window._notifTotalItems =
-            payload.totalItems || notifications.length || 0;
-          // Store totalUnread when provided by backend
-          window._notifTotalUnread =
-            typeof payload.totalUnread !== "undefined"
-              ? payload.totalUnread
-              : null;
-        } else {
-          notifications = [];
-          window._notifPage = 1;
-          window._notifTotalPages = 1;
-          window._notifPageSize = 5;
-          window._notifTotalItems = 0;
-          window._notifTotalUnread = 0;
-        }
-        actualizarContadorNotificaciones();
-        actualizarDropdownNotificaciones();
-        // Render table view of notifications (si existe la sección)
-        renderNotificationsTable();
-      }
-
-      // Renderiza la tabla de notificaciones en la sección del panel
-      function renderNotificationsTable() {
-        const tbody = document.getElementById("notificationsTableBody");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-        if (!Array.isArray(notifications) || notifications.length === 0) {
-          const tr = document.createElement("tr");
-          tr.innerHTML = '<td colspan="3">No hay notificaciones</td>';
-          tbody.appendChild(tr);
-          return;
-        }
-        notifications.forEach((n) => {
-          const tr = document.createElement("tr");
-          const mensaje = n.mensaje || "";
-          const fecha = n.fechaHora || "";
-          const leida = n.leida ? "Sí" : "No";
-          tr.innerHTML = `<td>${mensaje}</td><td>${fecha}</td><td>${leida}</td>`;
-          tbody.appendChild(tr);
-        });
-      }
-
-      function mostrar_vehiculosProp(data) {
-        if (!data) return;
-        // data puede ser el DTO { nombreCompleto, vehiculos, estado, saldoActual }
-        if (data.nombreCompleto) {
-          document.getElementById("nombreUsuario").textContent =
-            data.nombreCompleto;
-        }
-        if (data.estado) {
-          const estadoText = data.estado.nombre
-            ? data.estado.nombre
-            : String(data.estado);
-          document.getElementById("estadoUsuario").textContent = estadoText;
-        }
-        if (typeof data.saldoActual !== "undefined") {
-          document.getElementById("saldoUsuario").textContent = Number(
-            data.saldoActual
-          ).toFixed(2);
-        }
-        const vehiculos = Array.isArray(data.vehiculos) ? data.vehiculos : [];
-        mostrarVehiculos(vehiculos);
-      }
-
-      function mostrar_bonificacionesAsignadas(lista) {
-        const tbody = document.getElementById("bonificacionesTableBody");
-        tbody.innerHTML = "";
-        if (!Array.isArray(lista) || lista.length === 0) {
-          const tr = document.createElement("tr");
-          tr.innerHTML = `<td colspan="3">No hay bonificaciones asignadas</td>`;
-          tbody.appendChild(tr);
-          return;
-        }
-        lista.forEach((b) => {
-          const tr = document.createElement("tr");
-          const nombre = b.nombreBonificacion || b.nombre || "";
-          const puesto = (b.puesto && (b.puesto.nombre || b.puesto)) || "";
-          const fecha = b.fechaAsignada || b.fecha || "";
-          tr.innerHTML = `
-                    <td>${nombre}</td>
-                    <td>${puesto}</td>
-                    <td>${fecha}</td>
-                `;
-          tbody.appendChild(tr);
-        });
-      }
-
-      // Llamar al endpoint para borrar todas las notificaciones
-      function borrarTodasNotificaciones() {
-        // Usamos submit para mantener el comportamiento de la app
-        submit("/notificaciones/borrarTodas", "");
-      }
-
-      // Handler para la respuesta del borrado
-      function mostrar_borrarTodasResultado(param) {
-        const msg =
-          typeof param === "string"
-            ? param
-            : param && param.message
-            ? param.message
-            : "Resultado desconocido";
+      async function loadFragments() {
         try {
-          if (typeof mostrarMensaje === "function") {
-            mostrarMensaje(msg);
-          } else {
-            alert(msg);
-          }
-        } catch (e) {
-          alert(msg);
+          const vehiculos = await fetch('/propietario/mis-vehiculos.html').then(r => r.text());
+          document.getElementById('vehiculos-container').innerHTML = vehiculos;
+
+          const bonificaciones = await fetch('/propietario/bonificaciones-asignadas.html').then(r => r.text());
+          document.getElementById('bonificaciones-container').innerHTML = bonificaciones;
+
+          const notificaciones = await fetch('/propietario/notificaciones.html').then(r => r.text());
+          document.getElementById('notificaciones-container').innerHTML = notificaciones;
+
+          const transitos = await fetch('/propietario/mis-transitos.html').then(r => r.text());
+          document.getElementById('transitos-container').innerHTML = transitos;
+
+          executeFragmentScripts();
+        } catch (error) {
+          console.error('Error cargando fragmentos:', error);
         }
-        // recargar notificaciones y contador
-        cargarNotificaciones();
       }
 
-      // Mostrar tránsitos en la tabla del propietario
-      function mostrar_misTransitos(payload) {
-        // payload puede venir como array (compatibilidad) o como Respuesta.parametro
-        let lista = [];
-        if (Array.isArray(payload)) {
-          lista = payload;
-        } else if (payload && typeof payload === "object") {
-          // en muchos endpoints devolvemos un objeto con items o directamente la lista
-          if (payload.items && Array.isArray(payload.items)) {
-            lista = payload.items;
-          } else if (Array.isArray(payload)) {
-            lista = payload;
+      function executeFragmentScripts() {
+        const scripts = document.querySelectorAll('#vehiculos-container script, #bonificaciones-container script, #notificaciones-container script, #transitos-container script');
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          if (oldScript.src) {
+            newScript.src = oldScript.src;
           } else {
-            // si es un DTO directo
-            try {
-              lista = payload;
-            } catch (e) {
-              lista = [];
-            }
+            newScript.textContent = oldScript.textContent;
           }
-        }
-
-        // store full list and render first page
-        window._allTransitos = lista || [];
-        renderTransitosPage(1);
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
       }
     </script>
     <style>

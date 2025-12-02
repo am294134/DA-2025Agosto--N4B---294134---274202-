@@ -1,0 +1,78 @@
+<div class="notificaciones-section" style="margin-top: 16px">
+  <h2>Notificaciones</h2>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px">
+    <div style="font-size: 0.95rem; color: #444">
+      Tus notificaciones recientes
+    </div>
+    <div>
+      <button id="btn-borrar-notificaciones" class="action-btn" style="background: #e53935; color: #fff; border: none; padding: 6px 10px; border-radius: 4px">
+        Borrar Notificaciones
+      </button>
+    </div>
+  </div>
+  <div class="table-container">
+    <table style="width: 100%; border-collapse: collapse">
+      <thead>
+        <tr>
+          <th>Mensaje</th>
+          <th>Fecha</th>
+          <th>Leída</th>
+        </tr>
+      </thead>
+      <tbody id="notificationsTableBody">
+        <!-- Filas de notificaciones -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+const btnBorrarAll = document.getElementById("btn-borrar-notificaciones");
+if (btnBorrarAll) {
+  btnBorrarAll.addEventListener("click", function (e) {
+    e.preventDefault();
+    borrarTodasNotificaciones();
+  });
+}
+
+function renderNotificationsTable() {
+  const tbody = document.getElementById("notificationsTableBody");
+  if (!tbody) return;
+  tbody.innerHTML = "";
+  const notifications = window._notifications || [];
+  if (!Array.isArray(notifications) || notifications.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = '<td colspan="3">No hay notificaciones</td>';
+    tbody.appendChild(tr);
+    return;
+  }
+  notifications.forEach((n) => {
+    const tr = document.createElement("tr");
+    const mensaje = n.mensaje || "";
+    const fecha = n.fechaHora || "";
+    const leida = n.leida ? "Sí" : "No";
+    tr.innerHTML = `<td>${mensaje}</td><td>${fecha}</td><td>${leida}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function borrarTodasNotificaciones() {
+  submit("/notificaciones/borrarTodas", "");
+}
+
+function mostrar_borrarTodasResultado(param) {
+  const msg = typeof param === "string" ? param : (param && param.message) ? param.message : "Resultado desconocido";
+  try {
+    if (typeof mostrarMensaje === "function") {
+      mostrarMensaje(msg);
+    } else {
+      alert(msg);
+    }
+  } catch (e) {
+    alert(msg);
+  }
+  if (typeof cargarNotificaciones === "function") {
+    cargarNotificaciones();
+  }
+}
+</script>
