@@ -1,5 +1,6 @@
 package com.example.obligatorio_dda.Modelo;
 
+
 public class Datos {
     public Datos() {
     }
